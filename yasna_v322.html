@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.22</title>
+<title>ЯСНА v3.28</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -968,6 +968,10 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
   border-radius: 18px;
   font-size: 15px; line-height: 1.65;
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  /* v3.27: блокируем нативное выделение iOS — копирование через долгое нажатие */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .msg-bubble-ai {
   background: var(--glass);
@@ -2121,6 +2125,109 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .gr-empty-s { font-size:14px; color:var(--text3); line-height:1.6; max-width:260px; }
 .gr-empty-btn { padding:9px 22px; cursor:pointer; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.25); border-radius:20px; font-size:12px; font-weight:700; color:var(--accent); font-family:'Jost',sans-serif; }
 
+/* ══ ДЕТАЛЬНЫЙ ГРАФИК v3.24 ══ */
+.gr-detail-hdr {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  margin-bottom:20px;
+}
+.gr-detail-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px; font-weight:600; color:var(--text); line-height:1.1;
+}
+.gr-detail-unit {
+  font-size:12px; color:var(--text3); margin-top:3px; font-family:'Jost',sans-serif;
+}
+.gr-detail-val {
+  text-align:right;
+  font-family:'Cormorant Garamond',serif;
+  font-size:38px; font-weight:600; line-height:1;
+}
+.gr-detail-val.ok { color:var(--accent3); }
+.gr-detail-val.hi { color:var(--danger); }
+.gr-detail-val.lo { color:#FFB450; }
+.gr-detail-status {
+  font-size:11px; color:var(--text3); margin-top:4px;
+  text-align:right; font-family:'Jost',sans-serif;
+}
+.gr-detail-norm-band {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 14px; border-radius:12px;
+  background:rgba(122,255,212,0.07);
+  border:1px solid rgba(122,255,212,0.20);
+  margin-bottom:16px;
+  font-size:12px; font-weight:600;
+  color:rgba(122,255,212,0.9);
+  font-family:'Jost',sans-serif;
+}
+.light .gr-detail-norm-band {
+  background:rgba(10,152,112,0.07);
+  border-color:rgba(10,152,112,0.20);
+  color:var(--accent3);
+}
+.gr-detail-trend {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; border-radius:14px;
+  background:var(--glass); border:1px solid var(--glass-border);
+  margin-bottom:14px;
+}
+.gr-detail-trend-arrow { font-size:22px; font-weight:700; line-height:1; }
+.gr-detail-trend-body { flex:1; }
+.gr-detail-trend-val { font-size:16px; font-weight:700; font-family:'Cormorant Garamond',serif; }
+.gr-detail-trend-sub { font-size:11px; color:var(--text3); margin-top:1px; }
+.gr-detail-yasna {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:var(--rs); padding:16px;
+  margin-bottom:14px; position:relative; overflow:hidden;
+}
+.gr-detail-yasna::after {
+  content:''; position:absolute; top:0; left:15%; right:15%; height:1px;
+  background:linear-gradient(90deg,transparent,var(--glass-top),transparent); opacity:.7;
+}
+.gr-detail-yasna-hdr {
+  display:flex; align-items:center; gap:8px; margin-bottom:10px;
+}
+.gr-detail-yasna-av {
+  width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:#0A0620;
+}
+.light .gr-detail-yasna-av { color:white; }
+.gr-detail-yasna-text {
+  font-size:14px; color:var(--text); line-height:1.7;
+}
+.gr-detail-table-wrap {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:var(--rs); overflow:hidden; margin-bottom:14px;
+}
+.gr-detail-table { width:100%; border-collapse:collapse; font-size:13px; }
+.gr-detail-table th {
+  padding:9px 12px; text-align:left;
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.7px; color:var(--text3);
+  border-bottom:1px solid var(--glass-border);
+  font-family:'Jost',sans-serif;
+}
+.gr-detail-table td {
+  padding:9px 12px; border-bottom:1px solid var(--glass);
+  font-family:'Jost',sans-serif; vertical-align:middle;
+}
+.gr-detail-table tr:last-child td { border:none; }
+.gr-detail-periods {
+  display:flex; gap:6px; margin-bottom:16px;
+}
+.gr-detail-period {
+  flex:1; height:32px; border-radius:10px; cursor:pointer;
+  background:var(--glass); border:1px solid var(--glass-border);
+  font-family:'Jost',sans-serif; font-size:12px; font-weight:600; color:var(--text3);
+  transition:all .2s;
+}
+.gr-detail-period.on {
+  background:rgba(188,207,255,.14); border-color:var(--accent);
+  color:var(--accent);
+}
+.gr-detail-period:active { opacity:.75; }
+
 /* ══════════════════ ПОИСК ══════════════════ */
 .srch-wrap {
   flex:1; display:flex; flex-direction:column; overflow:hidden;
@@ -2461,6 +2568,58 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .sos-dismiss:active { background: var(--glass-hover); }
 
 /* ══════════════════ ОТЧЁТ ДЛЯ ВРАЧА v3.21 ══════════════════ */
+/* Кнопка «Новый отчёт» в шапке чата v3.26 */
+.doctor-new-btn {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:6px 12px; border-radius:14px;
+  background:rgba(212,176,255,.12);
+  border:1px solid rgba(212,176,255,.30);
+  color:var(--accent2);
+  font-family:'Jost',sans-serif; font-size:11px; font-weight:700;
+  cursor:pointer; transition:all .2s;
+  letter-spacing:.2px;
+}
+.doctor-new-btn:active { opacity:.7; transform:scale(.96); }
+.light .doctor-new-btn { background:rgba(106,58,224,.09); border-color:rgba(106,58,224,.25); color:var(--accent2); }
+
+/* Контекстное меню сообщения v3.27 — долгое нажатие */
+.msg-ctx-overlay {
+  position:fixed; inset:0; z-index:300;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:none; align-items:center; justify-content:center;
+  padding:24px;
+}
+.msg-ctx-overlay.on { display:flex; animation:fin .2s ease; }
+.msg-ctx-menu {
+  background:var(--bg2);
+  border:1px solid var(--glass-border);
+  border-radius:22px;
+  padding:8px;
+  min-width:200px;
+  box-shadow:0 16px 48px rgba(0,0,0,.55);
+  display:flex; flex-direction:column; gap:2px;
+}
+.msg-ctx-preview {
+  padding:10px 14px 8px;
+  font-size:13px; color:var(--text3);
+  line-height:1.45;
+  border-bottom:1px solid var(--glass-border);
+  margin-bottom:6px;
+  max-height:80px; overflow:hidden;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+}
+.msg-ctx-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px; border-radius:14px;
+  font-family:'Jost',sans-serif; font-size:15px; font-weight:500;
+  color:var(--text); cursor:pointer; transition:background .15s;
+  border:none; background:none; width:100%; text-align:left;
+}
+.msg-ctx-item:active { background:var(--glass-hover); }
+.msg-ctx-item.danger { color:var(--danger); }
+.msg-ctx-item svg { flex-shrink:0; }
+
 .report-actions {
   display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;
 }
@@ -2602,13 +2761,18 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
       <div id="ypWidget" style="display:none"></div>
 
       <!-- ДНЕВНИК САМОЧУВСТВИЯ -->
-      <div class="diary-strip" id="diaryStrip" onclick="openDiaryModal()">
-        <div class="diary-strip-top">
+      <div class="diary-strip" id="diaryStrip">
+        <div class="diary-strip-top" onclick="openDiaryModal()" style="cursor:pointer">
           <div class="diary-strip-title">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
             Дневник самочувствия <span class="diary-count" id="diaryCount">0</span>
           </div>
-          <span style="font-size:11px;color:var(--text3)">смотреть все →</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:var(--text3)">смотреть все →</span>
+            <button id="diaryCollapseBtn" onclick="event.stopPropagation();toggleDiaryCollapse()" style="background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 4px;font-size:13px;line-height:1;transition:color .2s" title="Свернуть/развернуть">
+              <svg id="diaryCollapseIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+          </div>
         </div>
         <div class="diary-entries" id="diaryPreview">
           <div class="diary-empty">Пока нет записей — всё что ты пишешь ЯСНА̂ сохраняется здесь</div>
@@ -3091,6 +3255,24 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
   </div>
 </div>
 
+<!-- КОНТЕКСТНОЕ МЕНЮ СООБЩЕНИЯ v3.27 -->
+<div class="msg-ctx-overlay" id="msgCtxOverlay" onclick="closeMsgCtx(event)">
+  <div class="msg-ctx-menu">
+    <div class="msg-ctx-preview" id="msgCtxPreview"></div>
+    <button class="msg-ctx-item" onclick="msgCtxCopy()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Скопировать
+    </button>
+    <button class="msg-ctx-item danger" onclick="msgCtxDelete()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+      Удалить
+    </button>
+    <button class="msg-ctx-item" onclick="closeMsgCtx()" style="color:var(--text3);font-size:14px;justify-content:center">
+      Отмена
+    </button>
+  </div>
+</div>
+
 <!-- SOS БАННЕР v3.22 -->
 <div class="sos-banner" id="sosBanner">
   <div class="sos-inner">
@@ -3209,6 +3391,34 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
     <div id="dnaSheetContent"></div>
   </div>
 </div>
+
+<!-- ДЕТАЛЬНЫЙ ГРАФИК v3.24 -->
+<div class="overlay" id="grDetailOverlay" onclick="grDetailOverlayClick(event)">
+  <div class="sheet" id="grDetailSheet" style="max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(32px,env(safe-area-inset-bottom))">
+    <div class="sh-handle"></div>
+    <div id="grDetailContent"></div>
+  </div>
+</div>
+
+<!-- ТУЛТИП ТОЧКИ НА ГРАФИКЕ v3.24 -->
+<div id="grPointTooltip" style="
+  position:fixed;z-index:600;
+  background:var(--bg2);
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  padding:10px 14px;
+  font-family:'Jost',sans-serif;
+  font-size:13px;color:var(--text);
+  box-shadow:0 8px 28px rgba(0,0,0,0.45);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s;
+  max-width:180px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+"></div>
+
+<!-- НАСТРОЙКИ — overlay обёртка (была утеряна, восстановлена v3.25) -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="sheet">
     <div class="sh-handle"></div>
@@ -3301,6 +3511,19 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
         <div class="si-hint">Нормы анализов при беременности значительно отличаются — ЯСНА̂ учтёт это</div>
       </div>
     </div>
+
+    <!-- ПАМЯТЬ ЯСНА v3.28 -->
+    <div class="sg" id="memorySection">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="sg-lbl" style="margin-bottom:0">Долгосрочная память ЯСНА̂</div>
+        <span id="memoryCount" style="font-size:11px;color:var(--accent);background:rgba(188,207,255,.10);border-radius:10px;padding:2px 9px;font-weight:700">0</span>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.55">
+        ЯСНА сама запоминает ключевые факты из разговора — они хранятся вечно и передаются в каждый промпт.
+      </div>
+      <div id="memoryList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"></div>
+    </div>
+
     <button class="btn-save" onclick="saveSettings()" style="display:flex;align-items:center;justify-content:center;gap:8px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Сохранить
@@ -3375,6 +3598,7 @@ function initApp() {
     renderDnaHomeBlock();
     renderHomeLastAnalysis();
     loadHealthSummary(false);
+    loadChatHistory(); // v3.23 — восстанавливаем историю чата
     // PDF.js workerSrc установлен синхронно в head
     if (!S.key) setTimeout(function(){ toast('⚙️ Добавь API-ключ в настройках'); }, 2000);
   } catch(e) { console.warn('init error', e.message); }
@@ -3561,7 +3785,7 @@ function send() {
     showTyping(false);
     var ans = '';
     if (d.error) { ans = '⚠️ ' + (d.error.message || 'Проверь API-ключ в настройках'); }
-    else { ans = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || 'Попробуй ещё раз.'; chatHistory.push({ role: 'assistant', content: ans }); if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20); }
+    else { ans = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || 'Попробуй ещё раз.'; chatHistory.push({ role: 'assistant', content: ans }); if (chatHistory.length > 100) chatHistory = chatHistory.slice(-100); }
     addMessage(ans, false);
   })
   .catch(function() { showTyping(false); addMessage('⚠️ Нет соединения. Проверь интернет.', false); });
@@ -3625,7 +3849,7 @@ function getChatSystemPrompt() {
     : 'Анализов пока нет — пользователь ещё не загрузил свои данные.';
 
   // Дневник — последние 15 записей
-  var diaryEntries = getDiaryEntries().slice(0, 15);
+  var diaryEntries = getDiaryEntries().slice(0, 50);
   var diaryContext = diaryEntries.length
     ? 'Последние записи дневника самочувствия:\n' + diaryEntries.map(function(e){ return '- ' + e.date + ' ' + e.time + ': ' + e.text; }).join('\n')
     : '';
@@ -3649,6 +3873,12 @@ function getChatSystemPrompt() {
     ? reportsData.slice(0, 2).map(function(r){
         return '· ' + r.date + ': ' + r.text.slice(0, 200);
       }).join('\n')
+    : '';
+
+  // Долгосрочная память ЯСНА (Чат 6)
+  var memoryItems = getMemory();
+  var memoryContext = memoryItems.length
+    ? memoryItems.map(function(m, i){ return (i+1) + '. ' + m.text; }).join('\n')
     : '';
 
   return 'Ты — ЯСНА, персональный AI-агент здоровья.\n' +
@@ -3684,6 +3914,8 @@ function getChatSystemPrompt() {
     (reportsContext ? 'ПРЕДЫДУЩИЕ ОТЧЁТЫ ДЛЯ ВРАЧА:\n' + reportsContext + '\n\n' : '') +
     (diaryContext ? 'ДНЕВНИК:\n' + diaryContext + '\n\n' : '') +
     (cycleContext ? 'ЦИКЛ:\n' + cycleContext + '\n\n' : '') +
+    (memoryContext ? 'ДОЛГОСРОЧНАЯ ПАМЯТЬ — факты которые ЯСНА помнит всегда:\n' + memoryContext + '\n\n' : '') +
+    'СЕГОДНЯ: ' + (function(){var d=new Date();var days=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];var months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];return days[d.getDay()]+', '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+', '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');})() + '\n' +
     'ВРЕМЯ СУТОК: ' + tc + '\n' +
     'Используй ' + (f?'женский':'мужской') + ' род при обращении к ' + S.name + '.\n' +
     (S.pregnancy && S.pregnancy !== 'no' ? 'ВАЖНО: беременность/послеродовой период — нормы анализов другие, не пугай без причины.\n' : '') +
@@ -3702,14 +3934,21 @@ function addMessage(text, isUser, id, source) {
   var div = document.createElement('div');
   div.className = 'msg ' + (isUser ? 'msg-user' : 'msg-ai');
   if (id) div.id = id;
+  // Уникальный ID для удаления
+  var msgId = 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
+  div.dataset.msgId = msgId;
   var html = '';
   if (!isUser) html += '<div class="msg-av">✦</div>';
   var content = isUser ? text : parseMarkdown(text);
   var sourceTag = (isUser && source)
     ? '<div class="msg-source">' + source + '</div>'
     : '';
-  html += '<div class="msg-body">' + sourceTag + '<div class="msg-bubble ' + (isUser ? 'msg-bubble-user' : 'msg-bubble-ai') + '">' + content + '</div><div class="msg-time">' + getTime() + '</div></div>';
+  html += '<div class="msg-body">' + sourceTag +
+    '<div class="msg-bubble ' + (isUser ? 'msg-bubble-user' : 'msg-bubble-ai') + '">' + content + '</div>' +
+    '<div class="msg-time">' + getTime() + '</div></div>';
   div.innerHTML = html;
+  // v3.27: долгое нажатие → контекстное меню
+  attachMsgLongPress(div, text, isUser);
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return div;
@@ -3746,10 +3985,11 @@ var THREAD_PROMPTS = {
   retest:   'Когда мне нужно пересдать анализы и какие именно?'
 };
 
+// Богатые подсказки для пустых тем v3.26
 var THREAD_WELCOME = {
-  dna:      'Здесь всё про твою ДНК. Спрашивай о генах, рисках, особенностях организма.',
-  analyses: 'Здесь разбираем твои анализы. Могу рассказать о любом показателе или сравнить динамику.',
-  decode:   'Здесь отвечаю на вопросы по расшифрованным документам.',
+  dna: '<strong>🧬 ДНК-раздел</strong><br><br>Здесь разбираем твои гены. Сначала загрузи ДНК-файл через раздел <em>Расшифровка → ДНК-файл</em>.<br><br><span style="color:var(--text3);font-size:13px">Примеры вопросов:</span><br><span style="color:var(--text3);font-size:13px">· «Что значит мой MTHFR?»<br>· «Есть ли риски по сердцу в моих генах?»<br>· «Как ДНК влияет на мой холестерин?»</span>',
+  analyses: '<strong>🗂 Анализы</strong><br><br>Здесь разбираем твои загруженные анализы. Загрузи хотя бы один бланк через <em>Расшифровку</em> — и я буду помнить все показатели.<br><br><span style="color:var(--text3);font-size:13px">Примеры вопросов:</span><br><span style="color:var(--text3);font-size:13px">· «Как мой холестерин за последние полгода?»<br>· «Есть ли у меня отклонения в ОАК?»<br>· «Сравни мои последние два анализа»</span>',
+  decode: '<strong>📄 Расшифровка</strong><br><br>Здесь отвечаю на вопросы по документам которые ты уже расшифровала. Сначала загрузи бланк через раздел <em>Расшифровка</em>.<br><br><span style="color:var(--text3);font-size:13px">Примеры вопросов:</span><br><span style="color:var(--text3);font-size:13px">· «Почему повышен мой АЛТ?»<br>· «Что значит «↑ выше нормы» у тромбоцитов?»<br>· «Что срочно нужно обсудить с врачом?»</span>',
   doctor:   'Помогу подготовиться к врачу — что показать, что спросить, на что обратить внимание.',
   retest:   'Разберём что и когда нужно пересдать исходя из твоих данных.'
 };
@@ -3793,11 +4033,18 @@ function switchThread(key) {
   // Восстанавливаем DOM темы
   if (chatThreads[key].dom !== null && chatThreads[key].history.length > 0) {
     msgs.innerHTML = chatThreads[key].dom;
+    // v3.26: для doctor — показываем кнопку «Новый отчёт» если есть история
+    if (key === 'doctor') {
+      setTimeout(function(){ ensureDoctorNewBtn(); }, 100);
+    }
     setTimeout(function(){ msgs.scrollTop = msgs.scrollHeight; }, 50);
   } else {
     msgs.innerHTML = '<div class="chat-day-sep">Сегодня</div>';
     if (key === 'doctor') {
       setTimeout(function(){ generateDoctorReport(); }, 250);
+    } else if (key === 'retest') {
+      // v3.26: автоанализ при первом открытии «Когда пересдать»
+      setTimeout(function(){ generateRetestAnalysis(); }, 250);
     } else if (key !== 'general' && THREAD_WELCOME[key]) {
       var wDiv = document.createElement('div');
       wDiv.className = 'msg msg-ai';
@@ -3893,7 +4140,7 @@ async function sendChat() {
     }
     if (!fullText) fullText = 'Попробуй ещё раз.';
     thisHistory.push({ role: 'assistant', content: fullText });
-    if (thisHistory.length > 20) chatThreads[thisThread].history = thisHistory.slice(-20);
+    if (thisHistory.length > 100) chatThreads[thisThread].history = thisHistory.slice(-100);
     // Сохраняем DOM только если пользователь всё ещё в этой теме
     if (activeThread === thisThread) {
       var msgsEl = document.getElementById('chatMsgs');
@@ -3901,8 +4148,40 @@ async function sendChat() {
     }
     // Синхронизируем глобальный chatHistory с активной темой
     chatHistory = chatThreads[activeThread].history.slice();
+    saveChatHistory(); // v3.23 — сохраняем историю после каждого ответа
+    tickMemoryExtraction(); // v3.28 — фоновая память каждые 10 сообщений
   } catch(e) { showTyping(false); addMessage('⚠️ Нет соединения. Проверь интернет.', false); }
   finally { if (btn) btn.disabled = false; }
+}
+
+// ══════════════════ СОХРАНЕНИЕ ИСТОРИИ ЧАТА v3.23 ══════════════════
+var CHAT_STORAGE_KEY = 'yasna_chat_history';
+
+function saveChatHistory() {
+  try {
+    var data = {};
+    Object.keys(chatThreads).forEach(function(key) {
+      if (chatThreads[key].history && chatThreads[key].history.length > 0) {
+        data[key] = chatThreads[key].history.slice(-100);
+      }
+    });
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(data));
+  } catch(e) { console.warn('saveChatHistory error', e.message); }
+}
+
+function loadChatHistory() {
+  try {
+    var raw = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (!raw) return;
+    var data = JSON.parse(raw);
+    Object.keys(data).forEach(function(key) {
+      if (chatThreads[key] && Array.isArray(data[key]) && data[key].length > 0) {
+        chatThreads[key].history = data[key];
+      }
+    });
+    // Синхронизируем глобальный chatHistory с общей темой
+    chatHistory = chatThreads['general'].history.slice();
+  } catch(e) { console.warn('loadChatHistory error', e.message); }
 }
 
 function clearChat() {
@@ -3923,6 +4202,7 @@ function clearChat() {
     chatInited = true;
   }
   toast('История темы очищена');
+  saveChatHistory(); // v3.23
 }
 
 function toggleChatMic() {
@@ -4057,6 +4337,134 @@ function saveSettings() {
   closeSettings(); updateGreeting(); updateCycleWidget(); renderYasnyCycle(); renderYasnyPulse(); renderDnaHomeBlock(); toast('✓ Сохранено');
 }
 
+// ══════════════════ ДОЛГОСРОЧНАЯ ПАМЯТЬ ЯСНА v3.28 ══════════════════
+
+var MEMORY_KEY = 'yasna_memory';
+var _memMsgCount = 0;      // счётчик сообщений с последнего извлечения
+var _isExtractingMemory = false; // флаг чтобы не запускать параллельно
+
+function getMemory() {
+  try {
+    return JSON.parse(localStorage.getItem(MEMORY_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function saveMemoryItems(items) {
+  localStorage.setItem(MEMORY_KEY, JSON.stringify(items));
+}
+
+function deleteMemoryItem(idx) {
+  var items = getMemory();
+  items.splice(idx, 1);
+  saveMemoryItems(items);
+  renderMemoryList();
+  toast('Удалено из памяти ✓');
+}
+
+// Рендер списка памяти в настройках
+function renderMemoryList() {
+  var items = getMemory();
+  var countEl = document.getElementById('memoryCount');
+  var listEl  = document.getElementById('memoryList');
+  if (countEl) countEl.textContent = items.length;
+  if (!listEl) return;
+  if (!items.length) {
+    listEl.innerHTML =
+      '<div style="font-size:13px;color:var(--text3);text-align:center;padding:12px 0;font-style:italic">' +
+        'Пока пусто — ЯСНА запомнит ключевые факты после 10 сообщений' +
+      '</div>';
+    return;
+  }
+  listEl.innerHTML = items.map(function(m, i) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;' +
+      'background:var(--glass-inner);border:1px solid var(--glass-border);border-radius:12px">' +
+      '<div style="flex:1;font-size:13px;color:var(--text2);line-height:1.5">' + m.text + '</div>' +
+      '<button onclick="deleteMemoryItem(' + i + ')" ' +
+        'style="background:none;border:none;color:var(--text3);cursor:pointer;' +
+        'font-size:16px;padding:0 2px;flex-shrink:0;line-height:1;transition:color .2s" ' +
+        'onmouseover="this.style.color=\'var(--danger)\'" ' +
+        'onmouseout="this.style.color=\'var(--text3)\'">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+// Вызывается из openSettings — рендерим список
+function openSettings() {
+  fillSettings();
+  renderMemoryList();
+  document.getElementById('overlay').classList.add('on');
+}
+
+// Фоновое извлечение памяти — после каждых 10 сообщений
+function tickMemoryExtraction() {
+  _memMsgCount++;
+  if (_memMsgCount < 10) return;
+  _memMsgCount = 0;
+  if (_isExtractingMemory) return;
+  if (!S.key) return;
+  // Берём историю активного треда
+  var history = chatThreads[activeThread] ? chatThreads[activeThread].history.slice() : [];
+  if (history.length < 4) return; // слишком мало для анализа
+  extractMemoryFromHistory(history);
+}
+
+async function extractMemoryFromHistory(history) {
+  _isExtractingMemory = true;
+  try {
+    var historyText = history.slice(-30).map(function(m) {
+      return (m.role === 'user' ? 'Пользователь: ' : 'ЯСНА: ') + m.content;
+    }).join('\n');
+
+    var existingMemory = getMemory();
+    var existingText = existingMemory.length
+      ? 'Уже записано в память:\n' + existingMemory.map(function(m){ return '- ' + m.text; }).join('\n') + '\n\n'
+      : '';
+
+    var prompt = 'Ты — система извлечения памяти для AI-агента здоровья ЯСНА.\n\n' +
+      existingText +
+      'Вот фрагмент разговора:\n' + historyText + '\n\n' +
+      'Задача: выдели НОВЫЕ ключевые факты о пользователе которых ещё НЕТ в памяти.\n' +
+      'Критерии для записи:\n' +
+      '- Симптомы которые повторяются или беспокоят (усталость, боли, плохой сон)\n' +
+      '- Связи которые пользователь сам замечает (устаю — низкий ферритин)\n' +
+      '- Страхи и беспокойства про здоровье\n' +
+      '- Привычки и образ жизни (спорт, диета, кофе)\n' +
+      '- Важные решения (начала пить витамин D, пошла к кардиологу)\n\n' +
+      'Если новых фактов нет — верни пустой массив.\n' +
+      'Ответь ТОЛЬКО в формате JSON без markdown:\n' +
+      '{"facts": ["факт 1", "факт 2"]}\n' +
+      'Каждый факт — одно предложение, до 80 символов. Максимум 5 новых фактов за раз.';
+
+    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }] })
+    });
+    var data = await res.json();
+    var raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '{}';
+    var clean = raw.replace(/```json|```/g, '').trim();
+    var parsed = JSON.parse(clean);
+    var newFacts = (parsed.facts || []).filter(function(f){ return f && f.trim(); });
+    if (newFacts.length) {
+      var now = new Date();
+      var dateStr = now.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
+      var updated = getMemory();
+      newFacts.forEach(function(f) {
+        updated.push({ text: f.trim(), date: dateStr });
+      });
+      saveMemoryItems(updated);
+      // Обновляем счётчик если настройки открыты
+      var countEl = document.getElementById('memoryCount');
+      if (countEl) countEl.textContent = updated.length;
+    }
+  } catch(e) {
+    // Тихо — пользователь не должен видеть ошибки фоновой памяти
+  } finally {
+    _isExtractingMemory = false;
+  }
+}
+
 function showHealthWidget() {
   // Виджет всегда виден — просто показываем breath space при смахивании
   var bs = document.getElementById('breathSpace');
@@ -4077,7 +4485,6 @@ function returnCard() {
   toast('ЯСНА̂ вернулась ✦');
 }
 
-function openSettings()  { fillSettings(); document.getElementById('overlay').classList.add('on'); }
 function closeSettings() { document.getElementById('overlay').classList.remove('on'); }
 function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeSettings(); }
 function resize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,130)+'px'; }
@@ -4138,7 +4545,7 @@ function processDecFile(file) {
         .then(function(result) {
           var text = result.value || '';
           if (!text.trim()) { toast('⚠️ DOCX пустой или защищён'); return; }
-          decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId });
+          decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
           saveDocFile(file.name, text);
           addDecFileRow(file.name, ext, sizeKb, fileId, icon);
         })
@@ -4150,7 +4557,7 @@ function processDecFile(file) {
     reader.onload = function(e) {
       extractPdfText(e.target.result).then(function(text) {
         if (!text.trim()) { toast('⚠️ PDF пустой или отсканированный — попробуй TXT'); return; }
-        decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId });
+        decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
         saveDocFile(file.name, text);
         addDecFileRow(file.name, ext, sizeKb, fileId, icon);
       }).catch(function(err) { toast('⚠️ Ошибка чтения PDF: ' + err.message); });
@@ -4158,7 +4565,7 @@ function processDecFile(file) {
     reader.readAsArrayBuffer(file);
   } else {
     reader.onload = function(e) {
-      decFilesData.push({ name:file.name, type:'text', data:e.target.result, fileId:fileId });
+      decFilesData.push({ name:file.name, type:'text', data:e.target.result, fileId:fileId, extractedDate:extractDateFromText(e.target.result) });
       saveDocFile(file.name, e.target.result);
       addDecFileRow(file.name, ext, sizeKb, fileId, icon);
     };
@@ -4407,7 +4814,7 @@ async function runDecode() {
         var n = NORMS[k]; var norm = n.both||(S.gender==='female'?n.f:n.m);
         manR.push({name:n.name,val:inp.value,unit:n.unit,status:getStatus(parseFloat(inp.value),norm)});
       });
-      if (manR.length) saveDecodeAsAnalysis(manR,document.getElementById('decDate').value,document.getElementById('decLab').value,document.getElementById('decYasnaBody').textContent.slice(0,300),'blood');
+      if (manR.length) saveDecodeAsAnalysis(manR,document.getElementById('decDate').value,document.getElementById('decLab').value,document.getElementById('decYasnaBody').textContent.slice(0,2000),'blood');
     } catch(e) { document.getElementById('decYasnaBody').textContent = '⚠️ Нет соединения.'; }
 
   // ─── ДНК / МРТ·УЗИ·ЭКГ — один файл ─────────────────────────
@@ -4460,7 +4867,7 @@ async function runDecode() {
         toast('🧬 ДНК сохранён · найдено ' + parsedGenes.length + ' маркеров');
       } else {
         document.getElementById('decYasnaBody').innerHTML = ans.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-        saveDecodeAsAnalysis([{name:decDocType,val:'—',unit:'',status:{cls:'status-ok'}}],'','',document.getElementById('decYasnaBody').textContent.slice(0,300),'doc');
+        saveDecodeAsAnalysis([{name:decDocType,val:'—',unit:'',status:{cls:'status-ok'}}],'','',document.getElementById('decYasnaBody').textContent.slice(0,2000),'doc');
       }
     } catch(e) { document.getElementById('decYasnaBody').textContent = '⚠️ Нет соединения.'; }
 
@@ -4557,13 +4964,48 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
   var paramsSection = ans.match(/\[ПОКАЗАТЕЛИ\]([\s\S]*?)(?:\[ВЫВОД\]|$)/i);
   if (paramsSection) {
     paramsSection[1].trim().split('\n').forEach(function(line) {
+      line = line.trim(); if (!line) return;
+      // Числовые показатели: «Железо (Fe): 14.2 мкмоль/л (норма 9-30) — норма»
       var m = line.match(/^[-•]?\s*(.+?):\s*([\d.,]+)\s*(.*?)\s*\((норма\s*[\d.,-–—]+)\)\s*[—-]\s*(.+)/i);
       if (m) {
+        var cleanName = normalizeIndicatorName(m[1].trim());
         var st = m[5].toLowerCase();
-        var cls = st.includes('норм')||st.includes('✓') ? 'status-ok' : st.includes('выше')||st.includes('↑') ? 'status-hi' : 'status-lo';
-        rows.push({ name:m[1].trim(), val:m[2], unit:m[3].trim(), norm:m[4].replace('норма','').trim(), status:{cls:cls, txt:m[5].trim()} });
+        var cls = (st.indexOf('норм')!==-1||st.indexOf('✓')!==-1) ? 'status-ok' : (st.indexOf('выше')!==-1||st.indexOf('↑')!==-1) ? 'status-hi' : 'status-lo';
+        rows.push({ name:cleanName, val:m[2], unit:m[3].trim(), norm:m[4].replace('норма','').trim(), status:{cls:cls, txt:m[5].trim()} });
+        return;
+      }
+      // v3.25: Текстовые показатели мочи: «Белок: отрицательный — норма»
+      var mt = line.match(/^[-•]?\s*(.+?):\s*([а-яёА-ЯЁa-zA-Z\s\+\-\/\.]+?)\s*[—-]\s*(норм|откл|выше|ниже|не норм|отклон|положительн|патолог|normal|abnormal)/i);
+      if (mt) {
+        var cleanNameT = normalizeIndicatorName(mt[1].trim());
+        var valText = mt[2].trim().toLowerCase();
+        var statusText = mt[3].toLowerCase();
+        var clsT = (statusText.indexOf('норм')!==-1||statusText.indexOf('normal')!==-1) ? 'status-ok' : 'status-hi';
+        if (valText.indexOf('отриц')!==-1||valText.indexOf('absent')!==-1||valText==='-'||valText==='нет') clsT = 'status-ok';
+        if (valText.indexOf('положит')!==-1||valText.indexOf('присут')!==-1||valText==='+'||valText.indexOf('следы')!==-1) clsT = 'status-hi';
+        rows.push({ name:cleanNameT, val:mt[2].trim(), unit:'', norm:'', status:{cls:clsT, txt:clsT==='status-ok'?'норма':'отклонение'} });
       }
     });
+  }
+  // v3.25: предупреждение о крови в моче — критичная находка
+  var criticalUrineFound = rows.some(function(r) {
+    var n = (r.name||'').toLowerCase();
+    var v = (r.val||'').toLowerCase();
+    return (n.indexOf('кровь')!==-1||n.indexOf('эритроцит')!==-1||n.indexOf('гематурия')!==-1) &&
+           (r.status.cls==='status-hi'||v.indexOf('положит')!==-1||v==='+'||(parseFloat(v)>2));
+  });
+  if (criticalUrineFound) {
+    setTimeout(function() {
+      var banner=document.getElementById('sosBanner');
+      if (!banner) return;
+      document.getElementById('sosBannerTitle').textContent='Обрати внимание ⚠️';
+      document.getElementById('sosBannerText').innerHTML='В анализе мочи обнаружена кровь (гематурия). Это симптом, требующий консультации врача. <strong>Не откладывай визит к урологу или терапевту.</strong>';
+      var cb=document.getElementById('sosCallBtn');
+      cb.style.background='linear-gradient(135deg,#FF9090,#C0392B)';
+      cb.href='tel:103';
+      cb.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.08 2.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>Обратиться к терапевту · 103';
+      banner.classList.add('on');
+    }, 1500);
   }
   if (rows.length > 0) {
     var tw = block.querySelector('.dmb-table-wrap');
@@ -4580,9 +5022,9 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
   bodyEl.innerHTML = conclusion.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
   saveDecodeAsAnalysis(
     rows.length ? rows : [{name:fd.name,val:'—',unit:'',status:{cls:'status-ok'}}],
-    document.getElementById('decDate')?document.getElementById('decDate').value:'',
+    fd.extractedDate || (document.getElementById('decDate')?document.getElementById('decDate').value:''),
     document.getElementById('decLab')?document.getElementById('decLab').value:'',
-    bodyEl.textContent.slice(0,300), 'blood');
+    bodyEl.textContent.slice(0,2000), null); // v3.25: null → detectCategory сам определит
 }
 
 function getProfileLine() {
@@ -4633,7 +5075,8 @@ function saveDocFile(name, text) {
   try {
     var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
     if (!sv.docfiles) sv.docfiles = [];
-    sv.docfiles = sv.docfiles.filter(function(f){ return f.name !== name; });
+    // v3.24: НЕ удаляем по имени — каждый файл получает уникальный id
+    // Два файла invitro.pdf от разных дат — разные записи
     var id = 'DOC' + Date.now().toString(36).toUpperCase().slice(-5);
     var preview = text.replace(/\s+/g,' ').trim().slice(0, 90);
     var months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
@@ -4774,29 +5217,45 @@ function renderDiaryPreview() {
   if (!preview) return;
   if (!entries.length) {
     preview.innerHTML = '<div class="diary-empty">Пока нет записей — расскажи ЯСНА как себя чувствуешь</div>';
-    return;
+  } else {
+    // Показываем последние 2 записи
+    preview.innerHTML = entries.slice(0, 2).map(function(e) {
+      return '<div class="diary-entry">' +
+        '<span class="diary-entry-time">' + e.time + '</span>' +
+        '<span class="diary-entry-text">' + e.text.slice(0, 80) + (e.text.length > 80 ? '...' : '') + '</span>' +
+        '</div>';
+    }).join('');
   }
-  // Показываем последние 2 записи
-  preview.innerHTML = entries.slice(0, 2).map(function(e) {
-    return '<div class="diary-entry">' +
-      '<span class="diary-entry-time">' + e.time + '</span>' +
-      '<span class="diary-entry-text">' + e.text.slice(0, 80) + (e.text.length > 80 ? '...' : '') + '</span>' +
-      '</div>';
-  }).join('');
+  // v3.26: применяем состояние сворачивания
+  applyDiaryCollapse();
 }
 
 function openDiaryModal() {
   var entries = getDiaryEntries();
   var all = document.getElementById('diaryAll');
   if (!entries.length) {
-    all.innerHTML = '<div class="diary-empty" style="padding:20px 0">Пока нет записей</div>';
+    all.innerHTML =
+      '<div style="text-align:center;padding:20px 0">' +
+        '<div style="font-size:28px;margin-bottom:10px;opacity:.4">📓</div>' +
+        '<div style="font-size:14px;color:var(--text3);line-height:1.65">Пока нет записей<br>' +
+        '<span style="font-size:12px;color:var(--text3);opacity:.7">Записи появятся когда ты напишешь ЯСНА что-нибудь с главного экрана</span></div>' +
+      '</div>';
   } else {
-    all.innerHTML = entries.map(function(e) {
-      return '<div class="diary-full-entry">' +
-        '<div class="diary-full-date">' + e.date + ' · ' + e.time + '</div>' +
-        '<div class="diary-full-text">' + e.text + '</div>' +
+    // v3.26: подсказка + записи с кнопкой удаления
+    all.innerHTML =
+      '<div style="display:flex;align-items:center;gap:7px;padding:8px 10px;background:rgba(188,207,255,.07);border:1px solid rgba(188,207,255,.15);border-radius:10px;margin-bottom:12px;font-size:11px;color:var(--text3);">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+        'Записи создаются только с главного экрана — отвечай ЯСНА в карточке приветствия' +
+      '</div>' +
+      entries.map(function(e, idx) {
+        return '<div class="diary-full-entry" id="dfe-' + idx + '">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+            '<div class="diary-full-date">' + e.date + ' · ' + e.time + '</div>' +
+            '<button onclick="deleteDiaryEntry(' + idx + ')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:0 2px;font-size:16px;line-height:1;flex-shrink:0;transition:color .2s" onmouseover="this.style.color=\'var(--danger)\'" onmouseout="this.style.color=\'var(--text3)\'">✕</button>' +
+          '</div>' +
+          '<div class="diary-full-text">' + e.text + '</div>' +
         '</div>';
-    }).join('');
+      }).join('');
   }
   document.getElementById('diaryModal').classList.add('on');
 }
@@ -5573,18 +6032,36 @@ function askAboutAnalysis(id) {
   openChatThread('analyses', 'Расскажи подробнее про мои анализы от '+a.dateStr+' ('+a.lab+'). Что важнее всего?');
 }
 
+// v3.25: автоопределение категории по набору показателей
+function detectCategory(rows) {
+  if (!rows || !rows.length) return 'blood';
+  var names = rows.map(function(r){ return (r.name||'').toLowerCase(); }).join(' ');
+  // Маркеры мочи — если 2+ совпадения → urine
+  var urineMarkers = ['ph мочи','удельный вес','лейкоциты мочи','эритроциты мочи',
+    'белок мочи','глюкоза мочи','кетоны','нитриты','уробилиноген','цилиндры',
+    'оксалаты','бактерии','эпителий','прозрачность','цвет мочи'];
+  var urineCount = urineMarkers.filter(function(k){ return names.indexOf(k) !== -1; }).length;
+  if (urineCount >= 2) return 'urine';
+  // Документы — МРТ, УЗИ, ЭКГ
+  var docMarkers = ['заключение','узи','мрт','экг','выписка','фгдс','рентген'];
+  if (docMarkers.some(function(k){ return names.indexOf(k) !== -1; })) return 'doc';
+  return 'blood';
+}
+
 function saveDecodeAsAnalysis(rows, date, lab, summary, category) {
   if(!rows||!rows.length) return;
-  var cat=category||'blood';
+  // v3.25: автоопределяем категорию если не передана явно
+  var cat = category || detectCategory(rows);
   var parts=[];
   if(cat==='blood'){
     var names=rows.map(function(r){return(r.name||'').toLowerCase();});
-    if(names.some(function(n){return n.indexOf('гемоглоб')!==-1||n.indexOf('лейкоц')!==-1;})) parts.push('ОАК');
-    if(names.some(function(n){return n.indexOf('холест')!==-1||n.indexOf('глюкоза')!==-1||n.indexOf('алт')!==-1;})) parts.push('Биохимия');
-    if(names.some(function(n){return n.indexOf('ттг')!==-1||n.indexOf('тироксин')!==-1;})) parts.push('Гормоны');
-    if(names.some(function(n){return n.indexOf('витамин')!==-1||n.indexOf('ферритин')!==-1;})) parts.push('Витамины');
+    if(names.some(function(n){return n.indexOf('гемоглоб')!==-1||n.indexOf('лейкоц')!==-1||n.indexOf('гематокрит')!==-1;})) parts.push('ОАК');
+    if(names.some(function(n){return n.indexOf('холест')!==-1||n.indexOf('глюкоза')!==-1||n.indexOf('алт')!==-1||n.indexOf('билирубин')!==-1;})) parts.push('Биохимия');
+    if(names.some(function(n){return n.indexOf('ттг')!==-1||n.indexOf('тироксин')!==-1||n.indexOf('кортизол')!==-1;})) parts.push('Гормоны');
+    if(names.some(function(n){return n.indexOf('витамин')!==-1||n.indexOf('ферритин')!==-1||n.indexOf('фолиев')!==-1;})) parts.push('Витамины');
   }
-  var type=parts.length?parts.join(' + '):(cat==='doc'?decDocType:cat==='dna'?'ДНК-профиль':'Анализ');
+  if(cat==='urine') parts.push('ОАМ');
+  var type=parts.length?parts.join(' + '):(cat==='doc'?decDocType:cat==='dna'?'ДНК-профиль':cat==='urine'?'ОАМ':'Анализ');
   var now=new Date();
   var dStr=date?new Date(date).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   var markers=rows.map(function(r){
@@ -5765,26 +6242,93 @@ var GR_PERIOD = '6m';
 var GR_SEARCH = '';
 
 // Нормы для графиков (мин, макс)
+// v3.25: расширенная база норм — ОАК, биохимия, гормоны, витамины, ОАМ, свёртывание
 var GR_NORMS = {
-  'Гемоглобин':   { f:[120,150], m:[130,170], unit:'г/л' },
-  'Лейкоциты':    { both:[4,9],               unit:'×10⁹/л' },
-  'Тромбоциты':   { both:[180,320],            unit:'×10⁹/л' },
-  'СОЭ':          { f:[0,20], m:[0,15],        unit:'мм/ч' },
-  'Эритроциты':   { f:[3.8,5.1], m:[4.3,5.7], unit:'×10¹²/л' },
-  'Глюкоза':      { both:[3.9,6.1],            unit:'ммоль/л' },
-  'Холестерин':   { both:[0,5.2],              unit:'ммоль/л' },
-  'ЛПНП':         { both:[0,3.0],              unit:'ммоль/л' },
-  'ЛПВП':         { f:[1.2,9], m:[1.0,9],      unit:'ммоль/л' },
-  'АЛТ':          { f:[0,35], m:[0,45],        unit:'Ед/л' },
-  'АСТ':          { f:[0,31], m:[0,37],        unit:'Ед/л' },
-  'Креатинин':    { f:[44,80], m:[62,115],     unit:'мкмоль/л' },
-  'ТТГ':          { both:[0.4,4.0],            unit:'мМЕ/л' },
-  'Т4 свободный': { both:[9,19],               unit:'пмоль/л' },
-  'АТ-ТПО':       { both:[0,35],               unit:'МЕ/мл' },
-  'Витамин D':    { both:[30,100],             unit:'нг/мл' },
-  'B12':          { both:[200,900],            unit:'пг/мл' },
-  'Ферритин':     { f:[10,120], m:[20,250],    unit:'нг/мл' },
-  'Железо':       { f:[9,30], m:[11,31],       unit:'мкмоль/л' },
+  // ── ОАК ──────────────────────────────────────────────────────
+  'Гемоглобин':          { f:[120,150],    m:[130,170],    unit:'г/л' },
+  'Лейкоциты':           { both:[4,9],                     unit:'×10⁹/л' },
+  'Тромбоциты':          { both:[180,320],                 unit:'×10⁹/л' },
+  'СОЭ':                 { f:[0,20],       m:[0,15],       unit:'мм/ч' },
+  'Эритроциты':          { f:[3.8,5.1],   m:[4.3,5.7],    unit:'×10¹²/л' },
+  'Гематокрит':          { f:[36,46],      m:[40,52],      unit:'%' },
+  'MCV':                 { both:[80,100],                  unit:'фл' },
+  'MCH':                 { both:[26,34],                   unit:'пг' },
+  'MCHC':                { both:[320,370],                 unit:'г/л' },
+  'RDW':                 { both:[11.5,14.5],               unit:'%' },
+  'Нейтрофилы%':         { both:[47,72],                   unit:'%' },
+  'Лимфоциты%':          { both:[19,37],                   unit:'%' },
+  'Моноциты%':           { both:[3,11],                    unit:'%' },
+  'Эозинофилы%':         { both:[0.5,5],                   unit:'%' },
+  'Базофилы%':           { both:[0,1],                     unit:'%' },
+  'Ретикулоциты%':       { both:[0.5,1.5],                 unit:'%' },
+  // ── Биохимия ─────────────────────────────────────────────────
+  'Глюкоза':             { both:[3.9,6.1],                 unit:'ммоль/л' },
+  'HbA1c':               { both:[4,6],                     unit:'%' },
+  'Инсулин':             { both:[2.6,24.9],                unit:'мкЕд/мл' },
+  'HOMA-IR':             { both:[0,2.7],                   unit:'' },
+  'Холестерин':          { both:[0,5.2],                   unit:'ммоль/л' },
+  'ЛПНП':                { both:[0,3.0],                   unit:'ммоль/л' },
+  'ЛПВП':                { f:[1.2,9],      m:[1.0,9],      unit:'ммоль/л' },
+  'Триглицериды':        { both:[0,1.7],                   unit:'ммоль/л' },
+  'АЛТ':                 { f:[0,35],       m:[0,45],       unit:'Ед/л' },
+  'АСТ':                 { f:[0,31],       m:[0,37],       unit:'Ед/л' },
+  'ГГТ':                 { f:[0,38],       m:[0,55],       unit:'Ед/л' },
+  'Щелочная фосфатаза':  { f:[35,105],     m:[40,130],     unit:'Ед/л' },
+  'Билирубин общий':     { both:[3.4,17.1],                unit:'мкмоль/л' },
+  'Билирубин прямой':    { both:[0,3.4],                   unit:'мкмоль/л' },
+  'Билирубин непрямой':  { both:[3.4,13.7],                unit:'мкмоль/л' },
+  'Общий белок':         { both:[64,83],                   unit:'г/л' },
+  'Альбумин':            { both:[35,52],                   unit:'г/л' },
+  'Креатинин':           { f:[44,80],      m:[62,115],     unit:'мкмоль/л' },
+  'Мочевина':            { both:[2.5,8.3],                 unit:'ммоль/л' },
+  'Мочевая кислота':     { f:[143,339],    m:[202,416],    unit:'мкмоль/л' },
+  'ЛДГ':                 { both:[125,220],                 unit:'Ед/л' },
+  'КФК':                 { f:[0,145],      m:[0,170],      unit:'Ед/л' },
+  'Амилаза':             { both:[28,100],                  unit:'Ед/л' },
+  'Липаза':              { both:[0,60],                    unit:'Ед/л' },
+  'Кальций':             { both:[2.15,2.55],               unit:'ммоль/л' },
+  'Фосфор':              { both:[0.81,1.45],               unit:'ммоль/л' },
+  'Калий':               { both:[3.5,5.1],                 unit:'ммоль/л' },
+  'Натрий':              { both:[136,145],                  unit:'ммоль/л' },
+  'Хлор':                { both:[98,107],                  unit:'ммоль/л' },
+  'Магний':              { both:[0.66,1.07],               unit:'ммоль/л' },
+  // ── Гормоны ──────────────────────────────────────────────────
+  'ТТГ':                 { both:[0.4,4.0],                 unit:'мМЕ/л' },
+  'Т4 свободный':        { both:[9,19],                    unit:'пмоль/л' },
+  'Т3 свободный':        { both:[2.6,5.7],                 unit:'пмоль/л' },
+  'АТ-ТПО':              { both:[0,35],                    unit:'МЕ/мл' },
+  'АТ-ТГ':               { both:[0,115],                   unit:'МЕ/мл' },
+  'Кортизол':            { both:[138,690],                 unit:'нмоль/л' },
+  'Пролактин':           { f:[67,726],     m:[58,475],     unit:'мМЕ/л' },
+  'Тестостерон':         { f:[0.38,1.97],  m:[12.1,35.5],  unit:'нмоль/л' },
+  'ДГЭА-С':              { f:[1.77,9.75],  m:[4.34,12.74], unit:'мкмоль/л' },
+  'ФСГ':                 { both:[1.5,12.4],                unit:'МЕ/л' },
+  'ЛГ':                  { both:[1.1,11.6],                unit:'МЕ/л' },
+  'Эстрадиол':           { f:[68,1269],    m:[41,159],     unit:'пмоль/л' },
+  'Прогестерон':         { f:[0.3,20],     m:[0,0.6],      unit:'нмоль/л' },
+  'АМГ':                 { f:[1,10],       m:[0,0],        unit:'нг/мл' },
+  // ── Витамины и микроэлементы ─────────────────────────────────
+  'Витамин D':           { both:[30,100],                  unit:'нг/мл' },
+  'B12':                 { both:[200,900],                  unit:'пг/мл' },
+  'Фолиевая кислота':    { both:[7,45.3],                  unit:'нмоль/л' },
+  'Ферритин':            { f:[10,120],     m:[20,250],     unit:'нг/мл' },
+  'Железо':              { f:[9,30],       m:[11,31],      unit:'мкмоль/л' },
+  'ОЖСС':                { both:[44.8,80.6],               unit:'мкмоль/л' },
+  'Цинк':                { both:[11,23],                   unit:'мкмоль/л' },
+  'Гомоцистеин':         { both:[5,15],                    unit:'мкмоль/л' },
+  'СРБ':                 { both:[0,5],                     unit:'мг/л' },
+  'СРБ вч':              { both:[0,3],                     unit:'мг/л' },
+  // ── Свёртывание ──────────────────────────────────────────────
+  'МНО':                 { both:[0.85,1.15],               unit:'' },
+  'Фибриноген':          { both:[2,4],                     unit:'г/л' },
+  'Д-димер':             { both:[0,0.5],                   unit:'мкг/мл' },
+  // ── ОАМ — числовые ───────────────────────────────────────────
+  'pH мочи':             { both:[5,7],                     unit:'' },
+  'Удельный вес':        { both:[1010,1030],               unit:'' },
+  'Лейкоциты мочи':      { both:[0,5],                     unit:'в п/зр' },
+  'Эритроциты мочи':     { both:[0,2],                     unit:'в п/зр' },
+  'Белок мочи':          { both:[0,0.14],                  unit:'г/л' },
+  'Глюкоза мочи':        { both:[0,0.8],                   unit:'ммоль/л' },
 };
 
 // Демо-данные для наполнения когда реальных мало
@@ -5822,6 +6366,112 @@ var GR_DEMO = [
   ]}
 ];
 
+// v3.25: расширенная таблица алиасов — латиница, сокращения, ГБУЗ-форматы
+var GR_NAME_ALIASES = {
+  // ОАК
+  'hb':'Гемоглобин','hgb':'Гемоглобин','hemoglobin':'Гемоглобин',
+  'wbc':'Лейкоциты','лейк':'Лейкоциты','leukocytes':'Лейкоциты',
+  'plt':'Тромбоциты','тромб':'Тромбоциты','platelets':'Тромбоциты',
+  'rbc':'Эритроциты','эритр':'Эритроциты','erythrocytes':'Эритроциты',
+  'ht':'Гематокрит','hct':'Гематокрит','гематокр':'Гематокрит','haematocrit':'Гематокрит',
+  'mcv':'MCV','средний объём эритр':'MCV','средний объем эритр':'MCV',
+  'mch':'MCH','среднее содержание гемоглобина':'MCH',
+  'mchc':'MCHC',
+  'rdw':'RDW','rdw-cv':'RDW','ширина распределения эритр':'RDW',
+  'нейтр':'Нейтрофилы%','нейтрофилы':'Нейтрофилы%','neut':'Нейтрофилы%','neutrophils':'Нейтрофилы%',
+  'лимф':'Лимфоциты%','лимфоциты':'Лимфоциты%','lymph':'Лимфоциты%','lymphocytes':'Лимфоциты%',
+  'моноциты':'Моноциты%','mono':'Моноциты%','monocytes':'Моноциты%',
+  'эозин':'Эозинофилы%','эозинофилы':'Эозинофилы%','eos':'Эозинофилы%',
+  'базофилы':'Базофилы%','baso':'Базофилы%',
+  'ретикулоциты':'Ретикулоциты%','ret':'Ретикулоциты%','reticulocytes':'Ретикулоциты%',
+  'соэ':'СОЭ','сое':'СОЭ','esr':'СОЭ','скорость оседания':'СОЭ',
+  // Биохимия
+  'glucose':'Глюкоза','глюк':'Глюкоза','сахар':'Глюкоза',
+  'hba1c':'HbA1c','гликированный гемоглобин':'HbA1c','гликогемоглобин':'HbA1c',
+  'инсулин':'Инсулин','insulin':'Инсулин',
+  'homa':'HOMA-IR','homa-ir':'HOMA-IR',
+  'cholesterol':'Холестерин','chol':'Холестерин','хол':'Холестерин','холестерол':'Холестерин',
+  'ldl':'ЛПНП','лпнп':'ЛПНП','лпнп-холестерин':'ЛПНП',
+  'hdl':'ЛПВП','лпвп':'ЛПВП','лпвп-холестерин':'ЛПВП',
+  'tg':'Триглицериды','триглицериды':'Триглицериды','triglycerides':'Триглицериды',
+  'alt':'АЛТ','алт':'АЛТ','alanine':'АЛТ','аланинаминотрансфераза':'АЛТ',
+  'ast':'АСТ','аст':'АСТ','aspartate':'АСТ','аспартатаминотрансфераза':'АСТ',
+  'ggt':'ГГТ','ggт':'ГГТ','гамма-гт':'ГГТ','гамма-глутамил':'ГГТ',
+  'alp':'Щелочная фосфатаза','щелочная фосф':'Щелочная фосфатаза',
+  'ldh':'ЛДГ','лдг':'ЛДГ','лактатдегидрогеназа':'ЛДГ',
+  'ккмв':'КФК','кфк':'КФК',
+  'билирубин':'Билирубин общий','общий билирубин':'Билирубин общий','total bilirubin':'Билирубин общий',
+  'прямой билирубин':'Билирубин прямой','direct bilirubin':'Билирубин прямой',
+  'непрямой билирубин':'Билирубин непрямой',
+  'общий белок':'Общий белок','total protein':'Общий белок',
+  'альбумин':'Альбумин','albumin':'Альбумин',
+  'creatinine':'Креатинин','креат':'Креатинин',
+  'urea':'Мочевина','мочевина':'Мочевина','bun':'Мочевина',
+  'мочевая кислота':'Мочевая кислота','uric acid':'Мочевая кислота',
+  'амилаза':'Амилаза','amylase':'Амилаза',
+  'липаза':'Липаза','lipase':'Липаза',
+  'кальций':'Кальций','calcium':'Кальций',
+  'фосфор':'Фосфор','phosphorus':'Фосфор',
+  'калий':'Калий','potassium':'Калий',
+  'натрий':'Натрий','sodium':'Натрий',
+  'хлор':'Хлор','chloride':'Хлор',
+  'магний':'Магний','magnesium':'Магний',
+  'срб':'СРБ','crp':'СРБ','с-реактивный белок':'СРБ',
+  'срб вч':'СРБ вч','вч-срб':'СРБ вч','hscrp':'СРБ вч',
+  'гомоцистеин':'Гомоцистеин','homocysteine':'Гомоцистеин',
+  // Гормоны
+  'tsh':'ТТГ','ттг':'ТТГ','тиреотропный':'ТТГ',
+  'ft4':'Т4 свободный','т4св':'Т4 свободный','т4 своб':'Т4 свободный','свободный т4':'Т4 свободный',
+  'ft3':'Т3 свободный','т3св':'Т3 свободный','свободный т3':'Т3 свободный',
+  'atpo':'АТ-ТПО','ат тпо':'АТ-ТПО','антитела к тпо':'АТ-ТПО',
+  'аттg':'АТ-ТГ','ат-тг':'АТ-ТГ','антитела к тг':'АТ-ТГ',
+  'cortisol':'Кортизол','кортизол':'Кортизол',
+  'prolactin':'Пролактин','пролактин':'Пролактин',
+  'testosterone':'Тестостерон','тестостерон':'Тестостерон',
+  'dhea':'ДГЭА-С','дгэа':'ДГЭА-С','дгэа-с':'ДГЭА-С',
+  'fsh':'ФСГ','фсг':'ФСГ',
+  'lh':'ЛГ','лг':'ЛГ',
+  'estradiol':'Эстрадиол','эстрадиол':'Эстрадиол','е2':'Эстрадиол',
+  'progesterone':'Прогестерон','прогестерон':'Прогестерон',
+  'amh':'АМГ','амг':'АМГ','антимюллеров гормон':'АМГ',
+  // Витамины
+  'vitd':'Витамин D','vit d':'Витамин D','витамин d':'Витамин D','25-oh':'Витамин D','25(oh)d':'Витамин D',
+  'ferritin':'Ферритин','ферр':'Ферритин',
+  'iron':'Железо','железо сыворот':'Железо','сывороточное железо':'Железо',
+  'tibc':'ОЖСС','ожсс':'ОЖСС',
+  'zinc':'Цинк','цинк':'Цинк',
+  'b12':'B12','витамин b12':'B12','цианокобаламин':'B12','кобаламин':'B12',
+  'folate':'Фолиевая кислота','folic acid':'Фолиевая кислота','фолиевая':'Фолиевая кислота',
+  // ОАМ
+  'ph':'pH мочи','ph мочи':'pH мочи','реакция мочи':'pH мочи',
+  'удельный вес':'Удельный вес','relative density':'Удельный вес',
+  'лейкоциты мочи':'Лейкоциты мочи',
+  'эритроциты мочи':'Эритроциты мочи',
+  'белок мочи':'Белок мочи',
+  'глюкоза мочи':'Глюкоза мочи',
+  // Свёртывание
+  'мно':'МНО','inr':'МНО','протромбин':'МНО',
+  'фибриноген':'Фибриноген','fibrinogen':'Фибриноген',
+  'д-димер':'Д-димер','d-dimer':'Д-димер',
+};
+
+// v3.25: убираем скобки и лишнее из имён — «Железо (Fe)» → «Железо»
+function cleanIndicatorName(name) {
+  if (!name) return '';
+  return name
+    .replace(/\s*\([^)]*\)/g, '')   // убираем (Fe), (WBC) и т.д.
+    .replace(/\s*\[[^\]]*\]/g, '')   // убираем [что угодно]
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeIndicatorName(rawName) {
+  // v3.25: сначала чистим скобки, потом ищем алиас
+  var cleaned = cleanIndicatorName(rawName || '');
+  var key = cleaned.toLowerCase().trim();
+  return GR_NAME_ALIASES[key] || cleaned;
+}
+
 function buildIndicatorsFromAnalyses() {
   // Собираем все показатели из реальных анализов
   var list = getAnalyses().filter(function(a){ return !a.isDemo && a.markers && a.markers.length; });
@@ -5831,8 +6481,10 @@ function buildIndicatorsFromAnalyses() {
       if (!m.name || !m.val || m.val === '—') return;
       var v = parseFloat(m.val);
       if (isNaN(v)) return;
-      if (!map[m.name]) map[m.name] = { name:m.name, unit:m.unit||'', points:[] };
-      map[m.name].points.push({ date:a.date, val:v, lab:a.lab });
+      // v3.24: нормализуем имя (Hb → Гемоглобин и т.д.)
+      var normName = normalizeIndicatorName(m.name);
+      if (!map[normName]) map[normName] = { name:normName, unit:m.unit||'', points:[] };
+      map[normName].points.push({ date:a.date, val:v, lab:a.lab });
     });
   });
   // Sort points by date
@@ -5858,6 +6510,8 @@ function filterByPeriod(points) {
 
 function grSearch(val) {
   GR_SEARCH = val.toLowerCase().trim();
+  // v3.24: при поиске сбрасываем выбранный чип чтобы показать все результаты
+  if (GR_SEARCH) GR_INDICATOR = null;
   renderGraphs();
 }
 
@@ -5985,125 +6639,195 @@ function renderGraphCard(ind, points, isDemo) {
   var latest = points[points.length - 1];
   var latestVal = latest ? latest.val : null;
 
-  // Статус последнего значения
   var status = 'ok';
   if (normRange && latestVal !== null) {
     if (latestVal < normRange[0]) status = 'lo';
     else if (latestVal > normRange[1]) status = 'hi';
   }
-  var statusTxt = status==='ok' ? '&#10003; норма' : status==='hi' ? '&#8593; выше нормы' : '&#8595; ниже нормы';
+  var statusTxt = !normRange ? '— нет нормы' : status==='ok' ? '&#10003; норма' : status==='hi' ? '&#8593; выше нормы' : '&#8595; ниже нормы';
 
-  // Тренд
-  var trendTxt = '';
+  // Тренд — v3.24: цвет + стрелка + процент
+  var trendHtml = '';
   if (points.length >= 2) {
     var first = points[0].val;
     var last = points[points.length-1].val;
-    var diff = (last - first).toFixed(1);
-    var pct = Math.abs(((last-first)/first*100)).toFixed(0);
-    if (Math.abs(last-first) < 0.05) trendTxt = 'стабильно';
-    else if (last > first) trendTxt = '&#8593; +' + Math.abs(diff) + ' (' + pct + '%) за период';
-    else trendTxt = '&#8595; &minus;' + Math.abs(diff) + ' (' + pct + '%) за период';
+    var diff = last - first;
+    var diffAbs = Math.abs(diff).toFixed(Math.abs(diff) >= 1 ? 1 : 2);
+    var pct = Math.abs((diff/first)*100).toFixed(0);
+    var trendCol, trendArrow, trendWord;
+    if (Math.abs(diff) < 0.05) {
+      trendCol = 'var(--accent3)'; trendArrow = '→'; trendWord = 'стабильно';
+    } else if (diff > 0) {
+      // Растёт: хорошо если в норме, плохо если выше нормы
+      trendCol = (status === 'hi') ? 'var(--danger)' : 'var(--accent3)';
+      trendArrow = '↑'; trendWord = '+' + diffAbs + ' (' + pct + '%)';
+    } else {
+      trendCol = (status === 'lo') ? '#FFB450' : 'var(--accent3)';
+      trendArrow = '↓'; trendWord = '−' + diffAbs + ' (' + pct + '%)';
+    }
+    trendHtml = '<div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding:8px 12px;' +
+      'background:rgba(255,255,255,0.05);border-radius:10px;border:1px solid rgba(255,255,255,0.08)">' +
+      '<span style="font-size:16px;font-weight:700;color:' + trendCol + '">' + trendArrow + '</span>' +
+      '<span style="font-size:12px;font-weight:700;color:' + trendCol + '">' + trendWord + '</span>' +
+      '<span style="font-size:11px;color:var(--text3)">за ' + points.length + ' ' + (points.length===1?'замер':points.length<5?'замера':'замеров') + '</span>' +
+      '<span style="margin-left:auto;font-size:11px;color:var(--text3)">нажми для деталей →</span>' +
+    '</div>';
   }
 
-  // SVG график
-  var svgHtml = points.length >= 2 ? drawLineSVG(points, normRange, status) : drawSinglePoint(points[0], normRange, status);
+  // SVG график — v3.24: передаём имя для кликабельных точек
+  var svgHtml = points.length >= 2
+    ? drawLineSVG(points, normRange, status, ind.name, false)
+    : drawSinglePoint(points[0], normRange, status);
 
-  // Insight текст
-  var insightText = buildInsight(ind.name, points, normRange, status, trendTxt, isDemo);
+  var safeInd = (ind.name||'').replace(/'/g,"\\'");
 
-  return '<div class="gr-card">' +
+  return '<div class="gr-card" style="cursor:pointer" onclick="openGraphDetail(\'' + safeInd + '\')">' +
     '<div class="gr-card-top">' +
       '<div>' +
         '<div class="gr-card-name">' + ind.name + '</div>' +
-        '<div class="gr-card-unit">' + (ind.unit||'') + (normRange ? ' &nbsp;·&nbsp; норма ' + normRange[0] + '&ndash;' + normRange[1] : '') + '</div>' +
+        '<div class="gr-card-unit">' + (ind.unit||'') +
+          (normRange ? ' &nbsp;·&nbsp; <span style="color:rgba(122,255,212,0.8);font-weight:600">норма ' + normRange[0] + '–' + normRange[1] + '</span>' : ' &nbsp;·&nbsp; <span style="color:rgba(245,242,255,0.35);font-size:10px">нормы нет в базе</span>') +
+        '</div>' +
       '</div>' +
-      (latestVal !== null ? '<div class="gr-card-latest"><div class="gr-card-val ' + status + '">' + latestVal + '</div><div class="gr-card-status">' + statusTxt + '</div></div>' : '') +
+      (latestVal !== null ? '<div class="gr-card-latest">' +
+        '<div class="gr-card-val ' + status + '">' + latestVal + '</div>' +
+        '<div class="gr-card-status">' + statusTxt + '</div>' +
+      '</div>' : '') +
     '</div>' +
     '<div class="gr-canvas-wrap">' + svgHtml + '</div>' +
-    (trendTxt ? '<div class="gr-norm-label">' + trendTxt + '</div>' : '') +
-    '<div class="gr-insight"><div class="gr-insight-av">&#10022;</div><div>' + insightText + '</div></div>' +
+    trendHtml +
   '</div>';
 }
 
-function drawLineSVG(points, normRange, status) {
-  var W = 320, H = 120, PAD = { t:10, r:10, b:24, l:36 };
+function drawLineSVG(points, normRange, status, indName, bigMode) {
+  // v3.24: bigMode — для шторки (большой график), обычный — для карточки
+  var W = bigMode ? 360 : 320;
+  var H = bigMode ? 180 : 140;
+  var PAD = { t:14, r:bigMode?44:40, b:32, l:40 };
+
   var vals = points.map(function(p){ return p.val; });
   var allVals = normRange ? vals.concat(normRange) : vals;
-  var minV = Math.min.apply(null, allVals) * 0.92;
-  var maxV = Math.max.apply(null, allVals) * 1.08;
+  var minV = Math.min.apply(null, allVals);
+  var maxV = Math.max.apply(null, allVals);
+  var pad = (maxV - minV) * 0.18 || 0.5;
+  minV = minV - pad;
+  maxV = maxV + pad;
   var range = maxV - minV || 1;
 
-  function px(v) { return PAD.l + (points.indexOf(v) / (points.length-1)) * (W - PAD.l - PAD.r); }
-  function py(v) { return PAD.t + (1 - (v-minV)/range) * (H - PAD.t - PAD.b); }
+  function xPos(i) { return PAD.l + (points.length > 1 ? (i / (points.length-1)) : 0.5) * (W - PAD.l - PAD.r); }
+  function yPos(v) { return PAD.t + (1 - (v-minV)/range) * (H - PAD.t - PAD.b); }
 
   var isLight = document.body.classList.contains('light');
-  var gridCol = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
-  var textCol = isLight ? 'rgba(18,10,56,0.4)' : 'rgba(245,242,255,0.4)';
-  var dotCol = status==='ok' ? '#7AFFD4' : status==='hi' ? '#FF9090' : '#FFB450';
-  var lineCol = status==='ok' ? 'rgba(122,255,212,0.7)' : status==='hi' ? 'rgba(255,144,144,0.7)' : 'rgba(255,180,80,0.7)';
-  var gradId = 'g' + ind_id_counter++;
+  var gridCol  = isLight ? 'rgba(0,0,0,0.06)'  : 'rgba(255,255,255,0.06)';
+  var textCol  = isLight ? 'rgba(18,10,56,0.45)' : 'rgba(245,242,255,0.45)';
+  var normTextCol = isLight ? 'rgba(10,152,112,0.7)' : 'rgba(122,255,212,0.75)';
+  var dotColOk = '#7AFFD4'; var dotColHi = '#FF9090'; var dotColLo = '#FFB450';
+  var lineCol  = status==='ok' ? 'rgba(122,255,212,0.8)' : status==='hi' ? 'rgba(255,144,144,0.8)' : 'rgba(255,180,80,0.8)';
+  var gradId   = 'g' + ind_id_counter++;
 
-  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="gr-canvas" xmlns="http://www.w3.org/2000/svg">';
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="gr-canvas" style="overflow:visible" xmlns="http://www.w3.org/2000/svg">';
 
-  // Gradient fill
+  // Градиент под линией
   svg += '<defs><linearGradient id="' + gradId + '" x1="0" x2="0" y1="0" y2="1">' +
-    '<stop offset="0%" stop-color="' + dotCol + '" stop-opacity="0.15"/>' +
-    '<stop offset="100%" stop-color="' + dotCol + '" stop-opacity="0"/>' +
+    '<stop offset="0%" stop-color="' + (status==='ok'?dotColOk:status==='hi'?dotColHi:dotColLo) + '" stop-opacity="0.18"/>' +
+    '<stop offset="100%" stop-color="' + (status==='ok'?dotColOk:status==='hi'?dotColHi:dotColLo) + '" stop-opacity="0"/>' +
   '</linearGradient></defs>';
 
-  // Norm band
+  // ── ЗОНЫ НОРМЫ ──
   if (normRange) {
-    var ny1 = py(Math.min(normRange[1], maxV));
-    var ny2 = py(Math.max(normRange[0], minV));
-    svg += '<rect x="' + PAD.l + '" y="' + ny1 + '" width="' + (W-PAD.l-PAD.r) + '" height="' + (ny2-ny1) + '" fill="rgba(122,255,212,0.07)" rx="3"/>';
-    svg += '<line x1="' + PAD.l + '" x2="' + (W-PAD.r) + '" y1="' + ny1 + '" y2="' + ny1 + '" stroke="rgba(122,255,212,0.25)" stroke-width="1" stroke-dasharray="3,4"/>';
-    svg += '<line x1="' + PAD.l + '" x2="' + (W-PAD.r) + '" y1="' + ny2 + '" y2="' + ny2 + '" stroke="rgba(122,255,212,0.25)" stroke-width="1" stroke-dasharray="3,4"/>';
+    var ny1 = yPos(Math.min(normRange[1], maxV * 0.999));
+    var ny2 = yPos(Math.max(normRange[0], minV * 1.001));
+    var bandH = Math.max(ny2 - ny1, 2);
+
+    // Зелёная полоса нормы
+    svg += '<rect x="' + PAD.l + '" y="' + ny1 + '" width="' + (W - PAD.l - PAD.r) + '" height="' + bandH + '"' +
+      ' fill="rgba(122,255,212,0.09)" rx="2"/>';
+
+    // Верхняя граница нормы — сплошная зелёная линия
+    svg += '<line x1="' + PAD.l + '" x2="' + (W - PAD.r) + '" y1="' + ny1 + '" y2="' + ny1 + '"' +
+      ' stroke="rgba(122,255,212,0.55)" stroke-width="1.5"/>';
+    // Нижняя граница нормы
+    svg += '<line x1="' + PAD.l + '" x2="' + (W - PAD.r) + '" y1="' + ny2 + '" y2="' + ny2 + '"' +
+      ' stroke="rgba(122,255,212,0.55)" stroke-width="1.5"/>';
+
+    // Подписи норм СПРАВА
+    var normMax = normRange[1].toFixed(normRange[1] >= 10 ? (normRange[1]%1===0?0:1) : 1);
+    var normMin = normRange[0].toFixed(normRange[0] >= 10 ? (normRange[0]%1===0?0:1) : 1);
+    svg += '<text x="' + (W - PAD.r + 4) + '" y="' + (ny1 + 4) + '"' +
+      ' text-anchor="start" font-size="9" font-weight="700" fill="' + normTextCol + '" font-family="Jost,sans-serif">' + normMax + '</text>';
+    svg += '<text x="' + (W - PAD.r + 4) + '" y="' + (ny2 + 4) + '"' +
+      ' text-anchor="start" font-size="9" font-weight="700" fill="' + normTextCol + '" font-family="Jost,sans-serif">' + normMin + '</text>';
   }
 
-  // Grid lines + Y labels
-  var ticks = 3;
+  // ── ГОРИЗОНТАЛЬНЫЕ ЛИНИИ СЕТКИ ──
+  var ticks = bigMode ? 4 : 3;
   for (var t = 0; t <= ticks; t++) {
     var tv = minV + (range * t / ticks);
-    var ty = py(tv);
-    svg += '<line x1="' + PAD.l + '" x2="' + (W-PAD.r) + '" y1="' + ty + '" y2="' + ty + '" stroke="' + gridCol + '" stroke-width="1"/>';
-    svg += '<text x="' + (PAD.l-4) + '" y="' + (ty+4) + '" text-anchor="end" font-size="9" fill="' + textCol + '" font-family="Jost,sans-serif">' + tv.toFixed(tv >= 10 ? 0 : 1) + '</text>';
+    var ty = yPos(tv);
+    svg += '<line x1="' + PAD.l + '" x2="' + (W - PAD.r) + '" y1="' + ty + '" y2="' + ty + '"' +
+      ' stroke="' + gridCol + '" stroke-width="1"/>';
+    svg += '<text x="' + (PAD.l - 4) + '" y="' + (ty + 3.5) + '"' +
+      ' text-anchor="end" font-size="9" fill="' + textCol + '" font-family="Jost,sans-serif">' +
+      tv.toFixed(tv >= 10 ? (tv%1===0?0:1) : 1) + '</text>';
   }
 
-  // Build path and area
+  // ── ЛИНИЯ И ОБЛАСТЬ ──
   var pathD = '', areaD = '';
   points.forEach(function(p, i) {
-    var x = PAD.l + (i / (points.length-1)) * (W - PAD.l - PAD.r);
-    var y = py(p.val);
-    if (i === 0) { pathD += 'M' + x + ',' + y; areaD += 'M' + x + ',' + (H-PAD.b) + ' L' + x + ',' + y; }
-    else {
-      // Smooth curve
-      var prevX = PAD.l + ((i-1) / (points.length-1)) * (W - PAD.l - PAD.r);
-      var prevY = py(points[i-1].val);
-      var cpx = (prevX + x) / 2;
-      pathD += ' C' + cpx + ',' + prevY + ' ' + cpx + ',' + y + ' ' + x + ',' + y;
-      areaD += ' C' + cpx + ',' + prevY + ' ' + cpx + ',' + y + ' ' + x + ',' + y;
+    var x = xPos(i); var y = yPos(p.val);
+    if (i === 0) {
+      pathD += 'M' + x.toFixed(1) + ',' + y.toFixed(1);
+      areaD += 'M' + x.toFixed(1) + ',' + (H - PAD.b).toFixed(1) + ' L' + x.toFixed(1) + ',' + y.toFixed(1);
+    } else {
+      var px2 = xPos(i-1); var py2 = yPos(points[i-1].val);
+      var cpx = ((px2 + x) / 2).toFixed(1);
+      pathD += ' C' + cpx + ',' + py2.toFixed(1) + ' ' + cpx + ',' + y.toFixed(1) + ' ' + x.toFixed(1) + ',' + y.toFixed(1);
+      areaD += ' C' + cpx + ',' + py2.toFixed(1) + ' ' + cpx + ',' + y.toFixed(1) + ' ' + x.toFixed(1) + ',' + y.toFixed(1);
     }
   });
-  var lastX = PAD.l + ((points.length-1) / (points.length-1)) * (W - PAD.l - PAD.r);
-  areaD += ' L' + lastX + ',' + (H-PAD.b) + ' Z';
-
+  if (points.length > 1) {
+    areaD += ' L' + xPos(points.length-1).toFixed(1) + ',' + (H - PAD.b).toFixed(1) + ' Z';
+  }
   svg += '<path d="' + areaD + '" fill="url(#' + gradId + ')"/>';
-  svg += '<path d="' + pathD + '" fill="none" stroke="' + lineCol + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+  svg += '<path d="' + pathD + '" fill="none" stroke="' + lineCol + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
 
-  // Dots + X labels
+  // ── ТОЧКИ + ДАТЫ + ЗНАЧЕНИЯ ──
+  // v3.24: показываем ВСЕ даты — умная логика чтобы не накладывались
+  // до 5 точек — все, больше — каждая вторая
+  var showAllLabels = points.length <= 5;
   points.forEach(function(p, i) {
-    var x = PAD.l + (i / (points.length-1)) * (W - PAD.l - PAD.r);
-    var y = py(p.val);
-    var dc = p.val < (normRange ? normRange[0] : -Infinity) ? '#FFB450'
-           : p.val > (normRange ? normRange[1] : Infinity) ? '#FF9090'
-           : '#7AFFD4';
-    svg += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="' + dc + '" stroke="' + (isLight?'white':'#04040F') + '" stroke-width="1.5"/>';
-    // X label — only first, last, and middle if 4+ points
-    var showLabel = (i === 0 || i === points.length-1 || (points.length >= 4 && i === Math.floor(points.length/2)));
-    if (showLabel) {
+    var x = xPos(i); var y = yPos(p.val);
+    var dc = normRange
+      ? (p.val < normRange[0] ? dotColLo : p.val > normRange[1] ? dotColHi : dotColOk)
+      : dotColOk;
+
+    // Кликабельная область (широкая для тач)
+    var safeInd = (indName||'').replace(/'/g,"\\'");
+    svg += '<rect x="' + (x-16) + '" y="' + (y-16) + '" width="32" height="32"' +
+      ' fill="transparent" style="cursor:pointer"' +
+      ' onclick="grPointClick(\'' + safeInd + '\',' + i + ',event)"/>';
+
+    // Точка
+    svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (bigMode?5:4.5) + '"' +
+      ' fill="' + dc + '" stroke="' + (isLight?'white':'#04040F') + '" stroke-width="2" style="cursor:pointer"' +
+      ' onclick="grPointClick(\'' + safeInd + '\',' + i + ',event)"/>';
+
+    // Значение над/под точкой (только bigMode или 1-4 точки)
+    if (bigMode || points.length <= 4) {
+      var valStr = p.val.toFixed(p.val >= 10 ? (p.val%1===0?0:1) : 1);
+      var vyOff = (y > H/2) ? -10 : 14;
+      svg += '<text x="' + x.toFixed(1) + '" y="' + (y + vyOff).toFixed(1) + '"' +
+        ' text-anchor="middle" font-size="10" font-weight="700" fill="' + dc + '" font-family="Jost,sans-serif">' + valStr + '</text>';
+    }
+
+    // X-метка даты — v3.24: все точки для ≤5, каждая вторая для >5
+    var showDate = showAllLabels || (i % 2 === 0) || (i === points.length - 1);
+    if (showDate) {
       var d = new Date(p.date);
-      var lbl = d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}).replace('.','');
-      svg += '<text x="' + x + '" y="' + (H-6) + '" text-anchor="middle" font-size="9" fill="' + textCol + '" font-family="Jost,sans-serif">' + lbl + '</text>';
+      var months2 = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+      var lbl = d.getDate() + ' ' + months2[d.getMonth()];
+      svg += '<text x="' + x.toFixed(1) + '" y="' + (H - 4) + '"' +
+        ' text-anchor="middle" font-size="9" fill="' + textCol + '" font-family="Jost,sans-serif">' + lbl + '</text>';
     }
   });
 
@@ -6127,13 +6851,13 @@ function drawSinglePoint(point, normRange, status) {
   return svg;
 }
 
+// v3.25: buildInsight — текст строится от тренда, нет противоречий ↑/↓ vs «не изменился»
 function buildInsight(name, points, normRange, status, trendTxt, isDemo) {
   if (!points.length) return 'Нет данных';
   var latest = points[points.length-1];
   var prev = points.length >= 2 ? points[points.length-2] : null;
 
   if (isDemo) {
-    // Предустановленные инсайты для демо
     var demos = {
       'Холестерин': 'Холестерин стабильно выше нормы (5.2). Снижение идёт медленно — за год &minus;0.3. Стоит обсудить с кардиологом при следующем визите.',
       'Витамин D': 'Витамин D критически низкий — 18 нг/мл при норме от 30. Летний подъём до 22 говорит о реакции на солнце, но этого недостаточно. Нужен приём добавок.',
@@ -6145,24 +6869,325 @@ function buildInsight(name, points, normRange, status, trendTxt, isDemo) {
     return demos[name] || 'Показатель в пределах ' + (status==='ok'?'нормы':'отклонения') + '.';
   }
 
+  // v3.25: строим текст от тренда — нет противоречий между ↑ и «не изменился»
+  var diff = prev ? (latest.val - prev.val) : 0;
+  var diffAbs = Math.abs(diff);
+  var isStable = !prev || diffAbs < 0.05;
+  var diffStr = diffAbs.toFixed(diffAbs >= 1 ? 1 : 2);
   var txt = '';
-  if (status === 'ok') txt = name + ' в норме';
-  else if (status === 'hi') txt = name + ' выше нормы (' + normRange[1] + ')';
-  else txt = name + ' ниже нормы (' + normRange[0] + ')';
 
-  if (prev) {
-    var diff = latest.val - prev.val;
-    if (Math.abs(diff) >= 0.1) {
-      txt += diff > 0 ? ', вырос на ' + diff.toFixed(1) + ' с прошлого анализа' : ', снизился на ' + Math.abs(diff).toFixed(1) + ' с прошлого анализа';
-    } else {
-      txt += ', практически не изменился';
-    }
+  if (status === 'ok') {
+    if (isStable) txt = name + ' в норме и стабилен.';
+    else if (diff > 0) txt = name + ' в норме, вырос на ' + diffStr + ' с прошлого анализа.';
+    else txt = name + ' в норме, снизился на ' + diffStr + ' с прошлого анализа.';
+  } else if (status === 'hi') {
+    var normMax = normRange ? normRange[1] : '';
+    if (isStable) txt = name + ' выше нормы (' + normMax + ') — стабильно держится на этом уровне.';
+    else if (diff > 0) txt = name + ' выше нормы (' + normMax + ') и продолжает расти — стоит обсудить с врачом.';
+    else txt = name + ' выше нормы (' + normMax + '), но снижается — динамика хорошая.';
+  } else {
+    var normMin = normRange ? normRange[0] : '';
+    if (isStable) txt = name + ' ниже нормы (' + normMin + ') — стабильно держится на этом уровне.';
+    else if (diff < 0) txt = name + ' ниже нормы (' + normMin + ') и продолжает снижаться — обрати внимание.';
+    else txt = name + ' ниже нормы (' + normMin + '), но растёт — хорошая тенденция.';
   }
-  txt += '.';
   return txt;
 }
 
-// ══════════════════ ПОИСК ══════════════════
+// ══════════════════ ДЕТАЛЬНЫЙ ГРАФИК v3.24 ══════════════════
+
+var GR_DETAIL_IND = null;     // имя текущего показателя в шторке
+var GR_DETAIL_PERIOD = 'all'; // период в шторке — по умолчанию всё
+
+function openGraphDetail(indName) {
+  GR_DETAIL_IND = indName;
+  GR_DETAIL_PERIOD = 'all';
+  document.getElementById('grDetailOverlay').classList.add('on');
+  renderGrDetail();
+}
+
+function closeGraphDetail() {
+  document.getElementById('grDetailOverlay').classList.remove('on');
+  GR_DETAIL_IND = null;
+  hideGrTooltip();
+}
+
+function grDetailOverlayClick(e) {
+  if (e.target === document.getElementById('grDetailOverlay')) closeGraphDetail();
+}
+
+function setGrDetailPeriod(p) {
+  GR_DETAIL_PERIOD = p;
+  renderGrDetail();
+}
+
+function renderGrDetail() {
+  var el = document.getElementById('grDetailContent');
+  if (!el || !GR_DETAIL_IND) return;
+
+  var all = getIndicators();
+  var ind = all.find(function(i){ return i.name === GR_DETAIL_IND; });
+  if (!ind) { el.innerHTML = '<div style="padding:20px;color:var(--text3)">Нет данных</div>'; return; }
+
+  var norm = GR_NORMS[ind.name];
+  var normRange = norm ? (norm.both || (S.gender==='female' ? norm.f : norm.m)) : null;
+
+  // Фильтр по периоду
+  var pts = ind.points.slice();
+  if (GR_DETAIL_PERIOD !== 'all') {
+    var months = GR_DETAIL_PERIOD === '3m' ? 3 : GR_DETAIL_PERIOD === '6m' ? 6 : 12;
+    var cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - months);
+    var filtered = pts.filter(function(p){ return new Date(p.date) >= cutoff; });
+    if (filtered.length) pts = filtered;
+  }
+
+  var latest = pts[pts.length - 1];
+  var latestVal = latest ? latest.val : null;
+
+  var status = 'ok';
+  if (normRange && latestVal !== null) {
+    if (latestVal < normRange[0]) status = 'lo';
+    else if (latestVal > normRange[1]) status = 'hi';
+  }
+  var statusTxt = status==='ok' ? '✓ норма' : status==='hi' ? '↑ выше нормы' : '↓ ниже нормы';
+
+  // Тренд блок
+  var trendHtml = '';
+  if (pts.length >= 2) {
+    var first = pts[0].val, last2 = pts[pts.length-1].val;
+    var diff2 = last2 - first;
+    var diffAbs2 = Math.abs(diff2).toFixed(Math.abs(diff2) >= 1 ? 1 : 2);
+    var pct2 = Math.abs((diff2/first)*100).toFixed(0);
+    var tCol, tArrow, tWord, tDesc;
+    if (Math.abs(diff2) < 0.05) {
+      tCol = 'var(--accent3)'; tArrow = '→'; tWord = 'Стабильно';
+      tDesc = 'Показатель не меняется за выбранный период';
+    } else if (diff2 > 0) {
+      tCol = (status==='hi') ? 'var(--danger)' : 'var(--accent3)';
+      tArrow = '↑'; tWord = '+' + diffAbs2 + ' ' + (ind.unit||'') + ' (+' + pct2 + '%)';
+      tDesc = status==='hi' ? 'Растёт и уже выше нормы — стоит обсудить с врачом' : 'Растёт — хорошая динамика';
+    } else {
+      tCol = (status==='lo') ? '#FFB450' : 'var(--accent3)';
+      tArrow = '↓'; tWord = '−' + diffAbs2 + ' ' + (ind.unit||'') + ' (−' + pct2 + '%)';
+      tDesc = status==='lo' ? 'Снижается и уже ниже нормы — обрати внимание' : 'Снижается — следи за динамикой';
+    }
+    // Подряд растёт или падает?
+    var streak = 1;
+    var streakDir = pts.length >= 2 ? (pts[pts.length-1].val > pts[pts.length-2].val ? 'up' : 'down') : null;
+    for (var si = pts.length - 2; si >= 1; si--) {
+      var curDir = pts[si].val > pts[si-1].val ? 'up' : 'down';
+      if (curDir === streakDir) streak++; else break;
+    }
+    if (streak >= 2) {
+      tDesc += ' (' + streak + ' ' + (streak===2?'анализа':streak<5?'анализа':'анализов') + ' подряд ' + (streakDir==='up'?'растёт':'снижается') + ')';
+    }
+    trendHtml = '<div class="gr-detail-trend">' +
+      '<div class="gr-detail-trend-arrow" style="color:' + tCol + '">' + tArrow + '</div>' +
+      '<div class="gr-detail-trend-body">' +
+        '<div class="gr-detail-trend-val" style="color:' + tCol + '">' + tWord + '</div>' +
+        '<div class="gr-detail-trend-sub">' + tDesc + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // Таблица всех измерений
+  var rowsHtml = pts.slice().reverse().map(function(p, ri) {
+    var rowStatus = 'ok';
+    if (normRange) {
+      if (p.val < normRange[0]) rowStatus = 'lo';
+      else if (p.val > normRange[1]) rowStatus = 'hi';
+    }
+    var stColor = rowStatus==='ok'?'var(--accent3)':rowStatus==='hi'?'var(--danger)':'#FFB450';
+    var stIcon  = rowStatus==='ok'?'✓':rowStatus==='hi'?'↑':'↓';
+    var d = new Date(p.date);
+    var months2 = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    var dateStr2 = d.getDate() + ' ' + months2[d.getMonth()] + ' ' + d.getFullYear();
+    // Изменение от предыдущего (реверс — предыдущий в таблице = следующий в pts)
+    var realIdx = pts.length - 1 - ri;
+    var diffFromPrev = '';
+    if (realIdx > 0) {
+      var prevVal = pts[realIdx-1].val;
+      var dv = p.val - prevVal;
+      if (Math.abs(dv) >= 0.05) {
+        diffFromPrev = '<span style="font-size:11px;color:' + (dv>0?'var(--danger)':'var(--accent3)') + ';margin-left:4px">' + (dv>0?'+':'') + dv.toFixed(1) + '</span>';
+      }
+    }
+    return '<tr>' +
+      '<td style="font-weight:500;color:var(--text2)">' + dateStr2 + '</td>' +
+      '<td style="font-weight:700;color:var(--text)">' + p.val + ' ' + (ind.unit||'') + diffFromPrev + '</td>' +
+      '<td style="white-space:nowrap;color:var(--text3);font-size:12px">' + (p.lab||'—') + '</td>' +
+      '<td style="text-align:right"><span style="font-size:11px;font-weight:700;color:' + stColor + '">' + stIcon + '</span></td>' +
+    '</tr>';
+  }).join('');
+
+  // Периоды
+  var periods3 = [['3m','3 мес'],['6m','6 мес'],['1y','Год'],['all','Всё']];
+  var periodsHtml = '<div class="gr-detail-periods">' +
+    periods3.map(function(p) {
+      return '<button class="gr-detail-period' + (GR_DETAIL_PERIOD===p[0]?' on':'') + '" onclick="setGrDetailPeriod(\'' + p[0] + '\')">' + p[1] + '</button>';
+    }).join('') + '</div>';
+
+  // AI-инсайт (простой, без запроса к API — экономим токены)
+  var aiText = buildDetailInsight(ind.name, pts, normRange, status);
+
+  el.innerHTML =
+    '<div class="gr-detail-hdr">' +
+      '<div>' +
+        '<div class="gr-detail-name">' + ind.name + '</div>' +
+        '<div class="gr-detail-unit">' + (ind.unit||'') +
+          (normRange ? ' &nbsp;·&nbsp; <span style="color:rgba(122,255,212,0.85);font-weight:600">норма ' + normRange[0] + '–' + normRange[1] + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      (latestVal !== null ? '<div>' +
+        '<div class="gr-detail-val ' + status + '">' + latestVal + '</div>' +
+        '<div class="gr-detail-status">' + statusTxt + '</div>' +
+      '</div>' : '') +
+    '</div>' +
+    (normRange ? '<div class="gr-detail-norm-band">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+      'Зелёная полоса = норма (' + normRange[0] + '–' + normRange[1] + ' ' + (ind.unit||'') + ')' +
+    '</div>' : '') +
+    periodsHtml +
+    '<div class="gr-canvas-wrap" style="margin-bottom:14px">' +
+      (pts.length >= 2
+        ? drawLineSVG(pts, normRange, status, ind.name, true)
+        : drawSinglePoint(pts[0], normRange, status)) +
+    '</div>' +
+    trendHtml +
+    '<div class="gr-detail-yasna">' +
+      '<div class="gr-detail-yasna-hdr">' +
+        '<div class="gr-detail-yasna-av">✦</div>' +
+        '<div style="font-size:13px;font-weight:700;color:var(--text)">ЯСНА говорит</div>' +
+      '</div>' +
+      '<div class="gr-detail-yasna-text">' + aiText + '</div>' +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Все измерения</div>' +
+    '<div class="gr-detail-table-wrap">' +
+      '<table class="gr-detail-table">' +
+        '<thead><tr><th>Дата</th><th>Значение</th><th>Лаборатория</th><th></th></tr></thead>' +
+        '<tbody>' + rowsHtml + '</tbody>' +
+      '</table>' +
+    '</div>' +
+    '<button onclick="openChatThread(\'analyses\',\'Расскажи подробнее про мой ' + ind.name + ' — что происходит и что делать?\')" style="width:100%;padding:14px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:\'Jost\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px">' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.06L2 22l4.94-1.38A9.96 9.96 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>' +
+      'Спросить ЯСНА про ' + ind.name +
+    '</button>' +
+    '<div style="height:8px"></div>';
+
+  document.getElementById('grDetailSheet').scrollTop = 0;
+}
+
+// Умный текстовый инсайт без AI-запроса
+function buildDetailInsight(name, pts, normRange, status) {
+  if (!pts.length) return 'Нет данных для анализа.';
+  var latest = pts[pts.length-1];
+  var unit = (GR_NORMS[name] && GR_NORMS[name].unit) || '';
+  var txt = '';
+
+  if (status === 'ok') {
+    txt = name + ' в норме';
+    if (pts.length >= 2) {
+      var diff3 = latest.val - pts[0].val;
+      if (Math.abs(diff3) < 0.05) txt += ' и стабилен — хороший результат.';
+      else txt += diff3 > 0 ? ' и растёт. Пока всё хорошо.' : ' и снижается. Следи чтобы не вышел за нижнюю границу.';
+    } else { txt += '.'; }
+  } else if (status === 'hi') {
+    txt = name + ' выше нормы (' + normRange[1] + ' ' + unit + '). Последнее значение: ' + latest.val + '.';
+    if (pts.length >= 2) {
+      var diff4 = latest.val - pts[pts.length-2].val;
+      txt += diff4 > 0 ? ' Продолжает расти — стоит обсудить с врачом.' : ' По сравнению с прошлым анализом снижается — динамика хорошая.';
+    }
+  } else {
+    txt = name + ' ниже нормы (' + normRange[0] + ' ' + unit + '). Последнее значение: ' + latest.val + '.';
+    if (pts.length >= 2) {
+      var diff5 = latest.val - pts[pts.length-2].val;
+      txt += diff5 < 0 ? ' Продолжает снижаться — обрати внимание.' : ' По сравнению с прошлым анализом растёт — хорошая тенденция.';
+    }
+  }
+  return txt;
+}
+
+// ── ТУЛТИП ПРИ КЛИКЕ НА ТОЧКУ ──
+var _grTooltipTimer = null;
+
+function grPointClick(indName, pointIdx, event) {
+  event.stopPropagation();
+  var all = getIndicators();
+  var ind = all.find(function(i){ return i.name === indName; });
+  if (!ind) return;
+
+  // Определяем какой набор точек сейчас отображается
+  var pts = ind.points;
+  if (document.getElementById('grDetailOverlay').classList.contains('on')) {
+    // Шторка — используем её период
+    if (GR_DETAIL_PERIOD !== 'all') {
+      var months3 = GR_DETAIL_PERIOD === '3m' ? 3 : GR_DETAIL_PERIOD === '6m' ? 6 : 12;
+      var cutoff2 = new Date(); cutoff2.setMonth(cutoff2.getMonth() - months3);
+      var fp = pts.filter(function(p){ return new Date(p.date) >= cutoff2; });
+      if (fp.length) pts = fp;
+    }
+  } else {
+    pts = filterByPeriod(pts);
+  }
+
+  var p = pts[pointIdx];
+  if (!p) return;
+
+  var norm = GR_NORMS[indName];
+  var normRange2 = norm ? (norm.both || (S.gender==='female' ? norm.f : norm.m)) : null;
+  var st = normRange2 ? (p.val < normRange2[0] ? 'lo' : p.val > normRange2[1] ? 'hi' : 'ok') : 'ok';
+  var stTxt = st==='ok'?'✓ норма':st==='hi'?'↑ выше нормы':'↓ ниже нормы';
+  var stCol = st==='ok'?'var(--accent3)':st==='hi'?'var(--danger)':'#FFB450';
+  var d = new Date(p.date);
+  var months4 = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  var dateStr3 = d.getDate() + ' ' + months4[d.getMonth()] + ' ' + d.getFullYear();
+
+  // Изменение от предыдущей точки
+  var changeTxt = '';
+  if (pointIdx > 0) {
+    var prev3 = pts[pointIdx-1];
+    var dv3 = p.val - prev3.val;
+    if (Math.abs(dv3) >= 0.05) changeTxt = '<div style="font-size:11px;color:' + (dv3>0?'var(--danger)':'var(--accent3)') + ';margin-top:3px">' + (dv3>0?'↑ +':'↓ ') + dv3.toFixed(1) + ' от предыдущего</div>';
+  }
+
+  var tooltip = document.getElementById('grPointTooltip');
+  tooltip.innerHTML =
+    '<div style="font-size:10px;color:var(--text3);margin-bottom:3px">' + dateStr3 + '</div>' +
+    '<div style="font-size:16px;font-weight:700;font-family:\'Cormorant Garamond\',serif;color:' + stCol + '">' + p.val + ' <span style="font-size:11px;font-family:\'Jost\',sans-serif">' + (ind.unit||'') + '</span></div>' +
+    '<div style="font-size:11px;color:' + stCol + ';margin-top:2px">' + stTxt + '</div>' +
+    changeTxt +
+    (p.lab ? '<div style="font-size:10px;color:var(--text3);margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08)">' + p.lab + '</div>' : '');
+
+  // Позиция тултипа
+  var rect = event.target.getBoundingClientRect ? event.target.getBoundingClientRect() : null;
+  var ex = event.clientX || (rect ? rect.left + rect.width/2 : 100);
+  var ey = event.clientY || (rect ? rect.top : 100);
+  var tw = 180, th = 100;
+  var tx = Math.min(ex - tw/2, window.innerWidth - tw - 10);
+  tx = Math.max(tx, 10);
+  var ty = ey - th - 16;
+  if (ty < 10) ty = ey + 20;
+
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top  = ty + 'px';
+  tooltip.style.opacity = '1';
+
+  clearTimeout(_grTooltipTimer);
+  _grTooltipTimer = setTimeout(hideGrTooltip, 3000);
+}
+
+function hideGrTooltip() {
+  var t = document.getElementById('grPointTooltip');
+  if (t) t.style.opacity = '0';
+}
+
+// Скрываем тултип при скролле или тапе по пустому месту
+document.addEventListener('scroll', hideGrTooltip, true);
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.id === 'grPointTooltip') return;
+  hideGrTooltip();
+}, true);
 
 var SRCH_QUERY = '';
 
@@ -7128,6 +8153,58 @@ function saveQuickIndicator() {
   toast('✓ ' + name + ' ' + val + ' ' + unit + ' → добавлен в анализы');
 }
 
+// ══════════════════ ИЗВЛЕЧЕНИЕ ДАТЫ ИЗ ТЕКСТА ФАЙЛА v3.23 ══════════════════
+// v3.25: расширенный парсер дат — 6 форматов, приоритет из содержимого документа
+function extractDateFromText(text) {
+  if (!text) return '';
+  var pad = function(n){ return String(parseInt(n)).padStart(2,'0'); };
+  var y, mo, d;
+
+  // 1. Формат ДД.ММ.ГГГГ — самый частый (Инвитро, Гемотест, ГБУЗ)
+  var m1 = text.match(/\b(\d{1,2})\.(\d{1,2})\.(20\d{2})\b/);
+  if (m1) {
+    y = parseInt(m1[3]); mo = parseInt(m1[2]); d = parseInt(m1[1]);
+    if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) {
+      return y + '-' + pad(mo) + '-' + pad(d);
+    }
+  }
+
+  // 2. Формат ДД/ММ/ГГГГ (слеш)
+  var m2 = text.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);
+  if (m2) {
+    y = parseInt(m2[3]); mo = parseInt(m2[2]); d = parseInt(m2[1]);
+    if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) {
+      return y + '-' + pad(mo) + '-' + pad(d);
+    }
+  }
+
+  // 3. Формат ДД-ММ-ГГГГ (тире, реже)
+  var m3 = text.match(/\b(\d{1,2})-(\d{2})-(20\d{2})\b/);
+  if (m3) {
+    y = parseInt(m3[3]); mo = parseInt(m3[2]); d = parseInt(m3[1]);
+    if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) {
+      return y + '-' + pad(mo) + '-' + pad(d);
+    }
+  }
+
+  // 4. ISO формат ГГГГ-ММ-ДД
+  var m4 = text.match(/\b(20\d{2})-(\d{2})-(\d{2})\b/);
+  if (m4) return m4[0];
+
+  // 5. Русский текст: «20 марта 2025», «3 января 2026»
+  var months = ['январ','феврал','март','апрел','май','мая','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+  var monthNums = ['01','02','03','04','05','05','06','07','08','09','10','11','12'];
+  for (var i = 0; i < months.length; i++) {
+    var re = new RegExp('\\b(\\d{1,2})\\s+' + months[i] + '[а-я]*\\s+(20\\d{2})\\b', 'i');
+    var m5 = text.match(re);
+    if (m5) {
+      return m5[2] + '-' + monthNums[i] + '-' + pad(parseInt(m5[1]));
+    }
+  }
+
+  return ''; // не нашли — используем сегодняшнюю дату
+}
+
 // ══════════════════ PDF.JS — ИЗВЛЕЧЕНИЕ ТЕКСТА v3.20 ══════════════════
 async function extractPdfText(arrayBuffer) {
   try {
@@ -7296,6 +8373,285 @@ function openDoctorReport() {
   }, 200);
 }
 
+// v3.26: Кнопка «Новый отчёт» — добавляется в чат если уже есть история
+function ensureDoctorNewBtn() {
+  if (document.getElementById('doctorNewReportBtn')) return; // уже есть
+  var msgs = document.getElementById('chatMsgs');
+  if (!msgs) return;
+  var sep = document.createElement('div');
+  sep.style.cssText = 'display:flex;justify-content:center;padding:8px 0 4px;flex-shrink:0';
+  sep.innerHTML =
+    '<button id="doctorNewReportBtn" class="doctor-new-btn" onclick="openDoctorReport()">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>' +
+      'Новый отчёт (обновить данные)' +
+    '</button>';
+  msgs.insertBefore(sep, msgs.firstChild.nextSibling);
+}
+
+// v3.27: Контекстное меню сообщения — долгое нажатие
+var _ctxTarget = null;      // DOM-элемент .msg
+var _ctxText   = '';         // чистый текст сообщения
+var _lpTimer   = null;       // таймер долгого нажатия
+var _lpMoved   = false;      // флаг — палец сдвинулся (скролл)
+
+function attachMsgLongPress(msgEl, rawText, isUser) {
+  // Текст для буфера — берём из rawText (до parseMarkdown)
+  // но с чисткой markdown-символов
+  var cleanText = (rawText || '').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/<br>/g,'\n').replace(/<[^>]+>/g,'');
+
+  function startLP(e) {
+    _lpMoved = false;
+    _lpTimer = setTimeout(function() {
+      if (_lpMoved) return;
+      _ctxTarget = msgEl;
+      _ctxText   = cleanText;
+      // Превью — первые 100 символов
+      var preview = cleanText.slice(0, 100) + (cleanText.length > 100 ? '…' : '');
+      document.getElementById('msgCtxPreview').textContent = preview;
+      document.getElementById('msgCtxOverlay').classList.add('on');
+      // Тактильный отклик на iOS
+      if (navigator.vibrate) navigator.vibrate(30);
+    }, 500);
+  }
+
+  function cancelLP() {
+    clearTimeout(_lpTimer);
+  }
+
+  function moveLP() {
+    _lpMoved = true;
+    clearTimeout(_lpTimer);
+  }
+
+  msgEl.addEventListener('touchstart',  startLP,  {passive: true});
+  msgEl.addEventListener('touchend',    cancelLP, {passive: true});
+  msgEl.addEventListener('touchcancel', cancelLP, {passive: true});
+  msgEl.addEventListener('touchmove',   moveLP,   {passive: true});
+  // Десктоп — правая кнопка мыши
+  msgEl.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    _ctxTarget = msgEl;
+    _ctxText   = cleanText;
+    var preview = cleanText.slice(0, 100) + (cleanText.length > 100 ? '…' : '');
+    document.getElementById('msgCtxPreview').textContent = preview;
+    document.getElementById('msgCtxOverlay').classList.add('on');
+  });
+}
+
+function closeMsgCtx(e) {
+  // Закрываем только по клику на фон или кнопку Отмена
+  if (e && e.target !== document.getElementById('msgCtxOverlay')) return;
+  document.getElementById('msgCtxOverlay').classList.remove('on');
+  _ctxTarget = null;
+  _ctxText   = '';
+}
+
+function msgCtxCopy() {
+  document.getElementById('msgCtxOverlay').classList.remove('on');
+  if (!_ctxText) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(_ctxText)
+      .then(function(){ toast('✓ Скопировано'); })
+      .catch(function(){ _copyFallback(_ctxText); toast('✓ Скопировано'); });
+  } else {
+    _copyFallback(_ctxText);
+    toast('✓ Скопировано');
+  }
+  _ctxTarget = null; _ctxText = '';
+}
+
+function msgCtxDelete() {
+  document.getElementById('msgCtxOverlay').classList.remove('on');
+  if (!_ctxTarget) return;
+  var msgEl = _ctxTarget;
+  _ctxTarget = null; _ctxText = '';
+  // Анимация исчезновения
+  msgEl.style.transition = 'opacity .25s, transform .25s';
+  msgEl.style.opacity = '0';
+  msgEl.style.transform = 'scale(.92)';
+  setTimeout(function(){
+    if (msgEl.parentNode) msgEl.parentNode.removeChild(msgEl);
+    // Обновляем DOM-кэш треда
+    var msgsEl = document.getElementById('chatMsgs');
+    if (msgsEl && chatThreads[activeThread]) {
+      chatThreads[activeThread].dom = msgsEl.innerHTML;
+    }
+  }, 250);
+}
+
+// v3.26: Удаление одной записи дневника
+function deleteDiaryEntry(idx) {
+  var entries = getDiaryEntries();
+  entries.splice(idx, 1);
+  var saved = JSON.parse(localStorage.getItem('yasna') || '{}');
+  saved.diary = entries;
+  localStorage.setItem('yasna', JSON.stringify(saved));
+  renderDiaryPreview();
+  // Перерендерим список в открытом модале
+  if (document.getElementById('diaryModal').classList.contains('on')) {
+    openDiaryModal();
+  }
+  toast('Запись удалена ✓');
+}
+
+// v3.26: Сворачивание дневника на главном экране
+var DIARY_COLLAPSED_KEY = 'yasna_diary_collapsed';
+
+function toggleDiaryCollapse() {
+  var isNow = localStorage.getItem(DIARY_COLLAPSED_KEY) === '1';
+  localStorage.setItem(DIARY_COLLAPSED_KEY, isNow ? '0' : '1');
+  applyDiaryCollapse();
+}
+
+function applyDiaryCollapse() {
+  var isCollapsed = localStorage.getItem(DIARY_COLLAPSED_KEY) === '1';
+  var preview = document.getElementById('diaryPreview');
+  var ico = document.getElementById('diaryCollapseIco');
+  if (preview) preview.style.display = isCollapsed ? 'none' : '';
+  if (ico) {
+    ico.setAttribute('points', isCollapsed ? '6 9 12 15 18 9' : '18 15 12 9 6 15');
+  }
+}
+
+// v3.26: Автоанализ «Когда пересдать» при первом открытии темы
+async function generateRetestAnalysis() {
+  if (!S.key) {
+    addMessage(
+      '⚙️ Добавь API-ключ в настройках, чтобы я могла проанализировать твои данные.',
+      false
+    );
+    return;
+  }
+
+  var sv = JSON.parse(localStorage.getItem('yasna') || '{}');
+  var analyses = sv.analyses || [];
+
+  // Приветственное сообщение
+  addMessage(
+    '**Анализирую твою историю** 📅\n\nСмотрю даты последних анализов и сравниваю с рекомендованными интервалами. Сейчас подготовлю список что нужно пересдать и когда.',
+    false
+  );
+
+  if (!analyses.length) {
+    addMessage(
+      'Пока нет загруженных анализов — мне не на что опираться 😔\n\nЗагрузи хотя бы один бланк через **Расшифровку**, и тогда я смогу сказать что и когда нужно пересдать.',
+      false
+    );
+    chatThreads['retest'].history.push({role:'assistant', content:'Нет загруженных анализов.'});
+    var msgsEl = document.getElementById('chatMsgs');
+    if (msgsEl) chatThreads['retest'].dom = msgsEl.innerHTML;
+    return;
+  }
+
+  // Собираем все показатели с датами
+  var indicatorDates = {}; // name → latest date
+  analyses.forEach(function(a) {
+    (a.markers || []).forEach(function(m) {
+      if (!m.name || m.val === '—') return;
+      var n = (m.name || '').toLowerCase().trim();
+      if (!indicatorDates[n] || a.date > indicatorDates[n].date) {
+        indicatorDates[n] = { name: m.name, date: a.date, dateStr: a.dateStr, status: m.status };
+      }
+    });
+  });
+
+  var indicatorsList = Object.values(indicatorDates);
+  var indText = indicatorsList.map(function(i) {
+    return i.name + ': последний ' + i.dateStr + ' (' + (i.status === 'ok' ? 'норма' : i.status === 'hi' ? 'выше нормы' : 'ниже нормы') + ')';
+  }).join('\n');
+
+  var now = new Date();
+  var todayStr = now.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
+
+  var prompt = 'Ты ЯСНА — персональный AI-агент здоровья.\n\n' +
+    'ПРОФИЛЬ: ' + getProfileLine() + '\n\n' +
+    'ИСТОРИЯ АНАЛИЗОВ — показатели и даты последней сдачи:\n' + indText + '\n\n' +
+    'СЕГОДНЯ: ' + todayStr + '\n\n' +
+    'Задача: составь чёткий персональный план «когда что пересдать».\n' +
+    'Для каждого показателя укажи:\n' +
+    '1. Когда последний раз сдавала\n' +
+    '2. Рекомендованный интервал повторной сдачи\n' +
+    '3. Срочность: ✅ всё хорошо / ⚠️ пора пересдать / 🔴 давно не сдавала\n\n' +
+    'Структура ответа:\n' +
+    '**🔴 Нужно пересдать сейчас:**\n[если есть]\n\n' +
+    '**⚠️ Скоро нужно:**\n[в течение 1-3 месяцев]\n\n' +
+    '**✅ Всё актуально:**\n[сдала недавно]\n\n' +
+    '**💊 Рекомендую добавить:**\n[важные показатели которых нет в истории — для ' + (S.gender === 'female' ? 'женщины' : 'мужчины') + ', ' + (S.age || 'взрослого') + ' лет]\n\n' +
+    'Будь конкретной. Только русский язык. Без общих слов — только про мои данные.';
+
+  showTyping(true);
+  try {
+    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200, stream: true,
+        messages: [{ role: 'system', content: getChatSystemPrompt() }, { role: 'user', content: prompt }] })
+    });
+
+    if (!res.ok || !res.body) {
+      showTyping(false);
+      addMessage('⚠️ Ошибка. Проверь API-ключ.', false);
+      return;
+    }
+    showTyping(false);
+    var msgDiv = addMessage('', false);
+    var bubble = msgDiv ? msgDiv.querySelector('.msg-bubble-ai') : null;
+    var fullText = '';
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+
+    while (true) {
+      var chunk = await reader.read();
+      if (chunk.done) break;
+      buffer += decoder.decode(chunk.value, { stream: true });
+      var lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (var li = 0; li < lines.length; li++) {
+        var line = lines[li].trim();
+        if (!line.startsWith('data: ')) continue;
+        var d3 = line.slice(6);
+        if (d3 === '[DONE]') break;
+        try {
+          var p3 = JSON.parse(d3);
+          var delta = (p3.choices && p3.choices[0] && p3.choices[0].delta && p3.choices[0].delta.content) || '';
+          if (delta) {
+            fullText += delta;
+            if (bubble) bubble.innerHTML = parseMarkdown(fullText);
+            var msgsEl2 = document.getElementById('chatMsgs');
+            if (msgsEl2) msgsEl2.scrollTop = msgsEl2.scrollHeight;
+          }
+        } catch (e3) {}
+      }
+    }
+
+    if (!fullText) { addMessage('Не удалось составить план. Попробуй позже.', false); return; }
+
+    // Кнопка копирования плана
+    if (msgDiv) {
+      msgDiv.dataset.reportText = fullText;
+      var actDiv = document.createElement('div');
+      actDiv.className = 'report-actions';
+      actDiv.style.marginTop = '10px';
+      actDiv.innerHTML =
+        '<button class="report-btn report-btn-copy" onclick="copyReport(this.closest(\'.msg\').dataset.reportText)">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
+          'Скопировать план' +
+        '</button>';
+      var msgBody2 = msgDiv.querySelector('.msg-body');
+      if (msgBody2) msgBody2.appendChild(actDiv);
+    }
+
+    chatThreads['retest'].history.push({ role: 'assistant', content: fullText });
+    var msgsEl3 = document.getElementById('chatMsgs');
+    if (msgsEl3) chatThreads['retest'].dom = msgsEl3.innerHTML;
+
+  } catch (e) {
+    showTyping(false);
+    addMessage('⚠️ Нет соединения.', false);
+  }
+}
+
 async function generateDoctorReport() {
   if (!S.key) { openSettings(); toast('Добавь API-ключ для генерации отчёта'); return; }
 
@@ -7421,6 +8777,9 @@ async function generateDoctorReport() {
 
     var msgsEl2 = document.getElementById('chatMsgs');
     if (msgsEl2) chatThreads['doctor'].dom = msgsEl2.innerHTML;
+
+    // v3.26: добавляем кнопку «Новый отчёт» после генерации
+    setTimeout(function(){ ensureDoctorNewBtn(); }, 100);
 
   } catch(e) {
     showTyping(false);
