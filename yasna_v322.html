@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.28</title>
+<title>ЯСНА v3.29</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -1069,7 +1069,38 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
   border-color: rgba(255,80,80,.5);
   color: var(--danger);
 }
-.chat-mic-btn.rec { animation: rp .9s infinite; }
+/* Telegram-стиль: кнопка растёт пока держишь */
+.chat-mic-btn.rec {
+  animation: tg-mic-pulse 1s ease-in-out infinite;
+  transform: scale(1.22);
+  box-shadow: 0 0 0 0 rgba(255,80,80,.5),
+              0 0 20px rgba(255,80,80,.35),
+              inset 0 1px 0 rgba(255,255,255,.4);
+}
+@keyframes tg-mic-pulse {
+  0%,100% {
+    transform: scale(1.22);
+    box-shadow: 0 0 0 0 rgba(255,80,80,.45), 0 0 20px rgba(255,80,80,.3), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  50% {
+    transform: scale(1.28);
+    box-shadow: 0 0 0 8px rgba(255,80,80,0), 0 0 32px rgba(255,80,80,.45), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+}
+/* Волны вокруг кнопки при записи */
+.chat-mic-btn.rec::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,80,80,.4);
+  animation: tg-mic-ring 1s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes tg-mic-ring {
+  0%   { transform: scale(1);   opacity: .7; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
 .chat-send-btn {
   background: linear-gradient(160deg, var(--accent), var(--accent2));
   color: #fff;
@@ -2843,6 +2874,11 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
     </div>
     <div class="chat-chips" id="chatChips">
       <div class="chip chip-wellbeing" onclick="startWellbeingEntry()">✦ Как я сейчас</div>
+      <!-- Кнопка «← ДНК-профиль» — показывается только в треде ДНК v3.29 -->
+      <div class="chip" id="chip-dna-back" onclick="openDnaModal()" style="display:none;align-items:center;gap:5px;background:rgba(122,255,212,0.10);border-color:rgba(122,255,212,0.35);color:var(--accent3)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        ДНК-профиль
+      </div>
       <div class="chip chat-thread-chip" id="chip-dna"      onclick="switchThread('dna')" style="display:inline-flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s2-6 10-6 10 6 10 6-2 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="3"/></svg>ДНК</div>
       <div class="chip chat-thread-chip" id="chip-analyses" onclick="switchThread('analyses')" style="display:inline-flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V9l-6-6z"/><path d="M9 3v6h6"/></svg>Анализы</div>
       <div class="chip chat-thread-chip" id="chip-decode"   onclick="switchThread('decode')" style="display:inline-flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M11 8v3l2 2"/></svg>Расшифровка</div>
@@ -2863,7 +2899,11 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
     </div>
     <div class="chat-inp-wrap">
       <div class="chat-inp-row">
-        <button class="chat-mic-btn" id="chatMicBtn" onclick="toggleChatMic()">
+        <button class="chat-mic-btn" id="chatMicBtn"
+          ontouchstart="chatMicPressStart(event)"
+          ontouchend="chatMicPressEnd(event)"
+          onmousedown="chatMicPressStart(event)"
+          onmouseup="chatMicPressEnd(event)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/></svg>
         </button>
         <textarea class="chat-inp" id="chatInp" placeholder="Я здесь. Пиши или говори..." rows="1" oninput="resizeChat(this)"></textarea>
@@ -3598,7 +3638,10 @@ function initApp() {
     renderDnaHomeBlock();
     renderHomeLastAnalysis();
     loadHealthSummary(false);
-    loadChatHistory(); // v3.23 — восстанавливаем историю чата
+    checkAndRefreshWidgets(); // v3.30 — проверяем кэш при открытии
+    scheduleNightlyUpdate();  // v3.30 — таймер на 00:01
+    loadChatHistory();
+    rebuildChatFromHistory(); // v3.30
     // PDF.js workerSrc установлен синхронно в head
     if (!S.key) setTimeout(function(){ toast('⚙️ Добавь API-ключ в настройках'); }, 2000);
   } catch(e) { console.warn('init error', e.message); }
@@ -3670,7 +3713,18 @@ function go(name) {
   if (nb) nb.classList.add('on');
   var disc = document.getElementById('globalDisc');
   if (disc) disc.style.display = name === 'chat' ? 'none' : '';
-  if (name === 'chat' && !chatInited) { chatInited = true; initWelcome(); }
+  if (name === 'chat' && !chatInited) {
+    chatInited = true;
+    if (chatThreads['general'].dom && chatThreads['general'].history.length) {
+      var mEl = document.getElementById('chatMsgs');
+      if (mEl) {
+        mEl.innerHTML = chatThreads['general'].dom;
+        setTimeout(function(){ mEl.scrollTop = mEl.scrollHeight; }, 50);
+      }
+    } else {
+      initWelcome();
+    }
+  }
   if (name === 'analyses') { renderAnalyses(); var as = document.getElementById('s-analyses'); if(as) as.scrollTop = 0; }
   if (name === 'decode') { var ds = document.getElementById('decScroll'); if(ds) ds.scrollTop = 0; switchDecTab('decode'); }
   if (name === 'graphs') { renderGraphs(); var gs = document.getElementById('grScroll'); if(gs) gs.scrollTop = 0; }
@@ -3922,11 +3976,19 @@ function getChatSystemPrompt() {
     'Пиши на русском языке.\n\n' +
     'ПАТТЕРНЫ В ДНЕВНИКЕ — замечай и упоминай органично в разговоре:\n' +
     '- Если несколько записей про усталость совпадают с поздними вечерами — скажи об этом\n' +
-    '- Если раздражительность совпадает с лютеиновой фазой цикла — отметь\n' +
+    (f ? '- Если раздражительность совпадает с лютеиновой фазой цикла — отметь\n' : '') +
     '- Если записи про плохой сон идут после стресса — свяжи\n' +
-    '- Говори об этом как умный друг: «Яна, я заметила что...», без специальных разделов\n' +
+    '- Говори об этом как умный друг: «' + (f ? 'Яна' : S.name || 'слушай') + ', я заметила что...», без специальных разделов\n' +
     '- Не упоминай паттерны если записей в дневнике меньше 3х\n' +
-    'ВАЖНО: если пользователь пишет о тяжёлых эмоциях — проявляй тепло и поддержку, не давай советов, не спрашивай лишних вопросов. Будь рядом.';
+    (f ? '' : '- Мужской профиль: не упоминай менструальный цикл, фазы цикла, ПМС, беременность\n') +
+    'ВАЖНО: если пользователь пишет о тяжёлых эмоциях — проявляй тепло и поддержку, не давай советов, не спрашивай лишних вопросов. Будь рядом.' +
+    '\n\nЧТО ЯСНА НЕ УМЕЕТ ДЕЛАТЬ (никогда не обещай и не говори «сейчас сделаю»):\n' +
+    '- Создавать PDF-файлы или скачивать файлы — вместо этого скажи: «Нажми кнопку «Скачать PDF» под отчётом в разделе К врачу»\n' +
+    '- Отправлять письма или сообщения — вместо этого: «Скопируй текст и вставь куда нужно»\n' +
+    '- Синхронизироваться с Apple Health, Google Fit, часами — пока не реализовано\n' +
+    '- Делать напоминания или уведомления — пока не реализовано\n' +
+    '- Переводить деньги, оформлять документы, бронировать врача\n' +
+    'Если просят то чего нет — честно скажи что именно нужно сделать руками, и покажи где в приложении это есть.';
 }
 
 function addMessage(text, isUser, id, source) {
@@ -4009,6 +4071,18 @@ function switchThread(key) {
   // Если переключились в general — снимаем все thread-chips
   if (key === 'general') {
     document.querySelectorAll('.chat-thread-chip').forEach(function(c){ c.classList.remove('thread-active'); });
+  }
+
+  // v3.29/v3.30: кнопка «← ДНК-профиль» — видна только в треде dna
+  var dnaBackChip = document.getElementById('chip-dna-back');
+  if (dnaBackChip) dnaBackChip.style.display = key === 'dna' ? 'inline-flex' : 'none';
+  // v3.30: при входе в не-general тред показываем чипы если были скрыты
+  if (key !== 'general') {
+    var chipsEl = document.getElementById('chatChips');
+    if (chipsEl && !chipsVisible) {
+      chipsEl.style.display = 'flex';
+      chipsVisible = true;
+    }
   }
 
   // Обновляем статус в шапке
@@ -4184,6 +4258,33 @@ function loadChatHistory() {
   } catch(e) { console.warn('loadChatHistory error', e.message); }
 }
 
+// v3.30 — восстанавливаем DOM чата из сохранённой истории
+function rebuildChatFromHistory() {
+  Object.keys(chatThreads).forEach(function(key) {
+    var history = chatThreads[key].history;
+    if (!history || !history.length) return;
+    var html = '<div class="chat-day-sep">История восстановлена</div>';
+    history.forEach(function(msg) {
+      if (!msg || !msg.content) return;
+      var isUser = msg.role === 'user';
+      var content = isUser
+        ? msg.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        : parseMarkdown(msg.content);
+      html +=
+        '<div class="msg ' + (isUser ? 'msg-user' : 'msg-ai') + '">' +
+          (!isUser ? '<div class="msg-av">✦</div>' : '') +
+          '<div class="msg-body">' +
+            '<div class="msg-bubble ' +
+              (isUser ? 'msg-bubble-user' : 'msg-bubble-ai') + '">' +
+              content +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    });
+    chatThreads[key].dom = html;
+  });
+}
+
 function clearChat() {
   chatHistory = [];
   chatThreads[activeThread].history = [];
@@ -4205,27 +4306,101 @@ function clearChat() {
   saveChatHistory(); // v3.23
 }
 
-function toggleChatMic() {
-  if (chatRec) { stopChatMic(); return; }
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { toast('Голос не поддерживается'); return; }
-  try {
-    chatRecog = new SR();
-    chatRecog.lang = 'ru-RU'; chatRecog.continuous = false; chatRecog.interimResults = true;
-    chatRecog.onstart = function() { chatRec = true; document.getElementById('chatMicBtn').classList.add('rec'); document.getElementById('chatVoiceBar').classList.add('on'); };
-    chatRecog.onresult = function(e) { var t = ''; for (var i = e.resultIndex; i < e.results.length; i++) t += e.results[i][0].transcript; document.getElementById('chatInp').value = t; document.getElementById('chatVoiceTxt').textContent = t || 'Слушаю...'; };
-    chatRecog.onend = function() { stopChatMic(); var t = document.getElementById('chatInp').value.trim(); if (t) sendChat(); };
-    chatRecog.onerror = function() { stopChatMic(); toast('Не удалось распознать речь'); };
-    chatRecog.start();
-  } catch(e) { toast('Ошибка микрофона'); }
+// ══ МИКРОФОН TELEGRAM-СТИЛЬ v3.29 ══
+// Короткий тап (<300мс) = вкл/выкл  |  Удержание = запись пока держишь
+// Текст вставляется в поле — пользователь сам решает отправлять или поправить
+
+var _micPressStart = 0;
+var _micHoldMode   = false;
+var _micHoldTimer  = null;
+
+function chatMicPressStart(e) {
+  e.preventDefault();
+  _micPressStart = Date.now();
+  _micHoldMode   = false;
+  _micHoldTimer  = setTimeout(function() {
+    _micHoldMode = true;
+    if (!chatRec) _startChatRecording();
+  }, 300);
 }
 
-function stopChatMic() {
+function chatMicPressEnd(e) {
+  clearTimeout(_micHoldTimer);
+  var elapsed = Date.now() - _micPressStart;
+  if (_micHoldMode) {
+    if (chatRec) _stopChatRecording();
+  } else {
+    if (elapsed < 300) {
+      if (chatRec) _stopChatRecording();
+      else _startChatRecording();
+    }
+  }
+}
+
+function _startChatRecording() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('Голос работает только в Safari'); return; }
+  try {
+    chatRecog = new SR();
+    chatRecog.lang = 'ru-RU';
+    chatRecog.continuous = true;
+    chatRecog.interimResults = true;
+
+    chatRecog.onstart = function() {
+      chatRec = true;
+      var btn = document.getElementById('chatMicBtn');
+      if (btn) {
+        btn.classList.add('rec');
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3" fill="var(--danger)" stroke="var(--danger)"/><path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/></svg>';
+      }
+      document.getElementById('chatVoiceBar').classList.add('on');
+      document.getElementById('chatVoiceTxt').textContent = 'Говори — отпусти когда закончишь';
+    };
+
+    chatRecog.onresult = function(e) {
+      var interim = '', final = '';
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      var inp = document.getElementById('chatInp');
+      if (inp) {
+        inp.value = final || interim;
+        resizeChat(inp);
+      }
+      document.getElementById('chatVoiceTxt').textContent = (final || interim) || 'Говори…';
+    };
+
+    chatRecog.onerror = function(err) {
+      _stopChatRecording();
+      if (err.error !== 'aborted') toast('Не удалось распознать речь');
+    };
+
+    chatRecog.onend = function() {
+      chatRec = false;
+      var btn = document.getElementById('chatMicBtn');
+      if (btn) {
+        btn.classList.remove('rec');
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/></svg>';
+      }
+      document.getElementById('chatVoiceBar').classList.remove('on');
+    };
+
+    chatRecog.start();
+  } catch(err) { toast('Ошибка микрофона'); }
+}
+
+function _stopChatRecording() {
   chatRec = false;
   if (chatRecog) { try { chatRecog.stop(); } catch(e){} }
-  document.getElementById('chatMicBtn').classList.remove('rec');
-  document.getElementById('chatVoiceBar').classList.remove('on');
 }
+
+function toggleChatMic() {
+  if (chatRec) _stopChatRecording();
+  else _startChatRecording();
+}
+
+function stopChatMic() { _stopChatRecording(); }
 
 function resizeChat(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 
@@ -6198,6 +6373,32 @@ function loadHealthSummary(forceRefresh) {
   });
 }
 
+// v3.30 — проверяем кэш виджетов, обновляем если устарел
+function checkAndRefreshWidgets() {
+  if (!S.key) return;
+  var today = new Date().toDateString();
+  var hwCache = JSON.parse(localStorage.getItem(HW_CACHE_KEY)           || '{}');
+  var ycCache = JSON.parse(localStorage.getItem(YC_ADVICE_CACHE_KEY)    || '{}');
+  var ypCache = JSON.parse(localStorage.getItem(YP_CACHE_KEY)           || '{}');
+  if (hwCache.date !== today) loadHealthSummary(false);
+  if (S.gender === 'female' && ycCache.date !== today) loadYcAdvice(false);
+  if (S.gender === 'male'   && ypCache.date !== today) loadYasnyPulseAI(false);
+}
+
+// v3.30 — в 00:01 сбрасываем кэш и обновляем виджеты
+function scheduleNightlyUpdate() {
+  var now      = new Date();
+  var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 1, 0);
+  var ms       = tomorrow.getTime() - now.getTime();
+  setTimeout(function() {
+    localStorage.removeItem(HW_CACHE_KEY);
+    localStorage.removeItem(YC_ADVICE_CACHE_KEY);
+    localStorage.removeItem(YP_CACHE_KEY);
+    checkAndRefreshWidgets();
+    scheduleNightlyUpdate(); // планируем следующую ночь
+  }, ms);
+}
+
 function renderHwText(txt, timeStr) {
   var body=document.getElementById('hwAiBody');
   var dateEl=document.getElementById('hwDate');
@@ -7183,6 +7384,13 @@ function hideGrTooltip() {
 }
 
 // Скрываем тултип при скролле или тапе по пустому месту
+// v3.30 — при возврате из фона проверяем кэш виджетов
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    if (typeof checkAndRefreshWidgets === 'function') checkAndRefreshWidgets();
+  }
+});
+
 document.addEventListener('scroll', hideGrTooltip, true);
 document.addEventListener('click', function(e) {
   if (e.target && e.target.id === 'grPointTooltip') return;
@@ -7494,17 +7702,39 @@ function openDnaTheme(themeKey) {
   var theme = DNA_THEMES.find(function(t){ return t.key === themeKey; });
   if (!theme) return;
 
-  // show loading state
+  // show loading state — анимированные шаги v3.29
+  var loadSteps = [
+    { delay:0,    icon:'🧬', text:'Читаю твои данные…' },
+    { delay:1100, icon:'🔍', text:'Ищу маркеры по теме «' + theme.title + '»…' },
+    { delay:2400, icon:'🤔', text:'Формирую персональный вывод…' }
+  ];
   document.getElementById('dnaSheetContent').innerHTML =
     '<button class="dna-back-btn" onclick="renderDnaLevel2()">' +
       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>' +
       'Назад' +
     '</button>' +
     '<div class="dna-modal-title">' + theme.icon + ' ' + theme.title + '</div>' +
-    '<div style="margin-top:24px;text-align:center;padding:32px 0">' +
-      '<div class="dots"><span></span><span></span><span></span></div>' +
-      '<div style="margin-top:12px;font-size:13px;color:var(--text3)">ЯСНА изучает твои гены…</div>' +
-    '</div>';
+    '<div id="dnaLoadSteps" style="margin-top:28px;display:flex;flex-direction:column;gap:12px;padding:0 4px"></div>';
+
+  var stepsEl = document.getElementById('dnaLoadSteps');
+  loadSteps.forEach(function(step, idx) {
+    setTimeout(function() {
+      if (!stepsEl || !stepsEl.isConnected) return;
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;animation:fin .35s ease;';
+      row.innerHTML =
+        '<span style="font-size:22px;line-height:1">' + step.icon + '</span>' +
+        '<span style="font-size:14px;font-weight:500;color:var(--text2)">' + step.text + '</span>' +
+        (idx < loadSteps.length - 1
+          ? '<span style="margin-left:auto;display:flex;gap:3px;align-items:center">' +
+              '<span style="width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.4;animation:dt .9s ' + (idx*0.15) + 's infinite"></span>' +
+              '<span style="width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.4;animation:dt .9s ' + (idx*0.15+0.2) + 's infinite"></span>' +
+              '<span style="width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.4;animation:dt .9s ' + (idx*0.15+0.4) + 's infinite"></span>' +
+            '</span>'
+          : '<span style="margin-left:auto;width:20px;height:20px;border:2px solid rgba(188,207,255,.25);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite"></span>');
+      stepsEl.appendChild(row);
+    }, step.delay);
+  });
 
   // scroll to top
   document.getElementById('dnaSheet').scrollTop = 0;
@@ -7670,9 +7900,12 @@ function openDnaUnknown() {
 
   document.getElementById('dnaSheet').scrollTop = 0;
 
+  var _discussBtnUnknown = '<button class="dna-discuss-btn" onclick="closeDnaModal();setTimeout(function(){openChatThread(\'dna\',window._dnaUnknownGenes||\'Расскажи про необычные маркеры из моего ДНК-файла\');},200);">💬 Обсудить с ЯСНА</button>';
+
   if (!S.key) {
     document.getElementById('dnaSheetContent').innerHTML = backBtn + titleH +
-      '<div class="dna-mb"><div class="dna-mb-text">Добавь API-ключ в настройках, чтобы ЯСНА могла расшифровать эти маркеры</div></div>';
+      '<div class="dna-mb"><div class="dna-mb-text">Добавь API-ключ в настройках, чтобы ЯСНА могла расшифровать эти маркеры</div></div>' +
+      _discussBtnUnknown;
     return;
   }
 
@@ -7725,7 +7958,8 @@ function openDnaUnknown() {
   })
   .catch(function(err){
     document.getElementById('dnaSheetContent').innerHTML = backBtn + titleH +
-      '<div class="dna-mb"><div class="dna-mb-text">Ошибка: ' + err.message + '</div></div>';
+      '<div class="dna-mb"><div class="dna-mb-text">Ошибка: ' + err.message + '</div></div>' +
+      _discussBtnUnknown;
   });
 }
 
@@ -7973,7 +8207,8 @@ function buildYpPrompt() {
   var diary = getDiaryEntries().slice(0, 5);
   var diaryCtx = diary.length ? diary.map(function(e){ return e.time + ': ' + e.text; }).join('\n') : 'Нет записей.';
 
-  return 'Ты ЯСНА — AI-агент здоровья. Мужской профиль.\n\n' +
+  return 'Ты ЯСНА — AI-агент здоровья. МУЖСКОЙ профиль — только мужская тематика.\n\n' +
+    'СТРОГО ЗАПРЕЩЕНО упоминать: менструальный цикл, фазы цикла, ПМС, овуляцию, эстроген, прогестерон, беременность, менструацию — это мужской профиль!\n\n' +
     'ДАННЫЕ:\n' +
     'Имя: ' + name + (S.age ? ', ' + S.age + ' лет' : '') + ', день: ' + weekDay + '\n' +
     sleepCtx + '\n' + testCtx + '\n' +
@@ -7983,8 +8218,8 @@ function buildYpPrompt() {
     'СТАТУС ОТНОШЕНИЙ: ' + relCtx + '\n\n' +
     'Ответь СТРОГО в формате JSON (без markdown, без лишнего):\n' +
     '{\n' +
-    '  "analytics": "Чёткий разбор показателей: тестостерон + его влияние на сегодняшний день, сон и его эффект на самочувствие, ДНК если есть. Конкретные числа. 2-3 предложения. Как врач другу — прямо и понятно.",\n' +
-    '  "advice": "Личный совет от ЯСНА в роли умной вредной подружки. 1-2 предложения с характером. Учитывай статус отношений в тоне. Используй **жирный** для ключевых слов."\n' +
+    '  "analytics": "Разбор по-мужски: тестостерон и его влияние на энергию/настроение, качество сна, ДНК если есть. Конкретные числа. 2-3 предложения. Как умный друг — прямо и по делу.",\n' +
+    '  "advice": "Личный совет от ЯСНА — умной вредной подружки. 1-2 предложения. Учитывай статус отношений. **жирный** для ключевых слов. Только про мужчин — спорт, работа, восстановление, отношения."\n' +
     '}';
 }
 
@@ -8395,44 +8630,49 @@ var _lpTimer   = null;       // таймер долгого нажатия
 var _lpMoved   = false;      // флаг — палец сдвинулся (скролл)
 
 function attachMsgLongPress(msgEl, rawText, isUser) {
-  // Текст для буфера — берём из rawText (до parseMarkdown)
-  // но с чисткой markdown-символов
-  var cleanText = (rawText || '').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/<br>/g,'\n').replace(/<[^>]+>/g,'');
+  var cleanText = (rawText || '')
+    .replace(/\*\*(.*?)\*\*/g,'$1')
+    .replace(/\*(.*?)\*/g,'$1')
+    .replace(/<br>/g,'\n')
+    .replace(/<[^>]+>/g,'');
+
+  var startX = 0, startY = 0;
 
   function startLP(e) {
     _lpMoved = false;
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
     _lpTimer = setTimeout(function() {
       if (_lpMoved) return;
       _ctxTarget = msgEl;
       _ctxText   = cleanText;
-      // Превью — первые 100 символов
-      var preview = cleanText.slice(0, 100) + (cleanText.length > 100 ? '…' : '');
+      var preview = cleanText.slice(0,100) + (cleanText.length > 100 ? '…' : '');
       document.getElementById('msgCtxPreview').textContent = preview;
       document.getElementById('msgCtxOverlay').classList.add('on');
-      // Тактильный отклик на iOS
       if (navigator.vibrate) navigator.vibrate(30);
     }, 500);
   }
 
-  function cancelLP() {
-    clearTimeout(_lpTimer);
-  }
+  function cancelLP() { clearTimeout(_lpTimer); }
 
-  function moveLP() {
-    _lpMoved = true;
-    clearTimeout(_lpTimer);
+  function moveLP(e) {
+    var x = e.touches ? e.touches[0].clientX : e.clientX;
+    var y = e.touches ? e.touches[0].clientY : e.clientY;
+    if (Math.abs(x - startX) > 8 || Math.abs(y - startY) > 8) {
+      _lpMoved = true;
+      clearTimeout(_lpTimer);
+    }
   }
 
   msgEl.addEventListener('touchstart',  startLP,  {passive: true});
   msgEl.addEventListener('touchend',    cancelLP, {passive: true});
   msgEl.addEventListener('touchcancel', cancelLP, {passive: true});
   msgEl.addEventListener('touchmove',   moveLP,   {passive: true});
-  // Десктоп — правая кнопка мыши
   msgEl.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     _ctxTarget = msgEl;
     _ctxText   = cleanText;
-    var preview = cleanText.slice(0, 100) + (cleanText.length > 100 ? '…' : '');
+    var preview = cleanText.slice(0,100) + (cleanText.length > 100 ? '…' : '');
     document.getElementById('msgCtxPreview').textContent = preview;
     document.getElementById('msgCtxOverlay').classList.add('on');
   });
