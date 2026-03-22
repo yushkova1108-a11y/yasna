@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.33</title>
+<title>ЯСНА v3.37</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -2605,6 +2605,161 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 }
 .yp-collapsed-advice strong { color:var(--text); font-weight:600; }
 
+/* ══ ЯСНЫЙ ПУЛЬС — ТРЕКЕР ШТОРКА v3.38 ══ */
+.yp-tracker-summary {
+  display:flex; gap:8px; margin-bottom:18px;
+}
+.yp-tracker-stat {
+  flex:1; padding:11px 8px; text-align:center;
+  background:var(--glass-inner); border:1px solid var(--glass-border);
+  border-radius:14px;
+}
+.yp-tracker-stat-val {
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px; font-weight:600; color:var(--text); line-height:1;
+}
+.yp-tracker-stat-lbl {
+  font-size:10px; color:var(--text3); margin-top:3px;
+  font-weight:600; letter-spacing:.3px; font-family:'Jost',sans-serif;
+}
+/* Календарь трекера */
+.yp-cal-wrap { margin-bottom:14px; }
+.yp-cal-month-nav {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
+}
+.yp-cal-month-label { font-size:15px; font-weight:700; color:var(--text); font-family:'Jost',sans-serif; }
+.yp-cal-nav-btn {
+  background:none; border:none; cursor:pointer; color:var(--accent);
+  padding:4px; display:flex; align-items:center; transition:color .2s;
+}
+.yp-cal-nav-btn:disabled { color:var(--text3); opacity:.3; }
+.yp-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+.yp-cal-dow {
+  text-align:center; font-size:9px; font-weight:800; color:var(--text3);
+  letter-spacing:.8px; padding-bottom:6px; text-transform:uppercase; font-family:'Jost',sans-serif;
+}
+.yp-cal-cell {
+  aspect-ratio:1; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:500; color:var(--text2);
+  font-family:'Jost',sans-serif; cursor:pointer; position:relative;
+  transition:background .15s;
+}
+.yp-cal-cell:active { background:rgba(255,255,255,.12); }
+.yp-cal-cell.today { border:1.5px solid var(--accent); color:var(--accent); font-weight:800; }
+.yp-cal-cell.selected { background:rgba(188,207,255,.18); color:var(--accent); }
+.yp-cal-cell.future { color:var(--text3); opacity:.35; pointer-events:none; }
+/* Точки на ячейках */
+.yp-cal-dots { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); display:flex; gap:2px; }
+.yp-cal-dot { width:4px; height:4px; border-radius:50%; }
+.yp-cal-dot-data     { background:var(--accent3); }
+.yp-cal-dot-workout  { background:#5B9AFF; }
+/* Панель дня */
+.yp-day-panel {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:var(--rs); padding:16px; margin-bottom:16px;
+  animation:fin .3s ease; position:relative; overflow:hidden;
+}
+.yp-day-panel::after {
+  content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
+  background:linear-gradient(90deg,transparent,var(--glass-top),transparent); opacity:.7;
+}
+.yp-day-panel-title {
+  font-size:13px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--text3); margin-bottom:14px; font-family:'Jost',sans-serif;
+}
+.yp-field-label {
+  font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase;
+  color:var(--text3); margin-bottom:8px; font-family:'Jost',sans-serif;
+}
+/* Широкие кнопки — для мужских пальцев */
+.yp-wide-btns { display:flex; flex-direction:column; gap:7px; margin-bottom:16px; }
+.yp-wide-btn {
+  width:100%; padding:14px 16px; border-radius:14px;
+  background:var(--glass); border:1px solid var(--glass-border);
+  font-family:'Jost',sans-serif; font-size:14px; font-weight:600;
+  color:var(--text2); cursor:pointer; transition:all .2s; text-align:left;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.yp-wide-btn:active { transform:scale(.98); }
+.yp-wide-btn.sel-green  { background:rgba(122,255,212,.15); border-color:rgba(122,255,212,.45); color:var(--accent3); }
+.yp-wide-btn.sel-blue   { background:rgba(91,154,255,.15);  border-color:rgba(91,154,255,.45);  color:#5B9AFF; }
+.yp-wide-btn.sel-yellow { background:rgba(255,180,80,.15);  border-color:rgba(255,180,80,.45);  color:#FFB450; }
+.yp-wide-btn.sel-red    { background:rgba(255,90,90,.15);   border-color:rgba(255,90,90,.45);   color:var(--danger); }
+.yp-wide-btn.sel-accent { background:rgba(188,207,255,.15); border-color:rgba(188,207,255,.45); color:var(--accent); }
+.yp-wide-btn.sel-purple { background:rgba(212,176,255,.15); border-color:rgba(212,176,255,.45); color:var(--accent2); }
+/* 2-колоночные кнопки */
+.yp-btn-row { display:flex; gap:8px; margin-bottom:16px; }
+.yp-btn-row .yp-wide-btn { flex:1; justify-content:center; font-size:13px; padding:12px 10px; }
+/* Числовой ввод в день-панели */
+.yp-day-input {
+  width:100%; background:var(--input-bg); border:1px solid var(--input-border);
+  border-radius:var(--rx); padding:12px 14px;
+  font-family:'Jost',sans-serif; font-size:15px; color:var(--text);
+  outline:none; transition:border-color .2s; margin-bottom:16px;
+}
+.yp-day-input:focus { border-color:var(--accent); }
+.yp-day-input::placeholder { color:var(--text3); }
+/* Медицинский вопрос скрыт */
+.yp-medical-toggle {
+  font-size:11px; color:var(--text3); cursor:pointer; padding:8px 0;
+  display:flex; align-items:center; gap:6px; font-family:'Jost',sans-serif;
+  font-weight:600; letter-spacing:.3px;
+}
+.yp-medical-toggle:hover { color:var(--accent); }
+.yp-medical-block { display:none; margin-top:10px; }
+.yp-medical-block.show { display:block; }
+
+/* ══ ЯСНА ЗНАЕТ ТЕБЯ — ПОРТРЕТ v3.39 ══ */
+.portrait-section {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--rs);
+  padding: 16px;
+  margin-bottom: 12px;
+  position: relative; overflow: hidden;
+}
+.portrait-section::after {
+  content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
+  background:linear-gradient(90deg,transparent,var(--glass-top),transparent); opacity:.7;
+}
+.portrait-category {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: 13px; color: var(--text2); line-height: 1.5;
+}
+.portrait-category:last-child { border: none; }
+.portrait-cat-icon {
+  font-size: 16px; flex-shrink: 0; margin-top: 1px;
+}
+.portrait-cat-text { flex: 1; }
+.portrait-cat-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--text3);
+  margin-bottom: 3px; font-family: 'Jost', sans-serif;
+}
+.portrait-summary-block {
+  background: rgba(188,207,255,.07);
+  border: 1px solid rgba(188,207,255,.18);
+  border-radius: var(--rx);
+  padding: 12px 14px;
+  font-size: 13px; color: var(--text2); line-height: 1.65;
+  margin-bottom: 12px;
+}
+.portrait-update-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; padding: 11px;
+  background: rgba(188,207,255,.10);
+  border: 1px solid rgba(188,207,255,.25);
+  border-radius: var(--rx);
+  font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--accent); cursor: pointer; transition: all .2s;
+}
+.portrait-update-btn:active { opacity: .7; }
+.portrait-update-btn.loading { animation: spin .8s linear infinite; }
+.portrait-date { font-size: 10px; color: var(--text3); margin-top: 8px; text-align: center; }
+
 /* ══════════════════ SOS БАННЕР v3.22 ══════════════════ */
 .sos-banner {
   position: fixed;
@@ -3185,7 +3340,7 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
           </div>
         </div>
         <div class="dec-upload-zone" onclick="document.getElementById('decDocInput').click()">
-          <input type="file" id="decDocInput" accept="image/*,.pdf,.docx,.txt" style="display:none" onchange="handleDecFile(this,'doc')">
+          <input type="file" id="decDocInput" accept="image/*,.pdf,.docx,.txt" multiple style="display:none" onchange="handleDecFile(this,'doc')">
           <div class="duz-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="duz-title">Загрузить заключение</div>
           <div class="duz-sub">Фото · PDF · DOCX · TXT</div>
@@ -3408,6 +3563,14 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
   </div>
 </div>
 
+<!-- ЯСНЫЙ ПУЛЬС — ТРЕКЕР ШТОРКА v3.38 -->
+<div class="overlay" id="ypOverlay" onclick="ypOverlayClick(event)">
+  <div class="sheet" id="ypSheet" style="max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(32px,env(safe-area-inset-bottom))">
+    <div class="sh-handle"></div>
+    <div id="ypSheetContent"></div>
+  </div>
+</div>
+
 <!-- ДНЕВНИК МОДАЛ -->
 <div class="diary-modal" id="diaryModal" onclick="closeDiaryModal(event)">
   <div class="diary-sheet">
@@ -3621,6 +3784,26 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
         </div>
         <div class="si-hint">Нормы анализов при беременности значительно отличаются — ЯСНА̂ учтёт это</div>
       </div>
+    </div>
+
+    <!-- ЯСНА ЗНАЕТ ТЕБЯ — ПОРТРЕТ v3.39 -->
+    <div class="sg" id="portraitSection">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="sg-lbl" style="margin-bottom:0">ЯСНА знает тебя</div>
+        <span id="portraitDate" style="font-size:10px;color:var(--text3)"></span>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;line-height:1.55">
+        Портрет твоего здоровья — ЯСНА анализирует всё что знает о тебе и строит связи между анализами, генами, активностью и самочувствием.
+      </div>
+      <div id="portraitContent">
+        <div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;font-style:italic">
+          Нажми «Обновить» — ЯСНА составит твой портрет здоровья
+        </div>
+      </div>
+      <button class="portrait-update-btn" id="portraitUpdateBtn" onclick="buildPortrait()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Обновить портрет
+      </button>
     </div>
 
     <!-- ПАМЯТЬ ЯСНА v3.28 -->
@@ -3893,7 +4076,23 @@ function send() {
   inp.value = ''; inp.style.height = '';
   saveDiaryEntry(txt);
   if (!chatInited) { chatInited = true; }
+
+  // v3.34: Баг 6 — принудительно переключаем на general тред
+  // чтобы ответ не улетал в ДНК / расшифровку / другой открытый тред
+  if (activeThread !== 'general') {
+    activeThread = 'general';
+    document.querySelectorAll('.chat-thread-chip').forEach(function(c){ c.classList.remove('thread-active'); });
+    var dnaBackChip = document.getElementById('chip-dna-back');
+    if (dnaBackChip) dnaBackChip.style.display = 'none';
+    var statusEl = document.getElementById('chatStatus');
+    if (statusEl) statusEl.innerHTML = '<span class="chat-online-dot"></span>онлайн';
+    var backBtn = document.getElementById('chatBackBtn');
+    if (backBtn) backBtn.style.display = 'none';
+  }
+  chatHistory = chatThreads['general'].history.slice();
   chatHistory.push({ role: 'user', content: txt });
+  chatThreads['general'].history = chatHistory.slice();
+
   go('chat');
   addMessage(txt, true);
   showTyping(true);
@@ -3910,8 +4109,16 @@ function send() {
     showTyping(false);
     var ans = '';
     if (d.error) { ans = '⚠️ ' + (d.error.message || 'Проверь API-ключ в настройках'); }
-    else { ans = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || 'Попробуй ещё раз.'; chatHistory.push({ role: 'assistant', content: ans }); if (chatHistory.length > 100) chatHistory = chatHistory.slice(-100); }
+    else {
+      ans = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || 'Попробуй ещё раз.';
+      chatThreads['general'].history.push({ role: 'assistant', content: ans });
+      if (chatThreads['general'].history.length > 100) chatThreads['general'].history = chatThreads['general'].history.slice(-100);
+      chatHistory = chatThreads['general'].history.slice();
+    }
     addMessage(ans, false);
+    var msgsEl = document.getElementById('chatMsgs');
+    if (msgsEl) chatThreads['general'].dom = msgsEl.innerHTML;
+    saveChatHistory();
   })
   .catch(function() { showTyping(false); addMessage('⚠️ Нет соединения. Проверь интернет.', false); });
 }
@@ -4040,6 +4247,20 @@ function getChatSystemPrompt() {
     (diaryContext ? 'ДНЕВНИК:\n' + diaryContext + '\n\n' : '') +
     (cycleContext ? 'ЦИКЛ:\n' + cycleContext + '\n\n' : '') +
     (memoryContext ? 'ДОЛГОСРОЧНАЯ ПАМЯТЬ — факты которые ЯСНА помнит всегда:\n' + memoryContext + '\n\n' : '') +
+    (function(){
+      var portrait = getPortrait();
+      if (!portrait || !portrait.data) return '';
+      var p = portrait.data;
+      var lines = ['ПОРТРЕТ ПОЛЬЗОВАТЕЛЯ (обновлён ' + (portrait.updatedAt||'') + '):'];
+      if (p.summary) lines.push('Общий портрет: ' + p.summary);
+      if (p.patterns) p.patterns.forEach(function(pt) {
+        if (pt.insight && pt.insight !== 'Недостаточно данных')
+          lines.push((pt.label||pt.category) + ': ' + pt.insight);
+      });
+      if (p.risks && p.risks.length) lines.push('Риски: ' + p.risks.join(', '));
+      if (p.strengths && p.strengths.length) lines.push('Сильные стороны: ' + p.strengths.join(', '));
+      return lines.join('\n') + '\n\n';
+    })() +
     'СЕГОДНЯ: ' + (function(){var d=new Date();var days=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];var months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];return days[d.getDay()]+', '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+', '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');})() + '\n' +
     'ВРЕМЯ СУТОК: ' + tc + '\n' +
     'Используй ' + (f?'женский':'мужской') + ' род при обращении к ' + S.name + '.\n' +
@@ -4607,6 +4828,213 @@ function deleteMemoryItem(idx) {
   toast('Удалено из памяти ✓');
 }
 
+// ══════════════════ ЯСНА ЗНАЕТ ТЕБЯ — ПОРТРЕТ v3.39 ══════════════════
+var PORTRAIT_KEY = 'yasna_portrait';
+
+function getPortrait() {
+  try { return JSON.parse(localStorage.getItem(PORTRAIT_KEY) || 'null'); } catch(e) { return null; }
+}
+
+function savePortrait(data) {
+  localStorage.setItem(PORTRAIT_KEY, JSON.stringify(data));
+}
+
+// Собираем все данные для анализа
+function buildPortraitContext() {
+  var sv = JSON.parse(localStorage.getItem('yasna') || '{}');
+  var lines = [];
+
+  // Профиль
+  lines.push('=== ПРОФИЛЬ ===');
+  lines.push(getProfileLine());
+
+  // Анализы — все показатели с датами
+  var analyses = sv.analyses || [];
+  if (analyses.length) {
+    lines.push('\n=== ИСТОРИЯ АНАЛИЗОВ ===');
+    analyses.forEach(function(a) {
+      var markers = (a.markers || []).map(function(m) {
+        return m.name + ': ' + (m.val||'') + ' ' + (m.unit||'') +
+          (m.status !== 'ok' ? ' [' + (m.status === 'hi' ? 'ВЫШЕ' : 'НИЖЕ') + ' нормы]' : '');
+      }).join(', ');
+      if (markers) lines.push(a.dateStr + ' (' + a.lab + '): ' + markers);
+    });
+  }
+
+  // ДНК
+  var dna = sv.dna;
+  if (dna) {
+    lines.push('\n=== ДНК ===');
+    if (dna.insight) lines.push(dna.insight);
+    var genes = (dna.genes || []).map(function(g) {
+      return g.name + (g.risk && g.risk !== 'ok' ? ' [' + g.risk + ']' : '');
+    }).join(', ');
+    if (genes) lines.push('Маркеры: ' + genes);
+  }
+
+  // Трекер — последние 30 дней
+  var ypDays = getYpDays ? getYpDays() : {};
+  var trackerLines = [];
+  for (var i = 0; i < 30; i++) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    var key = d.toISOString().split('T')[0];
+    var day = ypDays[key] || {};
+    var parts = [];
+    if (day.sleep)   parts.push('сон:' + day.sleep + (day.sleepHours ? '/' + day.sleepHours + 'ч' : ''));
+    if (day.energy)  parts.push('энергия:' + day.energy);
+    if (day.stress)  parts.push('стресс:' + day.stress);
+    if (day.workoutType) parts.push('тренировка:' + day.workoutType + (day.workoutIntensity ? '/' + day.workoutIntensity : '') + (day.workoutMin ? '/' + day.workoutMin + 'мин' : ''));
+    if (day.alcohol && day.alcohol !== 'no') parts.push('алкоголь:' + day.alcohol);
+    if (day.steps)   parts.push('шаги:' + day.steps);
+    if (parts.length) trackerLines.push(key + ': ' + parts.join(', '));
+  }
+  if (trackerLines.length) {
+    lines.push('\n=== ТРЕКЕР (30 дней) ===');
+    lines.push(trackerLines.join('\n'));
+  }
+
+  // Дневник
+  var diary = getDiaryEntries ? getDiaryEntries().slice(0, 20) : [];
+  if (diary.length) {
+    lines.push('\n=== ДНЕВНИК САМОЧУВСТВИЯ (последние 20) ===');
+    lines.push(diary.map(function(e) { return e.date + ' ' + e.time + ': ' + e.text; }).join('\n'));
+  }
+
+  // Память
+  var memory = getMemory();
+  if (memory.length) {
+    lines.push('\n=== УЖЕ ЗАПОМНЕНО ===');
+    lines.push(memory.map(function(m) { return '- ' + m.text; }).join('\n'));
+  }
+
+  return lines.join('\n');
+}
+
+async function buildPortrait() {
+  if (!S.key) {
+    toast('Добавь API-ключ в настройках');
+    return;
+  }
+  var btn = document.getElementById('portraitUpdateBtn');
+  var content = document.getElementById('portraitContent');
+  if (btn) { btn.classList.add('loading'); btn.textContent = 'Анализирую...'; }
+  if (content) content.innerHTML = '<div class="dots" style="padding:16px 0;justify-content:center;display:flex"><span></span><span></span><span></span></div>';
+
+  var ctx = buildPortraitContext();
+
+  var prompt = 'Ты — система глубокого анализа данных пользователя для AI-агента здоровья ЯСНА.\n\n' +
+    'Данные пользователя:\n' + ctx + '\n\n' +
+    'Задача: проанализируй ВСЕ данные и найди паттерны, связи и закономерности.\n\n' +
+    'Ответь СТРОГО в формате JSON без markdown:\n' +
+    '{\n' +
+    '  "summary": "Краткий портрет здоровья — 2-3 предложения. Кто этот человек с точки зрения здоровья, образа жизни, ключевых рисков и сильных сторон.",\n' +
+    '  "patterns": [\n' +
+    '    { "category": "sleep", "icon": "😴", "label": "Сон", "insight": "паттерн или наблюдение" },\n' +
+    '    { "category": "activity", "icon": "💪", "label": "Активность", "insight": "паттерн или наблюдение" },\n' +
+    '    { "category": "labs", "icon": "🩸", "label": "Анализы", "insight": "ключевая динамика или связь" },\n' +
+    '    { "category": "dna", "icon": "🧬", "label": "ДНК + здоровье", "insight": "связь генов с реальными данными" },\n' +
+    '    { "category": "lifestyle", "icon": "🌿", "label": "Образ жизни", "insight": "привычки, паттерны, факторы риска" },\n' +
+    '    { "category": "energy", "icon": "⚡", "label": "Энергия", "insight": "паттерн энергии и что на неё влияет" }\n' +
+    '  ],\n' +
+    '  "risks": ["риск 1", "риск 2"],\n' +
+    '  "strengths": ["сильная сторона 1", "сильная сторона 2"]\n' +
+    '}\n\n' +
+    'Важно:\n' +
+    '- Только факты из данных, ничего выдуманного\n' +
+    '- Если данных по категории нет — напиши "Недостаточно данных"\n' +
+    '- Связывай ДНК с реальными показателями когда видишь совпадение\n' +
+    '- Ищи паттерны во времени (плохой сон после алкоголя, усталость в определённые дни)\n' +
+    '- Пиши на русском языке, кратко и по делу';
+
+  try {
+    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }] })
+    });
+    var data = await res.json();
+    var raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+    var clean = raw.replace(/```json|```/g, '').trim();
+    var parsed = JSON.parse(clean);
+
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
+    var timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+    savePortrait({ data: parsed, updatedAt: dateStr + ' в ' + timeStr });
+    renderPortrait(parsed, dateStr + ' в ' + timeStr);
+    toast('✓ Портрет обновлён');
+  } catch(e) {
+    if (content) content.innerHTML = '<div style="font-size:13px;color:var(--danger);padding:8px 0">⚠️ Ошибка — проверь API-ключ</div>';
+    toast('⚠️ Не удалось обновить портрет');
+  } finally {
+    if (btn) {
+      btn.classList.remove('loading');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg> Обновить портрет';
+    }
+  }
+}
+
+function renderPortrait(parsed, dateStr) {
+  var content = document.getElementById('portraitContent');
+  var dateEl  = document.getElementById('portraitDate');
+  if (!content) return;
+  if (dateEl) dateEl.textContent = dateStr || '';
+
+  var html = '';
+
+  // Краткий портрет
+  if (parsed.summary) {
+    html += '<div class="portrait-summary-block">' + parsed.summary + '</div>';
+  }
+
+  // Сильные стороны и риски
+  if ((parsed.strengths && parsed.strengths.length) || (parsed.risks && parsed.risks.length)) {
+    html += '<div style="display:flex;gap:8px;margin-bottom:12px">';
+    if (parsed.strengths && parsed.strengths.length) {
+      html += '<div style="flex:1;padding:10px 12px;background:rgba(122,255,212,.08);border:1px solid rgba(122,255,212,.20);border-radius:12px">' +
+        '<div style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);margin-bottom:6px">Сильные стороны</div>' +
+        parsed.strengths.map(function(s) {
+          return '<div style="font-size:12px;color:var(--text2);padding:2px 0">✓ ' + s + '</div>';
+        }).join('') + '</div>';
+    }
+    if (parsed.risks && parsed.risks.length) {
+      html += '<div style="flex:1;padding:10px 12px;background:rgba(255,144,144,.07);border:1px solid rgba(255,144,144,.18);border-radius:12px">' +
+        '<div style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--danger);margin-bottom:6px">Обрати внимание</div>' +
+        parsed.risks.map(function(r) {
+          return '<div style="font-size:12px;color:var(--text2);padding:2px 0">⚠ ' + r + '</div>';
+        }).join('') + '</div>';
+    }
+    html += '</div>';
+  }
+
+  // Паттерны
+  if (parsed.patterns && parsed.patterns.length) {
+    html += '<div class="portrait-section">';
+    parsed.patterns.forEach(function(p) {
+      if (!p.insight || p.insight === 'Недостаточно данных') return;
+      html += '<div class="portrait-category">' +
+        '<span class="portrait-cat-icon">' + (p.icon || '•') + '</span>' +
+        '<div class="portrait-cat-text">' +
+          '<div class="portrait-cat-label">' + (p.label || p.category) + '</div>' +
+          p.insight +
+        '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  }
+
+  content.innerHTML = html || '<div style="font-size:13px;color:var(--text3);text-align:center;padding:12px 0">Недостаточно данных для анализа</div>';
+}
+
+// Загружаем портрет при открытии настроек
+function loadPortraitInSettings() {
+  var portrait = getPortrait();
+  if (!portrait) return;
+  renderPortrait(portrait.data, portrait.updatedAt);
+}
+
 // Рендер списка памяти в настройках
 function renderMemoryList() {
   var items = getMemory();
@@ -4638,6 +5066,7 @@ function renderMemoryList() {
 function openSettings() {
   fillSettings();
   renderMemoryList();
+  loadPortraitInSettings();
   document.getElementById('overlay').classList.add('on');
 }
 
@@ -4741,6 +5170,7 @@ var decMethod = 'photo';
 var decFilesData = [];
 var decFileName = '';
 var decLastResult = '';
+var decDocResults = {}; // fileId → { name, conclusion, markers }
 
 function setDecMethod(m) {
   decMethod = m;
@@ -4762,7 +5192,14 @@ function selectDocType(type, el) {
 }
 
 function handleDecDrop(e) { e.preventDefault(); document.getElementById('decFileZone').classList.remove('drag'); var f = e.dataTransfer.files[0]; if (f) processDecFile(f); }
-function handleDecFile(input, type) { var f = input.files[0]; if (!f) return; processDecFile(f); }
+function handleDecFile(input, type) {
+  // v3.34: обрабатываем ВСЕ выбранные файлы, не только первый
+  var files = input.files;
+  if (!files || !files.length) return;
+  for (var fi = 0; fi < files.length; fi++) {
+    processDecFile(files[fi]);
+  }
+}
 
 function processDecFile(file) {
   decFileName = file.name;
@@ -5080,12 +5517,46 @@ async function runDecode() {
   } else if (decMethod === 'dna' || decMethod === 'doc') {
     var fd0 = decFilesData[0];
     if (!fd0) { btn.disabled=false; btn.innerHTML=btnLabel; toast('Загрузи файл'); return; }
-    var textContent = parseDnaFile(fd0.data);
+
+    // v3.34: для doc — обрабатываем ВСЕ файлы как в file-методе (по одному блоку на файл)
+    if (decMethod === 'doc' && decFilesData.length > 1) {
+      var mrDoc = document.getElementById('decMultiResult');
+      mrDoc.innerHTML = '';
+      mrDoc.style.display = 'flex';
+      mrDoc.scrollIntoView({ behavior:'smooth', block:'start' });
+      for (var di = 0; di < decFilesData.length; di++) {
+        var fdDoc = decFilesData[di];
+        var blockDoc = makeDecBlock(fdDoc, true);
+        mrDoc.appendChild(blockDoc);
+        var bodyDocEl = blockDoc.querySelector('.dmb-body');
+        try {
+          var docText = fdDoc.data ? fdDoc.data.slice(0, 12000) : '';
+          var docMsg = 'Это медицинский документ типа «' + decDocType + '» (текст):\n---\n' + docText + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n[ВЫВОД]\nОбъясни медицинские термины простыми словами. Что найдено, что это значит для пациента. Без диагнозов. Если есть числовые показатели — выведи их в формате [ПОКАЗАТЕЛИ] перед [ВЫВОД].';
+          var resDoc = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + S.key },
+            body: JSON.stringify({ model:'deepseek-chat', max_tokens:2500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:docMsg}] })
+          });
+          var dataDoc = await resDoc.json();
+          var ansDoc = (dataDoc.choices&&dataDoc.choices[0]&&dataDoc.choices[0].message&&dataDoc.choices[0].message.content)||'';
+          if (dataDoc.error) ansDoc = '⚠️ ' + (dataDoc.error.message||'Проверь ключ');
+          decLastResult = ansDoc;
+          renderDecBlockAns(ansDoc, blockDoc, bodyDocEl, fdDoc);
+        } catch(e) { bodyDocEl.innerHTML = '⚠️ Нет соединения.'; }
+      }
+      btn.disabled=false; btn.innerHTML=btnLabel;
+      return;
+    }
+
+    // Один файл — dna или doc
+    // v3.34: для doc используем сырой текст, НЕ parseDnaFile
+    var textContent = decMethod === 'dna' ? parseDnaFile(fd0.data) : (fd0.data ? fd0.data.slice(0, 12000) : '');
     var msg0;
     if (decMethod === 'dna') {
       msg0 = 'Это ДНК-файл пользователя (формат VCF/TXT от 23andMe, MyHeritage, Генотеки или Атласа):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n1. Найди все значимые SNP-маркеры (MTHFR, APOE, COMT, VDR, CYP1A2, ACTN3, HFE, TCF7L2, PPARG, KCNJ11, BRCA1, BRCA2, FTO, LCT, MCM6, SLC6A4, BDNF, DRD4 и другие найденные)\n2. Для каждого найденного гена укажи: название, генотип (если есть), краткое значение\n3. Дай общий вывод о профиле здоровья\n\nОтветь строго в формате:\n[ГЕНЫ]\nГен: генотип — краткое значение\n...\n[ВЫВОД]\nОбщий персональный вывод по ДНК-профилю (3-5 предложений)';
     } else {
-      msg0 = 'Это медицинский документ (текст):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n1. Извлеки ВСЕ числовые показатели анализов в формате:\n[ПОКАЗАТЕЛИ]\nНазвание: значение единица (норма мин-макс) — статус\n2. Затем:\n[ВЫВОД]\nПерсональная расшифровка простыми словами. Без диагнозов.';
+      // v3.34: doc промпт — объяснение документа + числовые показатели если есть
+      msg0 = 'Это медицинский документ типа «' + decDocType + '» (текст):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\nЕсли в документе есть числовые показатели — выведи их ПЕРВЫМИ в формате:\n[ПОКАЗАТЕЛИ]\nНазвание: значение единица (норма мин-макс) — статус\n\nЗатем обязательно:\n[ВЫВОД]\nОбъясни медицинские термины простыми словами. Что найдено, что это значит для пациента. Без диагнозов. Минимум 3-5 предложений.';
     }
     document.getElementById('decResult').classList.add('show');
     document.getElementById('decYasnaBody').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
@@ -5094,7 +5565,7 @@ async function runDecode() {
       var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + S.key },
-        body: JSON.stringify({ model:'deepseek-chat', max_tokens:1500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:msg0}] })
+        body: JSON.stringify({ model:'deepseek-chat', max_tokens:2500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:msg0}] })
       });
       var data = await res.json();
       var ans = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
@@ -5195,7 +5666,7 @@ function makeDecBlock(fd, showHdr) {
         '<div class="dec-yasna-sub">Персональная интерпретация · Не является диагнозом</div>' +
       '</div></div>' +
       '<div class="dec-yasna-body dmb-body"><div class="dots"><span></span><span></span><span></span></div></div>' +
-      '<button class="dec-to-chat" onclick="sendDecodeToChat()">' +
+      '<button class="dec-to-chat" data-fileid="' + (fd.fileId||'') + '" onclick="sendDocToChat(this.dataset.fileid)">' +
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.06L2 22l4.94-1.38A9.96 9.96 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>' +
         'Задать вопрос по анализу в чате' +
       '</button>' +
@@ -5449,11 +5920,20 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
   var conclusionMatch = ans.match(/\[ВЫВОД\]([\s\S]*)/i);
   var conclusion = conclusionMatch ? conclusionMatch[1].trim() : ans;
   bodyEl.innerHTML = conclusion.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  var conclusionFull = bodyEl.textContent.slice(0, 4000);
   saveDecodeAsAnalysis(
     rows.length ? rows : [{name:fd.name,val:'—',unit:'',status:{cls:'status-ok'}}],
     fd.extractedDate || (document.getElementById('decDate')?document.getElementById('decDate').value:''),
     document.getElementById('decLab')?document.getElementById('decLab').value:'',
-    bodyEl.textContent.slice(0,2000), null); // v3.25: null → detectCategory сам определит
+    conclusionFull, null);
+  // Сохраняем контекст документа для передачи в чат (Баг 5 v3.37)
+  if (fd.fileId) {
+    decDocResults[fd.fileId] = {
+      name: fd.name,
+      conclusion: conclusionFull,
+      markers: rows
+    };
+  }
 }
 
 function getProfileLine() {
@@ -5491,8 +5971,52 @@ function renderTable(rows, date, lab) {
 }
 
 function sendDecodeToChat() {
-  if (decLastResult) { chatThreads['decode'].history.push({ role:'assistant', content:'Вот результаты твоих анализов:\n' + decLastResult }); }
+  // Если есть файл с результатом — передаём контекст
+  if (decFilesData.length && decFilesData[0].fileId && decDocResults[decFilesData[0].fileId]) {
+    sendDocToChat(decFilesData[0].fileId);
+    return;
+  }
+  if (decLastResult) {
+    chatThreads['decode'].history.push({ role:'assistant', content:'Вот результаты твоих анализов:\n' + decLastResult });
+  }
   openChatThread('decode', 'Объясни подробнее мои анализы');
+}
+
+// v3.37: передаёт контекст конкретного документа в тред decode
+function sendDocToChat(fileId) {
+  var result = fileId ? decDocResults[fileId] : null;
+  if (!result) { sendDecodeToChat(); return; }
+
+  // Строим контекстное сообщение с показателями и выводом
+  var contextMsg = '📄 Документ: **' + result.name + '**\n\n';
+  if (result.markers && result.markers.length) {
+    var hasDeviations = result.markers.some(function(m){
+      return m.status && (m.status.cls || '').indexOf('ok') === -1;
+    });
+    contextMsg += '**Найденные показатели:**\n';
+    result.markers.forEach(function(m) {
+      var stCls = (m.status && m.status.cls) || '';
+      var st = stCls.indexOf('hi') !== -1 ? '↑ выше нормы'
+             : stCls.indexOf('lo') !== -1 ? '↓ ниже нормы' : '✓ норма';
+      var flag = stCls.indexOf('ok') === -1 ? ' ⚠️' : '';
+      contextMsg += '• ' + m.name + ': ' + (m.val||'') + ' ' + (m.unit||'') + ' — ' + st + flag + '\n';
+    });
+    if (hasDeviations) {
+      contextMsg += '\n⚠️ Есть отклонения — обсудим с врачом.\n';
+    }
+    contextMsg += '\n';
+  }
+  contextMsg += '**Вывод ЯСНА:**\n' + result.conclusion;
+
+  // Передаём контекст в тред decode, убирая старый контекст этого файла
+  var history = chatThreads['decode'].history;
+  var filtered = history.filter(function(h) {
+    return !(h.role === 'assistant' && h.content.indexOf('📄 Документ: **' + result.name + '**') !== -1);
+  });
+  filtered.push({ role:'assistant', content: contextMsg });
+  chatThreads['decode'].history = filtered;
+
+  openChatThread('decode', 'Объясни подробнее этот документ — что важно и что мне делать с этими результатами?');
 }
 
 // ══════════════════ МОИ ФАЙЛЫ v3.12 ══════════════════
@@ -5832,6 +6356,45 @@ function togglePeriodStart() {
   chatHistory.push({ role: 'user', content: 'Сегодня начались месячные (' + now.toLocaleDateString('ru-RU') + ')' });
   updateCycleWidget();
   toast('Отмечено ✓');
+}
+
+// v3.36: показывает/скрывает date picker под кнопкой «Начались»
+function togglePeriodStartPicker() {
+  var data = getCycleData();
+  if (data.activePeriod && !data.activePeriod.end) {
+    toast('Цикл уже отмечен как начавшийся');
+    return;
+  }
+  var wrap = document.getElementById('ycDatePickerWrap');
+  if (!wrap) return;
+  var isVisible = wrap.style.display !== 'none';
+  wrap.style.display = isVisible ? 'none' : 'block';
+  var btn = document.getElementById('ycStartBtn');
+  if (btn) btn.style.background = isVisible ? '' : 'rgba(255,90,90,.12)';
+}
+
+// v3.36: сохраняет выбранную дату начала цикла
+function confirmPeriodStart() {
+  var inp = document.getElementById('ycStartDateInput');
+  if (!inp || !inp.value) { toast('Выбери дату'); return; }
+  var data = getCycleData();
+  if (data.activePeriod && !data.activePeriod.end) {
+    toast('Цикл уже отмечен как начавшийся');
+    return;
+  }
+  // Парсим дату — устанавливаем начало дня в локальном времени
+  var parts = inp.value.split('-');
+  var chosen = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]), 0, 0, 0);
+  var today = new Date();
+  today.setHours(23,59,59,999);
+  if (chosen > today) { toast('Нельзя выбрать будущую дату'); return; }
+  data.activePeriod = { start: chosen.getTime(), end: null };
+  saveCycleData(data);
+  var dateStr = chosen.toLocaleDateString('ru-RU', {day:'numeric', month:'long'});
+  chatThreads['general'].history.push({ role:'user', content:'Начались месячные ' + dateStr });
+  renderYcSheet();
+  renderYasnyCycle();
+  toast('Отмечено ✓ · ' + dateStr);
 }
 
 function markPeriodEnd() {
@@ -6250,6 +6813,18 @@ function renderYcSheet() {
   var isPeriodActive = data.activePeriod && !data.activePeriod.end;
   var startStyle = isPeriodActive ? 'background:rgba(255,90,90,.22);border-color:rgba(255,90,90,.5)' : '';
   var startTxt = isPeriodActive ? 'Идут сейчас' : 'Начались';
+  var todayIso = new Date().toISOString().split('T')[0];
+  // v3.36: date picker — видим только если период НЕ активен
+  var datePickerHtml = !isPeriodActive
+    ? '<div id="ycDatePickerWrap" style="display:none;margin-bottom:8px;animation:fin .25s ease">' +
+        '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Выбери первый день</div>' +
+        '<div style="display:flex;gap:8px;align-items:center">' +
+          '<input type="date" id="ycStartDateInput" max="' + todayIso + '" value="' + todayIso + '"' +
+            ' style="flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--rx);padding:10px 13px;font-family:Jost,sans-serif;font-size:15px;color:var(--text);outline:none;-webkit-appearance:none">' +
+          '<button onclick="confirmPeriodStart()" style="height:42px;padding:0 16px;border-radius:var(--rx);border:none;background:rgba(255,90,90,.20);border:1px solid rgba(255,90,90,.45);color:var(--danger);font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Подтвердить</button>' +
+        '</div>' +
+      '</div>'
+    : '';
   document.getElementById('ycSheetContent').innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">' +
       '<div style="font-family:Georgia,serif;font-size:26px;font-weight:600;color:var(--text)">Ясный цикл</div>' +
@@ -6262,13 +6837,14 @@ function renderYcSheet() {
       '<div class="yc-stat"><div class="yc-stat-val">' + avgLen + '</div><div class="yc-stat-lbl">дней цикл</div></div>' +
     '</div>' +
     '<div style="display:flex;gap:8px;margin-bottom:8px">' +
-      '<button class="cycle-btn cycle-btn-start" onclick="togglePeriodStart();renderYcSheet();renderYasnyCycle()" style="' + startStyle + '">' +
+      '<button class="cycle-btn cycle-btn-start" id="ycStartBtn" onclick="togglePeriodStartPicker()" style="' + startStyle + '">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg> ' + startTxt +
       '</button>' +
       '<button class="cycle-btn cycle-btn-end" onclick="markPeriodEnd();renderYcSheet();renderYasnyCycle()">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Закончились' +
       '</button>' +
     '</div>' +
+    datePickerHtml +
     '<button onclick="cancelLastCycleAction();renderYcSheet();renderYasnyCycle()" style="width:100%;height:38px;border-radius:var(--rx);background:var(--glass);border:1px solid var(--glass-border);color:var(--text3);font-family:Jost,sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg> Отменить последнее' +
     '</button>' +
@@ -7045,7 +7621,15 @@ var GR_NAME_ALIASES = {
   'определение магния':'Магний',
   'определение железа':'Железо',
   'железо сывороточное (определение)':'Железо',
+  'железо сывороточное':'Железо',
+  'определение железа (fe)':'Железо',
+  'железо (fe)':'Железо',
+  'fe сыворотки':'Железо',
+  'сывороточное fe':'Железо',
   'определение ферритина':'Ферритин',
+  'исследование ферритина':'Ферритин',
+  'ферритин сыворотки':'Ферритин',
+  'ферритин (определение)':'Ферритин',
   'определение витамина d':'Витамин D',
   '25-он витамин d':'Витамин D',
   '25(oh) витамин d':'Витамин D',
@@ -7159,6 +7743,14 @@ function filterByPeriod(points) {
   var cutoff = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
   var filtered = points.filter(function(p){ return new Date(p.date) >= cutoff; });
   return filtered.length ? filtered : points; // fallback to all if none in period
+}
+
+function clearGrIndicator() {
+  GR_INDICATOR = null;
+  GR_SEARCH = '';
+  var inp = document.getElementById('grSearchInp');
+  if (inp) inp.value = '';
+  renderGraphs();
 }
 
 function grSearch(val) {
@@ -7283,7 +7875,16 @@ function renderGraphs() {
     return renderGraphCard(ind, pts, isDemo);
   }).join('');
 
-  scroll.innerHTML = chipsHtml + perHtml + cardsHtml + '<div style="height:16px"></div>';
+  var backHtml = GR_INDICATOR
+    ? '<button onclick="clearGrIndicator()" style="display:flex;align-items:center;gap:7px;' +
+      'background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;' +
+      'padding:7px 14px;font-family:\'Jost\',sans-serif;font-size:13px;font-weight:600;' +
+      'color:var(--accent);cursor:pointer;margin-bottom:14px;transition:all .2s;' +
+      'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);width:fit-content">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>' +
+      '← Все графики</button>'
+    : '';
+  scroll.innerHTML = chipsHtml + backHtml + perHtml + cardsHtml + '<div style="height:16px"></div>';
 }
 
 function renderGraphCard(ind, points, isDemo) {
@@ -8503,19 +9104,23 @@ function renderYasnyPulse() {
     var shortAdvice = adviceText.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
 
     el.innerHTML =
-      '<div class="yp-collapsed ' + statusCls + '">' +
+      '<div class="yp-collapsed ' + statusCls + '" onclick="openYpSheet()" style="cursor:pointer">' +
         '<div class="yp-col-top">' +
           '<span class="yp-col-label">' +
             '<span class="yp-col-label-dot"></span>' +
             'Ясный пульс' +
           '</span>' +
-          '<button class="yc-toggle-btn" onclick="ypToggleCollapse()" title="Раскрыть">' + eyeSvg + '</button>' +
+          '<button class="yc-toggle-btn" onclick="event.stopPropagation();ypToggleCollapse()" title="Раскрыть">' + eyeSvg + '</button>' +
         '</div>' +
         '<div class="yp-advice-hdr" style="margin-bottom:6px">' +
           '<div class="yp-advice-av" style="width:22px;height:22px;font-size:10px;border-radius:6px">✦</div>' +
           '<div style="font-size:11px;font-weight:700;color:var(--text2)">ЯСНА говорит</div>' +
         '</div>' +
         '<div class="yp-collapsed-advice">' + shortAdvice + '</div>' +
+        '<div style="font-size:11px;color:var(--text3);margin-top:8px;display:flex;align-items:center;gap:5px">' +
+          '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
+          'Нажми чтобы открыть дневник трекера' +
+        '</div>' +
       '</div>';
     return;
   }
@@ -8554,30 +9159,39 @@ function renderYasnyPulse() {
   var refIconSvg = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>';
 
   el.innerHTML =
-    '<div class="yp-widget ' + statusCls + '">' +
+    '<div class="yp-widget ' + statusCls + '" onclick="openYpSheet()" style="cursor:pointer">' +
       '<div class="yp-label-row">' +
         '<div style="display:flex;align-items:center;gap:8px">' +
           '<span class="yp-label">✦ Ясный пульс</span>' +
           statusBadge +
         '</div>' +
-        '<button class="yc-toggle-btn" onclick="ypToggleCollapse()" title="Свернуть">' + eyeOffSvg + '</button>' +
+        '<button class="yc-toggle-btn" onclick="event.stopPropagation();ypToggleCollapse()" title="Свернуть">' + eyeOffSvg + '</button>' +
       '</div>' +
-      '<div class="yp-top">' +
+      '<div class="yp-top" onclick="openYpSheet()" style="cursor:pointer">' +
         '<div class="yp-orb-wrap"><div class="yp-orb-glow"></div><div class="yp-orb"></div></div>' +
         '<div class="yp-info">' +
           '<div class="yp-title-val">' + (S.name || '') + '</div>' +
           '<div class="yp-title-sub">' + getWeekDayRu().charAt(0).toUpperCase() + getWeekDayRu().slice(1) + '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="yp-sleep-label">Как спал?</div>' +
-      '<div class="yp-sleep-btns">' + sleepBtnHtml + '</div>' +
-      '<input class="yp-sleep-hours' + hoursShow + '" id="ypSleepHours" type="number" min="1" max="24" placeholder="Сколько часов? (необязательно)" value="' + hoursVal + '" onchange="ypSaveHours(this.value)">' +
-      '<div class="yp-refresh-row">' +
+      '<div style="display:flex;align-items:center;gap:6px;margin:10px 0 14px;padding:9px 13px;' +
+        'background:rgba(91,154,255,.08);border:1px solid rgba(91,154,255,.22);border-radius:12px;cursor:pointer" ' +
+        'onclick="openYpSheet()">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B9AFF" stroke-width="2" stroke-linecap="round">' +
+          '<rect x="3" y="4" width="18" height="18" rx="2"/>' +
+          '<line x1="16" y1="2" x2="16" y2="6"/>' +
+          '<line x1="8" y1="2" x2="8" y2="6"/>' +
+          '<line x1="3" y1="10" x2="21" y2="10"/>' +
+        '</svg>' +
+        '<span style="font-size:13px;font-weight:600;color:#5B9AFF;flex:1">Открыть дневник — записать сон, шаги, тренировку</span>' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B9AFF" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+      '</div>' +
+      '<div class="yp-refresh-row" onclick="event.stopPropagation()">' +
         '<div class="yp-refresh-date" id="ypAiDate">' + aiDateTxt + '</div>' +
         '<button class="yp-refresh-btn" onclick="loadYasnyPulseAI(true)">' + refIconSvg + ' Обновить</button>' +
       '</div>' +
       '<div id="ypAiBody">' + aiBodyHtml + '</div>' +
-      '<div class="yp-btns">' +
+      '<div class="yp-btns" onclick="event.stopPropagation()">' +
         '<button class="yp-btn yp-btn-write" onclick="ypQuickWrite()">Записать</button>' +
         '<button class="yp-btn yp-btn-ask" onclick="ypQuickAsk()">Спросить ЯСНА</button>' +
       '</div>' +
@@ -8616,9 +9230,8 @@ function ypSelectSleep(choice, btn) {
   var sleepMap = { great:'Отлично спал', ok:'Нормально спал', bad:'Плохо спал', none:'Не спал сегодня' };
   saveDiaryEntry(sleepMap[choice] + (hours ? ', ' + hours + ' ч' : ''));
   toast('✓ Записано');
-  // Сбрасываем кэш и перезагружаем AI
-  localStorage.removeItem(YP_CACHE_KEY);
-  setTimeout(function(){ loadYasnyPulseAI(false); }, 300);
+  // Обновляем AI в фоне — не удаляем кэш, показываем старый пока грузится новый
+  setTimeout(function(){ loadYasnyPulseAI(true); }, 300);
 }
 
 function ypSaveHours(val) {
@@ -8649,6 +9262,34 @@ function buildYpPrompt() {
     ? 'Сон: ' + ({ great:'отлично', ok:'нормально', bad:'плохо', none:'не спал' }[sleep.choice] || '—') + (sleep.hours ? ', ' + sleep.hours + ' ч' : '')
     : 'Данные о сне не внесены.';
 
+  // Данные трекера за сегодня
+  var todayKey = new Date().toISOString().split('T')[0];
+  var todayData = getYpDay(todayKey);
+  var trackerLines = [];
+  if (todayData.energy)   trackerLines.push('Энергия: ' + todayData.energy + '/5');
+  if (todayData.stress)   trackerLines.push('Стресс: ' + ({low:'низкий',mid:'средний',high:'высокий'}[todayData.stress]||'—'));
+  if (todayData.alcohol && todayData.alcohol !== 'no') trackerLines.push('Алкоголь: ' + ({bit:'немного',yes:'да'}[todayData.alcohol]||'—'));
+  if (todayData.steps)    trackerLines.push('Шаги: ' + todayData.steps);
+  if (todayData.workoutType) trackerLines.push('Тренировка: ' + ({gym:'зал',run:'бег',walk:'прогулка',other:'другое'}[todayData.workoutType]||'—') + (todayData.workoutIntensity?' ('+{easy:'лёгкая',mid:'средняя',hard:'тяжёлая'}[todayData.workoutIntensity]+')':'') + (todayData.workoutMin?' '+todayData.workoutMin+' мин':''));
+  var trackerCtx = trackerLines.length ? 'Трекер сегодня: ' + trackerLines.join(', ') : '';
+
+  // Тренировки за последние 7 дней для контекста
+  var ypDaysAll = getYpDays();
+  var recentWorkouts = [];
+  for (var wi = 1; wi <= 7; wi++) {
+    var wd = new Date(); wd.setDate(wd.getDate() - wi);
+    var wk = wd.toISOString().split('T')[0];
+    var wday = ypDaysAll[wk] || {};
+    if (wday.workoutType) {
+      var wlabels = {gym:'зал',run:'бег',walk:'прогулка',other:'другое'};
+      var wilabels = {easy:'лёгкая',mid:'средняя',hard:'тяжёлая'};
+      recentWorkouts.push(wk + ': ' + (wlabels[wday.workoutType]||wday.workoutType) +
+        (wday.workoutIntensity ? ' ' + (wilabels[wday.workoutIntensity]||'') : '') +
+        (wday.workoutMin ? ' ' + wday.workoutMin + 'мин' : ''));
+    }
+  }
+  var workoutsCtx = recentWorkouts.length ? 'Тренировки за 7 дней: ' + recentWorkouts.join('; ') : 'Тренировок за 7 дней не записано.';
+
   var sv = JSON.parse(localStorage.getItem('yasna') || '{}');
   var analyses = sv.analyses || [];
   var testRec = null;
@@ -8677,7 +9318,7 @@ function buildYpPrompt() {
     'СТРОГО ЗАПРЕЩЕНО упоминать: менструальный цикл, фазы цикла, ПМС, овуляцию, эстроген, прогестерон, беременность, менструацию — это мужской профиль!\n\n' +
     'ДАННЫЕ:\n' +
     'Имя: ' + name + (S.age ? ', ' + S.age + ' лет' : '') + ', день: ' + weekDay + '\n' +
-    sleepCtx + '\n' + testCtx + '\n' +
+    sleepCtx + '\n' + (trackerCtx ? trackerCtx + '\n' : '') + workoutsCtx + '\n' + testCtx + '\n' +
     (dnaCtx ? dnaCtx + '\n' : '') +
     (S.cond ? 'Состояния: ' + S.cond + '\n' : '') +
     'Дневник: ' + diaryCtx + '\n\n' +
@@ -8690,9 +9331,22 @@ function buildYpPrompt() {
 }
 
 async function loadYasnyPulseAI(forceRefresh) {
-  if (!S.key) return;
   var today = new Date().toDateString();
   var cache = JSON.parse(localStorage.getItem(YP_CACHE_KEY) || '{}');
+
+  if (!S.key) {
+    // Нет ключа — показываем кэш если есть, иначе заглушку
+    if (cache.analytics) {
+      ypRenderAiText(cache.analytics, cache.advice, cache.time);
+    } else {
+      var bodyEl = document.getElementById('ypAiBody');
+      if (bodyEl) bodyEl.innerHTML = ypBuildTwoBlocksHtml(
+        'Добавь API-ключ DeepSeek в настройках — и я буду анализировать твои данные каждый день.',
+        'Зайди в ⚙️ Настройки → поле «DeepSeek API ключ» → получи бесплатно на platform.deepseek.com'
+      );
+    }
+    return;
+  }
   if (!forceRefresh && cache.date === today && cache.analytics) {
     ypRenderAiText(cache.analytics, cache.advice, cache.time);
     return;
@@ -8724,7 +9378,13 @@ async function loadYasnyPulseAI(forceRefresh) {
     localStorage.setItem(YP_CACHE_KEY, JSON.stringify({ date: today, analytics: analytics, advice: advice, time: timeStr }));
     ypRenderAiText(analytics, advice, timeStr);
   } catch(e) {
-    if (bodyEl) bodyEl.innerHTML = '<span style="color:var(--text3);font-size:13px">Нет соединения</span>';
+    // При ошибке соединения — показываем старый кэш если есть, иначе сообщение
+    var oldCache = JSON.parse(localStorage.getItem(YP_CACHE_KEY) || '{}');
+    if (oldCache.analytics) {
+      ypRenderAiText(oldCache.analytics, oldCache.advice, oldCache.time);
+    } else {
+      if (bodyEl) bodyEl.innerHTML = '<span style="color:var(--text3);font-size:13px">Нет соединения — добавь API-ключ в настройках</span>';
+    }
   }
 }
 
@@ -8765,8 +9425,361 @@ function ypQuickAsk() {
   openChatThread('general', 'Что мне важно сегодня с учётом моих данных?');
 }
 
+// ══════════════════ ЯСНЫЙ ПУЛЬС — ТРЕКЕР ДНЕЙ v3.38 ══════════════════
+var YP_DAYS_KEY = 'yasna_yp_days';
+var _ypCalOffset = 0;   // 0 = текущий месяц
+var _ypSelectedDay = null; // 'YYYY-MM-DD'
 
-// ══════════════════ БЫСТРОЕ ДОБАВЛЕНИЕ ПОКАЗАТЕЛЯ v3.20 ══════════════════
+function getYpDays() {
+  try { return JSON.parse(localStorage.getItem(YP_DAYS_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function getYpDay(dateStr) {
+  return getYpDays()[dateStr] || {};
+}
+
+function saveYpDay(dateStr, data) {
+  try {
+    var days = getYpDays();
+    days[dateStr] = Object.assign(days[dateStr] || {}, data);
+    localStorage.setItem(YP_DAYS_KEY, JSON.stringify(days));
+  } catch(e) {}
+}
+
+function openYpSheet() {
+  _ypCalOffset = 0;
+  _ypSelectedDay = new Date().toISOString().split('T')[0];
+  document.getElementById('ypOverlay').classList.add('on');
+  renderYpSheet();
+}
+
+function closeYpSheet() {
+  document.getElementById('ypOverlay').classList.remove('on');
+}
+
+function ypOverlayClick(e) {
+  if (e.target === document.getElementById('ypOverlay')) closeYpSheet();
+}
+
+function renderYpSheet() {
+  var el = document.getElementById('ypSheetContent');
+  if (!el) return;
+
+  // ── Мини-сводка за текущий месяц ──
+  var statsMonth = getYpMonthStats();
+  var statsHtml =
+    '<div class="yp-tracker-summary">' +
+      '<div class="yp-tracker-stat">' +
+        '<div class="yp-tracker-stat-val">' + statsMonth.workouts + '</div>' +
+        '<div class="yp-tracker-stat-lbl">тренировок</div>' +
+      '</div>' +
+      '<div class="yp-tracker-stat">' +
+        '<div class="yp-tracker-stat-val">' + statsMonth.minutes + '</div>' +
+        '<div class="yp-tracker-stat-lbl">мин актив.</div>' +
+      '</div>' +
+      '<div class="yp-tracker-stat">' +
+        '<div class="yp-tracker-stat-val">' + statsMonth.steps + '</div>' +
+        '<div class="yp-tracker-stat-lbl">шаги (ср.)</div>' +
+      '</div>' +
+    '</div>';
+
+  // ── Календарь ──
+  var calHtml = renderYpCalendar();
+
+  // ── Панель выбранного дня ──
+  var panelHtml = _ypSelectedDay ? renderYpDayPanel(_ypSelectedDay) : '';
+
+  el.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">' +
+      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:26px;font-weight:600;color:var(--text)">Ясный пульс</div>' +
+      '<button onclick="closeYpSheet()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px;line-height:1">✕</button>' +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Этот месяц</div>' +
+    statsHtml + calHtml +
+    '<div id="ypDayPanel">' + panelHtml + '</div>';
+
+  document.getElementById('ypSheet').scrollTop = 0;
+}
+
+function getYpDays7Stats() {
+  var days = getYpDays();
+  var workouts = 0, minutes = 0, stepsSum = 0, stepsCount = 0;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    var key = d.toISOString().split('T')[0];
+    var day = days[key] || {};
+    if (day.workoutType) workouts++;
+    if (day.workoutMin) minutes += parseInt(day.workoutMin) || 0;
+    if (day.steps) { stepsSum += parseInt(day.steps) || 0; stepsCount++; }
+  }
+  return {
+    workouts: workouts,
+    minutes: minutes,
+    steps: stepsCount ? Math.round(stepsSum / stepsCount).toLocaleString('ru') : '—'
+  };
+}
+
+function getYpMonthStats() {
+  var days = getYpDays();
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var workouts = 0, minutes = 0, stepsSum = 0, stepsCount = 0;
+  for (var d = 1; d <= daysInMonth; d++) {
+    var key = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var day = days[key] || {};
+    if (day.workoutType) workouts++;
+    if (day.workoutMin) minutes += parseInt(day.workoutMin) || 0;
+    if (day.steps) { stepsSum += parseInt(day.steps) || 0; stepsCount++; }
+  }
+  return {
+    workouts: workouts,
+    minutes: minutes,
+    steps: stepsCount ? Math.round(stepsSum / stepsCount).toLocaleString('ru') : '—'
+  };
+}
+
+function renderYpCalendar() {
+  var now = new Date();
+  var viewDate = new Date(now.getFullYear(), now.getMonth() + _ypCalOffset, 1);
+  var year = viewDate.getFullYear();
+  var month = viewDate.getMonth();
+  var firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var todayStr = now.toISOString().split('T')[0];
+  var days = getYpDays();
+
+  var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var prevArrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  var nextArrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+  var canGoPrev = _ypCalOffset > -6;
+  var canGoNext = _ypCalOffset < 0; // не в будущее
+
+  var html = '<div class="yp-cal-wrap">' +
+    '<div class="yp-cal-month-nav">' +
+      '<button class="yp-cal-nav-btn" onclick="ypCalNav(-1)" ' + (canGoPrev?'':'disabled') + '>' + prevArrow + '</button>' +
+      '<div class="yp-cal-month-label">' + monthNames[month] + ' ' + year + '</div>' +
+      '<button class="yp-cal-nav-btn" onclick="ypCalNav(1)" ' + (canGoNext?'':'disabled') + '>' + nextArrow + '</button>' +
+    '</div>' +
+    '<div class="yp-cal-grid">';
+
+  ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(function(d) {
+    html += '<div class="yp-cal-dow">' + d + '</div>';
+  });
+
+  for (var i = 0; i < firstDay; i++) html += '<div class="yp-cal-cell"></div>';
+
+  for (var day = 1; day <= daysInMonth; day++) {
+    var dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    var isFuture = dateStr > todayStr;
+    var isToday = dateStr === todayStr;
+    var isSelected = dateStr === _ypSelectedDay;
+    var dayData = days[dateStr] || {};
+
+    var cls = 'yp-cal-cell';
+    if (isFuture) cls += ' future';
+    else if (isSelected) cls += ' selected';
+    else if (isToday) cls += ' today';
+
+    var dots = '';
+    var hasData = dayData.sleep || dayData.energy || dayData.stress || dayData.steps;
+    var hasWorkout = !!dayData.workoutType;
+    if (hasData || hasWorkout) {
+      dots = '<div class="yp-cal-dots">';
+      if (hasData)    dots += '<div class="yp-cal-dot yp-cal-dot-data"></div>';
+      if (hasWorkout) dots += '<div class="yp-cal-dot yp-cal-dot-workout"></div>';
+      dots += '</div>';
+    }
+
+    var onclick = isFuture ? '' : 'onclick="ypSelectDay(\'' + dateStr + '\')"';
+    html += '<div class="' + cls + '" ' + onclick + '>' + day + dots + '</div>';
+  }
+
+  // Легенда
+  html += '</div>' +
+    '<div style="display:flex;gap:14px;margin-top:10px;padding:0 2px">' +
+      '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-weight:600">' +
+        '<div class="yp-cal-dot yp-cal-dot-data" style="width:8px;height:8px"></div>Данные дня' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-weight:600">' +
+        '<div class="yp-cal-dot yp-cal-dot-workout" style="width:8px;height:8px"></div>Тренировка' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-weight:600">' +
+        '<div style="width:8px;height:8px;border-radius:50%;border:1.5px solid var(--accent)"></div>Сегодня' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  return html;
+}
+
+function ypCalNav(dir) {
+  var newOffset = _ypCalOffset + dir;
+  if (newOffset < -6 || newOffset > 0) return;
+  _ypCalOffset = newOffset;
+  renderYpSheet();
+}
+
+function ypSelectDay(dateStr) {
+  _ypSelectedDay = dateStr;
+  // Перерисовываем только панель и календарь — без полного renderYpSheet
+  var panel = document.getElementById('ypDayPanel');
+  if (panel) {
+    panel.innerHTML = renderYpDayPanel(dateStr);
+    setTimeout(function(){ panel.scrollIntoView({ behavior:'smooth', block:'start' }); }, 50);
+  }
+  // Обновляем точки на календаре (outerHTML замена)
+  var calWrap = document.querySelector('#ypSheetContent .yp-cal-wrap');
+  if (calWrap) {
+    var newCal = document.createElement('div');
+    newCal.innerHTML = renderYpCalendar();
+    calWrap.parentNode.replaceChild(newCal.firstChild, calWrap);
+  }
+}
+
+function renderYpDayPanel(dateStr) {
+  var d = new Date(dateStr + 'T00:00:00');
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  var days = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  var title = d.getDate() + ' ' + months[d.getMonth()] + ', ' + days[d.getDay()];
+  var data = getYpDay(dateStr);
+  var ds = "'" + dateStr + "'";
+
+  // ── СОН ──
+  var sleepLabels = { great:'Отлично', ok:'Нормально', bad:'Плохо', none:'Не спал' };
+  var sleepCls    = { great:'sel-green', ok:'sel-accent', bad:'sel-yellow', none:'sel-red' };
+  var sleepHtml = '<div class="yp-field-label">Сон</div>' +
+    '<div class="yp-btn-row">' +
+    ['great','ok','bad','none'].map(function(v) {
+      var active = data.sleep === v ? ' ' + sleepCls[v] : '';
+      return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'sleep\',\'' + v + '\',this,\'sleep\')">' + sleepLabels[v] + '</button>';
+    }).join('') +
+    '</div>';
+
+  var hoursHtml = '';
+  if (data.sleep && data.sleep !== 'none') {
+    hoursHtml = '<input class="yp-day-input" type="number" min="1" max="24" placeholder="Часов сна (необязательно)" value="' + (data.sleepHours || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'sleepHours\',this.value)">';
+  }
+
+  // ── ЭНЕРГИЯ ──
+  var energyHtml = '<div class="yp-field-label">Энергия</div>' +
+    '<div class="yp-btn-row">' +
+    [1,2,3,4,5].map(function(v) {
+      var active = data.energy == v ? ' sel-accent' : '';
+      return '<button class="yp-wide-btn' + active + '" style="justify-content:center;font-size:16px;padding:12px 6px" onclick="ypSaveDayField(' + ds + ',\'energy\',' + v + ',this,\'energy\')">' + v + '</button>';
+    }).join('') +
+    '</div>';
+
+  // ── СТРЕСС ──
+  var stressLabels = { low:'Низкий', mid:'Средний', high:'Высокий' };
+  var stressCls    = { low:'sel-green', mid:'sel-yellow', high:'sel-red' };
+  var stressHtml = '<div class="yp-field-label">Стресс</div>' +
+    '<div class="yp-wide-btns">' +
+    ['low','mid','high'].map(function(v) {
+      var active = data.stress === v ? ' ' + stressCls[v] : '';
+      return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'stress\',\'' + v + '\',this,\'stress\')">' + stressLabels[v] + '</button>';
+    }).join('') +
+    '</div>';
+
+  // ── АЛКОГОЛЬ ──
+  var alcLabels = { no:'Нет', bit:'Немного', yes:'Да' };
+  var alcCls    = { no:'sel-green', bit:'sel-yellow', yes:'sel-red' };
+  var alcHtml = '<div class="yp-field-label">Алкоголь</div>' +
+    '<div class="yp-btn-row">' +
+    ['no','bit','yes'].map(function(v) {
+      var active = data.alcohol === v ? ' ' + alcCls[v] : '';
+      return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'alcohol\',\'' + v + '\',this,\'alcohol\')">' + alcLabels[v] + '</button>';
+    }).join('') +
+    '</div>';
+
+  // ── ШАГИ ──
+  var stepsHtml = '<div class="yp-field-label">Шаги</div>' +
+    '<input class="yp-day-input" type="number" min="0" max="100000" step="500" placeholder="Сколько шагов?" value="' + (data.steps || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'steps\',this.value)">';
+
+  // ── ТРЕНИРОВКА ──
+  var wtLabels  = { gym:'Зал', run:'Бег', walk:'Прогулка', other:'Другое' };
+  var wtCls     = { gym:'sel-blue', run:'sel-green', walk:'sel-accent', other:'sel-purple' };
+  var wiLabels  = { easy:'Лёгкая', mid:'Средняя', hard:'Тяжёлая' };
+  var wiCls     = { easy:'sel-green', mid:'sel-yellow', hard:'sel-red' };
+
+  var workoutHtml = '<div class="yp-field-label">Тренировка</div>' +
+    '<div class="yp-btn-row">' +
+    ['gym','run','walk','other'].map(function(v) {
+      var active = data.workoutType === v ? ' ' + wtCls[v] : '';
+      return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'workoutType\',\'' + v + '\',this,\'workoutType\')">' + wtLabels[v] + '</button>';
+    }).join('') +
+    '</div>';
+
+  if (data.workoutType) {
+    workoutHtml +=
+      '<div class="yp-field-label" style="margin-top:4px">Интенсивность</div>' +
+      '<div class="yp-btn-row">' +
+      ['easy','mid','hard'].map(function(v) {
+        var active = data.workoutIntensity === v ? ' ' + wiCls[v] : '';
+        return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'workoutIntensity\',\'' + v + '\',this,\'workoutIntensity\')">' + wiLabels[v] + '</button>';
+      }).join('') +
+      '</div>' +
+      '<input class="yp-day-input" type="number" min="5" max="300" step="5" placeholder="Минут (необязательно)" value="' + (data.workoutMin || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'workoutMin\',this.value)">';
+  }
+
+  // ── МЕДИЦИНСКИЙ ВОПРОС (скрыт) ──
+  var libidoLabels = { low:'Низкое', mid:'Среднее', high:'Высокое' };
+  var medHtml = '<div class="yp-medical-toggle" onclick="ypToggleMedical()">' +
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' +
+    '</svg>' +
+    'Медицинский вопрос — показать' +
+  '</div>' +
+  '<div class="yp-medical-block" id="ypMedBlock">' +
+    '<div class="yp-field-label" style="color:var(--text3)">Либидо (не отображается нигде, только аналитика)</div>' +
+    '<div class="yp-btn-row">' +
+    ['low','mid','high'].map(function(v) {
+      var active = data.libido === v ? ' sel-accent' : '';
+      return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'libido\',\'' + v + '\',this,\'libido\')">' + libidoLabels[v] + '</button>';
+    }).join('') +
+    '</div>' +
+  '</div>';
+
+  return '<div class="yp-day-panel">' +
+    '<div class="yp-day-panel-title">' + title + '</div>' +
+    sleepHtml + hoursHtml + energyHtml + stressHtml + alcHtml + stepsHtml + workoutHtml + medHtml +
+    '<button onclick="toast(\'✓ Сохранено\')" style="width:100%;margin-top:6px;height:46px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:\'Jost\',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Готово</button>' +
+  '</div>';
+}
+
+function ypSaveDayField(dateStr, field, val, btn, group) {
+  saveYpDay(dateStr, (function(obj){ obj[field] = val; return obj; })({}));
+  // Обновляем подсветку кнопок в группе
+  if (group) {
+    var panel = document.getElementById('ypDayPanel');
+    if (panel) {
+      // Перерисовываем панель
+      panel.innerHTML = renderYpDayPanel(dateStr);
+    }
+  }
+  // Обновляем точки на календаре
+  var calWrap = document.querySelector('#ypSheetContent .yp-cal-wrap');
+  if (calWrap) calWrap.outerHTML = renderYpCalendar();
+}
+
+function ypSaveFieldDirect(dateStr, field, val) {
+  saveYpDay(dateStr, (function(obj){ obj[field] = val; return obj; })({}));
+}
+
+function ypToggleMedical() {
+  var block = document.getElementById('ypMedBlock');
+  if (block) block.classList.toggle('show');
+  var toggle = block ? block.previousElementSibling : null;
+  if (toggle) {
+    var isShown = block.classList.contains('show');
+    toggle.innerHTML = toggle.innerHTML.replace(
+      isShown ? 'показать' : 'скрыть',
+      isShown ? 'скрыть' : 'показать'
+    );
+  }
+}
 var QI_STATUS = 'ok';
 
 var QI_UNITS_MAP = {
@@ -9394,11 +10407,31 @@ async function generateDoctorReport() {
     ? (dna.insight||'') + '\nМаркеры: ' + (dna.genes||[]).map(function(g){ return g.name; }).join(', ')
     : '';
 
+  // Тренировки за 30 дней для отчёта
+  var ypAllDays = getYpDays();
+  var reportWorkouts = [];
+  for (var rw = 0; rw < 30; rw++) {
+    var rwd = new Date(); rwd.setDate(rwd.getDate() - rw);
+    var rwk = rwd.toISOString().split('T')[0];
+    var rwday = ypAllDays[rwk] || {};
+    if (rwday.workoutType) {
+      var rwl = {gym:'зал',run:'бег',walk:'прогулка',other:'другое'};
+      var rwi = {easy:'лёгкая',mid:'средняя',hard:'тяжёлая'};
+      reportWorkouts.push(rwk + ': ' + (rwl[rwday.workoutType]||rwday.workoutType) +
+        (rwday.workoutIntensity ? ', ' + (rwi[rwday.workoutIntensity]||'') : '') +
+        (rwday.workoutMin ? ', ' + rwday.workoutMin + ' мин' : ''));
+    }
+  }
+  var workoutText = reportWorkouts.length
+    ? reportWorkouts.join('\n')
+    : 'Данных о тренировках нет.';
+
   var prompt = 'Ты ЯСНА — персональный AI-агент здоровья. Сформируй структурированный отчёт для визита к врачу.\n\n' +
     'ПРОФИЛЬ: ' + getProfileLine() + '\n\n' +
     'АНАЛИЗЫ:\n' + analysesText + '\n\n' +
     'ДНЕВНИК (7 дней):\n' + diaryText + '\n\n' +
     (dnaText ? 'ДНК:\n' + dnaText + '\n\n' : '') +
+    'ФИЗИЧЕСКАЯ АКТИВНОСТЬ (30 дней):\n' + workoutText + '\n\n' +
     'Сформируй отчёт строго в формате:\n\n' +
     '**ОТЧЁТ ДЛЯ ВРАЧА · ЯСНА̂**\n' +
     'Пациент: '+(S.name||'')+', '+(S.age||'—')+' лет, '+(S.gender==='female'?'женщина':'мужчина')+'\n' +
@@ -9406,6 +10439,7 @@ async function generateDoctorReport() {
     '**Жалобы и самочувствие:**\n[из дневника, лаконично, только факты]\n\n' +
     '**Отклонения в анализах:**\n[только показатели вне нормы — название, значение, норма, дата. Если всё норма — написать «Все показатели в норме»]\n\n' +
     '**Динамика показателей:**\n[только если несколько дат с одним показателем — как изменился. Если нет данных — раздел пропустить]\n\n' +
+    (reportWorkouts.length ? '**Физическая активность:**\n[сводка тренировок за месяц — частота, типы, динамика]\n\n' : '') +
     (dnaText ? '**Генетические особенности:**\n[только важное для врача, кратко]\n\n' : '') +
     '**Вопросы для врача:**\n[3-5 конкретных вопросов исходя из данных]\n\n' +
     'Стиль: лаконичный медицинский документ, только факты. На русском языке.';
