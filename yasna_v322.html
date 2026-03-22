@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.31</title>
+<title>ЯСНА v3.32</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -7079,10 +7079,39 @@ function cleanIndicatorName(name) {
 }
 
 function normalizeIndicatorName(rawName) {
-  // v3.25: сначала чистим скобки, потом ищем алиас
-  var cleaned = cleanIndicatorName(rawName || '');
-  var key = cleaned.toLowerCase().trim();
-  return GR_NAME_ALIASES[key] || cleaned;
+  // v3.32: 4 стратегии поиска — сырая, очищенная, содержимое скобок, частичное совпадение
+  if (!rawName) return '';
+  var raw = rawName.trim();
+
+  // 1. Сырая строка целиком (с скобками) → алиас
+  var key1 = raw.toLowerCase();
+  if (GR_NAME_ALIASES[key1]) return GR_NAME_ALIASES[key1];
+
+  // 2. Очищенная строка (без скобок, без лишних пробелов) → алиас
+  var cleaned = cleanIndicatorName(raw);
+  var key2 = cleaned.toLowerCase();
+  if (GR_NAME_ALIASES[key2]) return GR_NAME_ALIASES[key2];
+
+  // 3. Содержимое последних скобок отдельно → алиас
+  // «Определение лютеинизирующего гормона (ЛГ)» → попробуем «лг»
+  var bracketMatch = raw.match(/\(([^)]+)\)\s*$/);
+  if (bracketMatch) {
+    var bracketKey = bracketMatch[1].toLowerCase().trim();
+    if (GR_NAME_ALIASES[bracketKey]) return GR_NAME_ALIASES[bracketKey];
+  }
+
+  // 4. Частичное совпадение — ищем алиас который входит в строку как подстрока
+  // (защита от лишних слов типа «Общий холестерин сыворотки»)
+  var lowerRaw = key1;
+  var aliasKeys = Object.keys(GR_NAME_ALIASES);
+  for (var i = 0; i < aliasKeys.length; i++) {
+    var ak = aliasKeys[i];
+    if (ak.length >= 4 && lowerRaw.indexOf(ak) !== -1) {
+      return GR_NAME_ALIASES[ak];
+    }
+  }
+
+  return cleaned || raw;
 }
 
 function buildIndicatorsFromAnalyses() {
