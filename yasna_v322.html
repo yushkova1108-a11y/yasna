@@ -4711,37 +4711,50 @@ function processDecFile(file) {
     };
     reader.readAsDataURL(file);
   } else if (ext === 'DOCX' || ext === 'DOC') {
-    // mammoth.js для Word файлов
-    reader.onload = function(e) {
-      if (typeof mammoth === 'undefined') {
-        toast('⚠️ Mammoth.js не загружен — проверь интернет'); return;
-      }
-      mammoth.extractRawText({ arrayBuffer: e.target.result })
-        .then(function(result) {
-          var text = result.value || '';
-          if (!text.trim()) { toast('⚠️ DOCX пустой или защищён'); return; }
-          decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
-          saveDocFile(file.name, text);
-          addDecFileRow(file.name, ext, sizeKb, fileId, icon);
-        })
-        .catch(function(err) { toast('⚠️ Ошибка чтения DOCX: ' + err.message); });
+    // mammoth.js для Word файлов + base64 для просмотра
+    var docxB64Reader = new FileReader();
+    docxB64Reader.onload = function(b64ev) {
+      var base64Orig = b64ev.target.result;
+      reader.onload = function(e) {
+        if (typeof mammoth === 'undefined') {
+          toast('⚠️ Mammoth.js не загружен — проверь интернет'); return;
+        }
+        mammoth.extractRawText({ arrayBuffer: e.target.result })
+          .then(function(result) {
+            var text = result.value || '';
+            if (!text.trim()) { toast('⚠️ DOCX пустой или защищён'); return; }
+            decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
+            saveDocFile(file.name, text, base64Orig);
+            addDecFileRow(file.name, ext, sizeKb, fileId, icon);
+          })
+          .catch(function(err) { toast('⚠️ Ошибка чтения DOCX: ' + err.message); });
+      };
+      reader.readAsArrayBuffer(file);
     };
-    reader.readAsArrayBuffer(file);
+    docxB64Reader.readAsDataURL(file);
   } else if (ext === 'PDF') {
-    // PDF.js для текстовых PDF
-    reader.onload = function(e) {
-      extractPdfText(e.target.result).then(function(text) {
-        if (!text.trim()) { toast('⚠️ PDF пустой или отсканированный — попробуй TXT'); return; }
-        decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
-        saveDocFile(file.name, text);
-        addDecFileRow(file.name, ext, sizeKb, fileId, icon);
-      }).catch(function(err) { toast('⚠️ Ошибка чтения PDF: ' + err.message); });
+    // PDF.js для текстовых PDF + сохраняем base64 для просмотра оригинала
+    var pdfBase64Reader = new FileReader();
+    pdfBase64Reader.onload = function(b64event) {
+      var base64Orig = b64event.target.result; // data:application/pdf;base64,...
+      reader.onload = function(e) {
+        extractPdfText(e.target.result).then(function(text) {
+          if (!text.trim()) { toast('⚠️ PDF пустой или отсканированный — попробуй TXT'); return; }
+          decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
+          saveDocFile(file.name, text, base64Orig);
+          addDecFileRow(file.name, ext, sizeKb, fileId, icon);
+        }).catch(function(err) { toast('⚠️ Ошибка чтения PDF: ' + err.message); });
+      };
+      reader.readAsArrayBuffer(file);
     };
-    reader.readAsArrayBuffer(file);
+    pdfBase64Reader.readAsDataURL(file);
   } else {
     reader.onload = function(e) {
-      decFilesData.push({ name:file.name, type:'text', data:e.target.result, fileId:fileId, extractedDate:extractDateFromText(e.target.result) });
-      saveDocFile(file.name, e.target.result);
+      var txt = e.target.result;
+      decFilesData.push({ name:file.name, type:'text', data:txt, fileId:fileId, extractedDate:extractDateFromText(txt) });
+      // v3.30: для TXT сохраняем как data:text/plain;base64
+      var b64 = 'data:text/plain;base64,' + btoa(unescape(encodeURIComponent(txt.slice(0,512000))));
+      saveDocFile(file.name, txt, b64);
       addDecFileRow(file.name, ext, sizeKb, fileId, icon);
     };
     reader.readAsText(file);
@@ -5048,9 +5061,9 @@ async function runDecode() {
 
   // ─── ФАЙЛЫ (PDF/DOCX/TXT) — мультирежим ─────────────────────
   } else if ((decMethod === 'file' || decMethod === 'photo') && decFilesData.length > 0) {
-    if (decFilesData.length > 3) {
+    if (decFilesData.length > 5) {
       btn.disabled=false; btn.innerHTML=btnLabel;
-      toast('Загружено ' + decFilesData.length + ' файлов — за раз можно 3. Убери лишние.');
+      toast('Загружено ' + decFilesData.length + ' файлов — за раз можно 5. Убери лишние.');
       return;
     }
     var mr = document.getElementById('decMultiResult');
@@ -5126,11 +5139,54 @@ function buildDecFileMessages(fd) {
     var base64 = fd.data.split(',')[1];
     return [{ role:'user', content: [
       { type:'image', source:{ type:'base64', media_type:fd.mime, data:base64 } },
-      { type:'text', text:'Это медицинский бланк анализов.\n\nПрофиль пациента: ' + getProfileLine() + '\n\nЗадача:\n1. Извлеки ВСЕ числовые показатели. Для каждого: название | значение | единица | норма из бланка\n2. Отметь отклонения (↑ выше / ↓ ниже / ✓ норма)\n3. Выведи данные в формате:\n[ПОКАЗАТЕЛИ]\nНазвание: значение единица (норма мин-макс) — статус\n...\n[ВЫВОД]\nПерсональная расшифровка простыми словами. Без диагнозов.' }
+      { type:'text', text: buildMedPromptStr() }
     ]}];
   }
-  var textContent = parseDnaFile(fd.data);
-  return [{ role:'user', content:'Это медицинский документ (текст):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n1. Извлеки ВСЕ числовые показатели анализов в формате:\n[ПОКАЗАТЕЛИ]\nНазвание: значение единица (норма мин-макс) — статус\n2. Затем:\n[ВЫВОД]\nПерсональная расшифровка простыми словами. Без диагнозов.' }];
+  // v3.30: для ДНК-файлов — parseDnaFile, для медицинских — сырой текст
+  var isGenetic = /\.vcf$/i.test(fd.name) || (fd.data && fd.data.indexOf('##fileformat') !== -1);
+  var textContent = isGenetic ? parseDnaFile(fd.data) : fd.data.slice(0, 12000);
+  return [{ role:'user', content: buildMedPromptTextStr(textContent) }];
+}
+
+// v3.30: промпт для медицинских анализов (текстовые файлы — Ситилаб, Гемотест и т.д.)
+function buildMedPromptTextStr(textContent) {
+  return 'Это медицинский документ — текст лабораторного бланка анализов.\n\n' +
+    'ТЕКСТ БЛАНКА:\n---\n' + textContent + '\n---\n\n' +
+    'Профиль пациента: ' + getProfileLine() + '\n\n' +
+    'ЗАДАЧА:\n' +
+    '1. Извлеки ВСЕ числовые показатели из бланка.\n' +
+    '   В бланках Ситилаб/Гемотест/Инвитро формат строки такой:\n' +
+    '   «Название (код)  значение*  единица  мин - макс»\n' +
+    '   Знак * означает выход за пределы нормы.\n' +
+    '2. Для каждого показателя выведи СТРОГО в формате:\n\n' +
+    '[ПОКАЗАТЕЛИ]\n' +
+    'Название: значение единица (норма мин-макс) — статус\n\n' +
+    'Примеры правильного формата:\n' +
+    'Гемоглобин: 121 г/л (норма 118.5-142) — норма\n' +
+    'Лейкоциты: 3.65 10^9/л (норма 3.89-9.23) — ↓ ниже нормы\n' +
+    'RDW-CV: 18.8 % (норма 11.4-15.29) — ↑ выше нормы\n' +
+    'МНО: 0.97 (норма 0.80-1.20) — норма\n' +
+    'Фибриноген: 3.1 г/л (норма 1.8-3.5) — норма\n\n' +
+    'Статус ТОЛЬКО: «норма», «↑ выше нормы», «↓ ниже нормы»\n' +
+    'Включи ВСЕ разделы: ОАК, лейкоцитарную формулу, биохимию, мочу, коагулограмму.\n\n' +
+    '[ВЫВОД]\n' +
+    'Персональная расшифровка простыми словами. Без диагнозов. Особо отметь отклонения.';
+}
+
+function buildMedPromptStr() {
+  return 'Это медицинский бланк анализов (изображение).\n\n' +
+    'Профиль пациента: ' + getProfileLine() + '\n\n' +
+    'ЗАДАЧА:\n' +
+    '1. Извлеки ВСЕ числовые показатели\n' +
+    '2. Для каждого выведи СТРОГО в формате:\n\n' +
+    '[ПОКАЗАТЕЛИ]\n' +
+    'Название: значение единица (норма мин-макс) — статус\n\n' +
+    'Примеры:\n' +
+    'Гемоглобин: 121 г/л (норма 118.5-142) — норма\n' +
+    'Лейкоциты: 3.65 10^9/л (норма 3.89-9.23) — ↓ ниже нормы\n\n' +
+    'Статус ТОЛЬКО: «норма», «↑ выше нормы», «↓ ниже нормы»\n\n' +
+    '[ВЫВОД]\n' +
+    'Персональная расшифровка простыми словами. Без диагнозов.';
 }
 
 // ─── Рендерит ответ AI в блок одного файла ───────────────────
@@ -5246,12 +5302,10 @@ function getDocFiles() {
   return (JSON.parse(localStorage.getItem('yasna')||'{}').docfiles) || [];
 }
 
-function saveDocFile(name, text) {
+function saveDocFile(name, text, base64Orig) {
   try {
     var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
     if (!sv.docfiles) sv.docfiles = [];
-    // v3.24: НЕ удаляем по имени — каждый файл получает уникальный id
-    // Два файла invitro.pdf от разных дат — разные записи
     var id = 'DOC' + Date.now().toString(36).toUpperCase().slice(-5);
     var preview = text.replace(/\s+/g,' ').trim().slice(0, 90);
     var months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
@@ -5259,10 +5313,12 @@ function saveDocFile(name, text) {
     var hh = String(now.getHours()).padStart(2,'0');
     var mm = String(now.getMinutes()).padStart(2,'0');
     var dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' · ' + hh + ':' + mm;
-    sv.docfiles.unshift({ id:id, name:name, date:dateStr, preview:preview, text:text.slice(0,10000) });
+    // v3.30: сохраняем base64 оригинала (только первые 500KB чтобы не переполнить localStorage)
+    var orig = base64Orig ? base64Orig.slice(0, 512000) : null;
+    sv.docfiles.unshift({ id:id, name:name, date:dateStr, preview:preview, text:text.slice(0,10000), orig:orig });
     if (sv.docfiles.length > 50) sv.docfiles = sv.docfiles.slice(0,50);
     localStorage.setItem('yasna', JSON.stringify(sv));
-  } catch(e) {}
+  } catch(e) { console.warn('saveDocFile error', e.message); }
 }
 
 function deleteDocFile(id) {
@@ -5317,10 +5373,42 @@ function renderDocFiles() {
       '</div>' +
       (f.preview ? '<div class="dfc-preview">' + f.preview + (f.text && f.text.length >= 90 ? '…' : '') + '</div>' : '') +
       '<div style="display:flex;gap:8px">' +
-        '<button class="dfc-btn dfc-btn-primary" onclick="redecodeFile(\'' + f.id + '\')" style="display:flex;align-items:center;justify-content:center;gap:6px">' + svgRedo + ' Расшифровать снова</button>' +
+        (f.orig ? '<button class="dfc-btn" onclick="viewOrigFile(\'' + f.id + '\')" style="display:flex;align-items:center;justify-content:center;gap:5px;flex:0 0 auto;padding:9px 12px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Бланк</button>' : '') +
+        '<button class="dfc-btn dfc-btn-primary" onclick="redecodeFile(\'' + f.id + '\')" style="display:flex;align-items:center;justify-content:center;gap:6px;flex:1">' + svgRedo + ' Расшифровать снова</button>' +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
+}
+
+// v3.30: просмотр оригинального PDF бланка
+function viewOrigFile(id) {
+  var files = getDocFiles();
+  var file = files.find(function(f){ return f.id === id; });
+  if (!file || !file.orig) { toast('Оригинал не сохранён — загрузи файл заново'); return; }
+  // Открываем PDF в новой вкладке
+  try {
+    var ext = file.name.split('.').pop().toUpperCase();
+    if (ext === 'PDF') {
+      var byteStr = atob(file.orig.split(',')[1]);
+      var ab = new ArrayBuffer(byteStr.length);
+      var ia = new Uint8Array(ab);
+      for (var i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+      var blob = new Blob([ab], { type:'application/pdf' });
+      var url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+    } else {
+      // Для не-PDF показываем текст
+      var w = window.open('', '_blank');
+      if (w) {
+        w.document.write('<pre style="font-family:monospace;padding:20px;white-space:pre-wrap">' +
+          (file.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>');
+        w.document.close();
+      }
+    }
+  } catch(e) {
+    toast('⚠️ Не удалось открыть файл: ' + e.message);
+  }
 }
 
 function redecodeFile(id) {
@@ -7270,13 +7358,27 @@ function renderGrDetail() {
         '<tbody>' + rowsHtml + '</tbody>' +
       '</table>' +
     '</div>' +
-    '<button onclick="openChatThread(\'analyses\',\'Расскажи подробнее про мой ' + ind.name + ' — что происходит и что делать?\')" style="width:100%;padding:14px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:\'Jost\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px">' +
+    '<button id="grDetailAskBtn" data-name="' + ind.name.replace(/"/g, '&quot;') + '" style="width:100%;padding:14px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:\'Jost\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.06L2 22l4.94-1.38A9.96 9.96 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>' +
       'Спросить ЯСНА про ' + ind.name +
     '</button>' +
     '<div style="height:8px"></div>';
 
   document.getElementById('grDetailSheet').scrollTop = 0;
+
+  // v3.30: навешиваем обработчик на кнопку через id — безопасно для любых имён
+  setTimeout(function() {
+    var btn = document.getElementById('grDetailAskBtn');
+    if (btn) {
+      btn.onclick = function() {
+        var name = this.getAttribute('data-name') || GR_DETAIL_IND || '';
+        closeGraphDetail();
+        setTimeout(function() {
+          openChatThread('analyses', 'Расскажи подробнее про мой ' + name + ' — что происходит и что делать?');
+        }, 200);
+      };
+    }
+  }, 50);
 }
 
 // Умный текстовый инсайт без AI-запроса
