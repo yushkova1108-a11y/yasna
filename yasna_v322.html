@@ -4191,25 +4191,60 @@ function getChatSystemPrompt() {
     ) : '',
   ].filter(Boolean).join('. ');
 
-  // ТОЛЬКО реальные анализы пользователя — демо не передаём в AI
+  // v3.41 FIX: компактный промпт — одна строка на показатель + история значений
+  // Было: каждый бланк отдельным блоком → 20+ бланков × 30 строк = 600+ строк
+  // Стало: один показатель = одна строка с историей → ~80 строк для тех же данных
   var sv = JSON.parse(localStorage.getItem('yasna') || '{}');
   var realAnalyses = sv.analyses || [];
-  var analysesLines = [];
+
+  // Собираем историю по каждому показателю (ключ = name + unit)
+  var indicatorMap = {};
   realAnalyses.forEach(function(an) {
     if (!an.markers || !an.markers.length) return;
-    var markersTxt = an.markers.map(function(m) {
-      var statusTxt = m.status === 'hi' ? '↑ ВЫШЕ НОРМЫ' : m.status === 'lo' ? '↓ НИЗКИЙ' : '✓ норма';
-      return '- ' + m.name + ': ' + (m.val||m.value||'') + ' ' + (m.unit||'') + ' ' + statusTxt;
-    }).join('\n');
-    analysesLines.push(an.dateStr + ', ' + an.lab + ' (' + an.type + '):\n' + markersTxt);
-    if (an.summary) analysesLines.push('  Вывод: ' + an.summary);
+    an.markers.forEach(function(m) {
+      if (!m.name || !m.val || m.val === '—') return;
+      var key = m.name + '||' + (m.unit || '');
+      if (!indicatorMap[key]) {
+        indicatorMap[key] = { name: m.name, unit: m.unit || '', points: [], lastStatus: m.status, lastDate: an.dateStr };
+      }
+      indicatorMap[key].points.push({ val: m.val, date: an.date, dateStr: an.dateStr, status: m.status });
+      // Обновляем последнее значение (сортируем по дате)
+      if (an.date >= (indicatorMap[key].lastDate || '')) {
+        indicatorMap[key].lastStatus = m.status;
+        indicatorMap[key].lastDate = an.dateStr;
+        indicatorMap[key].lastVal = m.val;
+      }
+    });
   });
-  var analysesContext = analysesLines.length
-    ? analysesLines.join('\n\n')
+
+  // Строим компактный текст
+  var indicatorLines = Object.values(indicatorMap).map(function(ind) {
+    ind.points.sort(function(a, b){ return a.date.localeCompare(b.date); });
+    var last = ind.points[ind.points.length - 1];
+    var statusTxt = last.status === 'hi' ? '↑' : last.status === 'lo' ? '↓' : '✓';
+    var historyVals = ind.points.map(function(p){ return p.val; });
+    // Компактная история: [1.4 → 2.0 → 1.7 → 1.4 → 3.0 → 59]
+    var historyStr = historyVals.length > 1
+      ? ' история: [' + historyVals.join('→') + ']'
+      : '';
+    return ind.name + ': ' + last.val + ' ' + ind.unit + ' ' + statusTxt + ' (посл. ' + last.dateStr + ')' + historyStr;
+  });
+
+  // Сначала отклонения, потом норма — важное первым
+  indicatorLines.sort(function(a, b) {
+    var aHasFlag = a.indexOf('↑') !== -1 || a.indexOf('↓') !== -1;
+    var bHasFlag = b.indexOf('↑') !== -1 || b.indexOf('↓') !== -1;
+    if (aHasFlag && !bHasFlag) return -1;
+    if (!aHasFlag && bHasFlag) return 1;
+    return 0;
+  });
+
+  var analysesContext = indicatorLines.length
+    ? indicatorLines.join('\n')
     : 'Анализов пока нет — пользователь ещё не загрузил свои данные.';
 
-  // Дневник — последние 15 записей
-  var diaryEntries = getDiaryEntries().slice(0, 50);
+  // Дневник — последние 15 записей (было 50)
+  var diaryEntries = getDiaryEntries().slice(0, 15);
   var diaryContext = diaryEntries.length
     ? 'Последние записи дневника самочувствия:\n' + diaryEntries.map(function(e){ return '- ' + e.date + ' ' + e.time + ': ' + e.text; }).join('\n')
     : '';
@@ -6120,13 +6155,34 @@ function saveDocFile(name, text, base64Orig) {
 
 function deleteDocFile(id) {
   var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
+  // Находим файл чтобы знать его имя
+  var file = (sv.docfiles||[]).find(function(f){ return f.id === id; });
+  var fileName = file ? file.name : '';
   sv.docfiles = (sv.docfiles||[]).filter(function(f){ return f.id !== id; });
-  localStorage.setItem('yasna', JSON.stringify(sv));
-  var t = document.getElementById('toast');
-  t.classList.remove('on','confirm'); t.innerHTML='';
-  removeDecFile();
-  renderDocFiles();
-  setTimeout(function(){ toast('Файл удалён'); }, 80);
+  // v3.41 FIX: удаляем анализы связанные с этим файлом
+  // Анализы привязаны по имени файла через поле lab или id анализа
+  if (fileName && sv.analyses) {
+    var baseName = fileName.replace(/\.[^.]+$/, ''); // без расширения
+    var before = sv.analyses.length;
+    sv.analyses = sv.analyses.filter(function(a) {
+      // Удаляем анализ если его lab или dateStr содержит имя файла, или id совпадает
+      return !(a.lab && (a.lab === fileName || a.lab === baseName || a.lab === 'Загружено'));
+    });
+    var removed = before - sv.analyses.length;
+    localStorage.setItem('yasna', JSON.stringify(sv));
+    removeDecFile();
+    renderDocFiles();
+    renderHomeLastAnalysis();
+    var msg = removed > 0
+      ? 'Файл удалён · ' + removed + ' анализ' + (removed===1?'':removed<5?'а':'ов') + ' тоже удалено'
+      : 'Файл удалён';
+    setTimeout(function(){ toast(msg); }, 80);
+  } else {
+    localStorage.setItem('yasna', JSON.stringify(sv));
+    removeDecFile();
+    renderDocFiles();
+    setTimeout(function(){ toast('Файл удалён'); }, 80);
+  }
 }
 
 function confirmDeleteDocFile(id) {
@@ -7379,22 +7435,37 @@ function loadHealthSummary(forceRefresh) {
   if(!S.key){ document.getElementById('hwAiBody').innerHTML='<span style="color:var(--text3);font-size:13px">Добавь API-ключ в настройках чтобы ЯСНА&#770; дала персональный совет</span>'; return; }
   var today=new Date().toDateString();
   var cache=JSON.parse(localStorage.getItem(HW_CACHE_KEY)||'{}');
-  if(!forceRefresh && cache.date===today && cache.text){
-    renderHwText(cache.text, cache.time); return;
+  // v3.41 FIX: СРАЗУ показываем кэш, не ждём API
+  if(cache.date===today && cache.text){
+    renderHwText(cache.text, cache.time);
+    if(!forceRefresh) return;
   }
   var body=document.getElementById('hwAiBody');
-  body.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
   var btn=document.getElementById('hwRefreshBtn');
+  if(!cache.text) body.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
   if(btn) btn.classList.add('loading');
 
-  // Собираем контекст: дневник + анализы
+  // v3.41: только отклонения для виджета — самый компактный запрос
   var diary=getDiaryEntries().slice(0,5);
   var diaryCtx=diary.length?diary.map(function(e){return e.date+' '+e.time+': '+e.text;}).join('\n'):'нет записей';
   var sv2 = JSON.parse(localStorage.getItem('yasna')||'{}');
   var analyses=sv2.analyses||[];
-  var anCtx=analyses.length
-    ? analyses.slice(0,3).map(function(a){return a.dateStr+' '+a.type+': '+(a.markers||[]).map(function(m){return m.name+' '+m.val+(m.status!=='ok'?(m.status==='hi'?' ↑':' ↓'):'');}).join(', ');}).join('\n')
-    : 'Анализы ещё не загружены';
+  var latestByName={};
+  analyses.forEach(function(a){
+    (a.markers||[]).forEach(function(m){
+      if(!m.name||m.val==='—') return;
+      var key=m.name+'||'+(m.unit||'');
+      if(!latestByName[key]||a.date>(latestByName[key].date||''))
+        latestByName[key]={name:m.name,val:m.val,unit:m.unit||'',status:m.status,date:a.date,dateStr:a.dateStr};
+    });
+  });
+  var deviations=[];
+  Object.values(latestByName).forEach(function(m){
+    if(m.status!=='ok') deviations.push(m.name+': '+m.val+' '+m.unit+' '+(m.status==='hi'?'↑':'↓')+' ('+m.dateStr+')');
+  });
+  var anCtx=deviations.length
+    ? 'Отклонения от нормы:\n'+deviations.join('\n')
+    : analyses.length?'Все показатели в норме':'Анализы ещё не загружены';
   var cycleCtx=S.gender==='female'?getCycleContext():'';
   var f=S.gender==='female';
   var prompt='Ты ЯСНА — персональный AI-агент здоровья. Дай короткую живую сводку для '+S.name+' на сегодня.\n\n'+
@@ -7844,10 +7915,12 @@ function buildIndicatorsFromAnalyses() {
       if (!m.name || !m.val || m.val === '—') return;
       var v = parseFloat(m.val);
       if (isNaN(v)) return;
-      // v3.24: нормализуем имя (Hb → Гемоглобин и т.д.)
       var normName = normalizeIndicatorName(m.name);
-      if (!map[normName]) map[normName] = { name:normName, unit:m.unit||'', points:[] };
-      map[normName].points.push({ date:a.date, val:v, lab:a.lab });
+      var unit = (m.unit || '').trim();
+      // v3.41 FIX: ключ = normName + unit — Тромбоциты ×10⁹/л и Тромбоциты% не смешиваются
+      var mapKey = normName + '||' + unit;
+      if (!map[mapKey]) map[mapKey] = { name:normName, unit:unit, points:[] };
+      map[mapKey].points.push({ date:a.date, val:v, lab:a.lab });
     });
   });
   // Sort points by date
