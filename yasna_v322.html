@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.39</title>
+<title>ЯСНА v3.42</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -5125,7 +5125,15 @@ function renderPortrait(parsed, dateStr) {
 // Загружаем портрет при открытии настроек
 function loadPortraitInSettings() {
   var portrait = getPortrait();
-  if (!portrait) return;
+  if (!portrait) {
+    // Нет кэша — показываем подсказку
+    var content = document.getElementById('portraitContent');
+    if (content && content.children.length === 0) {
+      content.innerHTML = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;font-style:italic">Нажми «Обновить» — ЯСНА составит твой портрет здоровья</div>';
+    }
+    return;
+  }
+  // v3.42: кэш есть — показываем мгновенно без API
   renderPortrait(portrait.data, portrait.updatedAt);
 }
 
@@ -5303,13 +5311,22 @@ function processDecFile(file) {
     return;
   }
 
-  // v3.39 FIX — ЗАДАЧА 3: предупреждение о дублях (имя + размер)
+  // v3.42: блокируем дубли — один и тот же файл нельзя загрузить дважды
   var isDuplicate = decFilesData.some(function(f) {
     return f.name === file.name && f.size === file.size;
   });
   if (isDuplicate) {
-    toast('⚠️ «' + file.name.slice(0, 25) + '» похоже уже загружен — данные могут задвоиться на графике');
-    // Продолжаем загрузку — пользователь сам решает
+    toast('⛔ «' + file.name.slice(0, 25) + '» уже загружен — данные задвоятся в графиках');
+    return; // блокируем, не продолжаем
+  }
+  // Проверяем также среди уже сохранённых файлов в истории
+  var savedFiles = getDocFiles();
+  var alreadySaved = savedFiles.some(function(f) {
+    return f.name === file.name;
+  });
+  if (alreadySaved) {
+    toast('⚠️ Файл «' + file.name.slice(0, 20) + '» уже расшифровывался раньше');
+    // Предупреждаем но не блокируем — файл мог обновиться
   }
 
   decFileName = file.name;
@@ -5341,8 +5358,8 @@ function processDecFile(file) {
           .then(function(result) {
             var text = result.value || '';
             if (!text.trim()) { toast('⚠️ DOCX пустой или защищён'); return; }
-            decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
-            saveDocFile(file.name, text, base64Orig);
+            var docFileId = saveDocFile(file.name, text, base64Orig); // v3.42: получаем id
+            decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, docFileId:docFileId, extractedDate:extractDateFromText(text) });
             addDecFileRow(file.name, ext, sizeKb, fileId, icon);
           })
           .catch(function(err) { toast('⚠️ Ошибка чтения DOCX: ' + err.message); });
@@ -5358,8 +5375,8 @@ function processDecFile(file) {
       reader.onload = function(e) {
         extractPdfText(e.target.result).then(function(text) {
           if (!text.trim()) { toast('⚠️ PDF пустой или отсканированный — попробуй TXT'); return; }
-          decFilesData.push({ name:file.name, size:file.size, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
-          saveDocFile(file.name, text, base64Orig);
+          var docFileId = saveDocFile(file.name, text, base64Orig); // v3.42
+          decFilesData.push({ name:file.name, size:file.size, type:'text', data:text, fileId:fileId, docFileId:docFileId, extractedDate:extractDateFromText(text) });
           addDecFileRow(file.name, ext, sizeKb, fileId, icon);
         }).catch(function(err) { toast('⚠️ Ошибка чтения PDF: ' + err.message); });
       };
@@ -5369,10 +5386,9 @@ function processDecFile(file) {
   } else {
     reader.onload = function(e) {
       var txt = e.target.result;
-      decFilesData.push({ name:file.name, size:file.size, type:'text', data:txt, fileId:fileId, extractedDate:extractDateFromText(txt) });
-      // v3.30: для TXT сохраняем как data:text/plain;base64
       var b64 = 'data:text/plain;base64,' + btoa(unescape(encodeURIComponent(txt.slice(0,512000))));
-      saveDocFile(file.name, txt, b64);
+      var docFileId = saveDocFile(file.name, txt, b64); // v3.42
+      decFilesData.push({ name:file.name, size:file.size, type:'text', data:txt, fileId:fileId, docFileId:docFileId, extractedDate:extractDateFromText(txt) });
       addDecFileRow(file.name, ext, sizeKb, fileId, icon);
     };
     reader.readAsText(file);
@@ -6035,7 +6051,7 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
     rows.length ? rows : [{name:fd.name,val:'—',unit:'',status:{cls:'status-ok'}}],
     fd.extractedDate || (document.getElementById('decDate')?document.getElementById('decDate').value:''),
     document.getElementById('decLab')?document.getElementById('decLab').value:'',
-    conclusionFull, null);
+    conclusionFull, null, fd.docFileId || fd.fileId || null); // v3.42: передаём docFileId
   // Сохраняем контекст документа для передачи в чат (Баг 5 v3.37)
   if (fd.fileId) {
     decDocResults[fd.fileId] = {
@@ -6145,44 +6161,35 @@ function saveDocFile(name, text, base64Orig) {
     var hh = String(now.getHours()).padStart(2,'0');
     var mm = String(now.getMinutes()).padStart(2,'0');
     var dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' · ' + hh + ':' + mm;
-    // v3.30: сохраняем base64 оригинала (только первые 500KB чтобы не переполнить localStorage)
     var orig = base64Orig ? base64Orig.slice(0, 512000) : null;
     sv.docfiles.unshift({ id:id, name:name, date:dateStr, preview:preview, text:text.slice(0,10000), orig:orig });
     if (sv.docfiles.length > 50) sv.docfiles = sv.docfiles.slice(0,50);
     localStorage.setItem('yasna', JSON.stringify(sv));
-  } catch(e) { console.warn('saveDocFile error', e.message); }
+    return id; // v3.42: возвращаем fileId для связи с анализами
+  } catch(e) { console.warn('saveDocFile error', e.message); return null; }
 }
 
 function deleteDocFile(id) {
   var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
-  // Находим файл чтобы знать его имя
   var file = (sv.docfiles||[]).find(function(f){ return f.id === id; });
-  var fileName = file ? file.name : '';
   sv.docfiles = (sv.docfiles||[]).filter(function(f){ return f.id !== id; });
-  // v3.41 FIX: удаляем анализы связанные с этим файлом
-  // Анализы привязаны по имени файла через поле lab или id анализа
-  if (fileName && sv.analyses) {
-    var baseName = fileName.replace(/\.[^.]+$/, ''); // без расширения
+  // v3.42: удаляем анализы строго по sourceFileId — больше не трогаем чужие анализы
+  var removed = 0;
+  if (sv.analyses) {
     var before = sv.analyses.length;
     sv.analyses = sv.analyses.filter(function(a) {
-      // Удаляем анализ если его lab или dateStr содержит имя файла, или id совпадает
-      return !(a.lab && (a.lab === fileName || a.lab === baseName || a.lab === 'Загружено'));
+      return a.sourceFileId !== id;
     });
-    var removed = before - sv.analyses.length;
-    localStorage.setItem('yasna', JSON.stringify(sv));
-    removeDecFile();
-    renderDocFiles();
-    renderHomeLastAnalysis();
-    var msg = removed > 0
-      ? 'Файл удалён · ' + removed + ' анализ' + (removed===1?'':removed<5?'а':'ов') + ' тоже удалено'
-      : 'Файл удалён';
-    setTimeout(function(){ toast(msg); }, 80);
-  } else {
-    localStorage.setItem('yasna', JSON.stringify(sv));
-    removeDecFile();
-    renderDocFiles();
-    setTimeout(function(){ toast('Файл удалён'); }, 80);
+    removed = before - sv.analyses.length;
   }
+  localStorage.setItem('yasna', JSON.stringify(sv));
+  removeDecFile();
+  renderDocFiles();
+  renderHomeLastAnalysis();
+  var msg = removed > 0
+    ? 'Файл удалён · ' + removed + ' анализ' + (removed===1?'':removed<5?'а':'ов') + ' тоже удалено'
+    : 'Файл удалён';
+  setTimeout(function(){ toast(msg); }, 80);
 }
 
 function confirmDeleteDocFile(id) {
@@ -7327,9 +7334,8 @@ function detectCategory(rows) {
   return 'blood';
 }
 
-function saveDecodeAsAnalysis(rows, date, lab, summary, category) {
+function saveDecodeAsAnalysis(rows, date, lab, summary, category, sourceFileId) {
   if(!rows||!rows.length) return;
-  // v3.25: автоопределяем категорию если не передана явно
   var cat = category || detectCategory(rows);
   var parts=[];
   if(cat==='blood'){
@@ -7347,7 +7353,8 @@ function saveDecodeAsAnalysis(rows, date, lab, summary, category) {
     var cl=r.status&&r.status.cls?r.status.cls:'';
     return{name:r.name,val:r.val,unit:r.unit||'',status:cl.indexOf('hi')!==-1?'hi':cl.indexOf('lo')!==-1?'lo':'ok'};
   });
-  saveAnalysisRecord({id:'an-'+now.getTime(),date:date||now.toISOString().split('T')[0],dateStr:dStr,lab:lab||'Загружено',type:type,category:cat,markers:markers,summary:summary||'',isDemo:false});
+  // v3.42: sourceFileId — точная связь анализа с файлом, по которому можно удалить
+  saveAnalysisRecord({id:'an-'+now.getTime(),date:date||now.toISOString().split('T')[0],dateStr:dStr,lab:lab||'Загружено',type:type,category:cat,markers:markers,summary:summary||'',isDemo:false,sourceFileId:sourceFileId||null});
   toast('✓ Сохранено в Анализы');
 }
 
