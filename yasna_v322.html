@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.37</title>
+<title>ЯСНА v3.39</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -1591,6 +1591,16 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .yc-cal-cell.period { background:rgba(192,57,89,.22); color:#FFB0C0; font-weight:700; }
 .yc-cal-cell.period.today { background:rgba(255,80,110,.35); border-color:#FF6B8A; color:white; }
 .yc-cal-cell.predicted { background:rgba(124,58,237,.12); color:var(--accent2); border:1px dashed rgba(124,58,237,.35); }
+/* v3.40: выбранная дата начала цикла */
+.yc-cal-cell.selecting {
+  background: rgba(255,90,90,.22) !important;
+  border: 1.5px solid rgba(255,90,90,.7) !important;
+  color: #FFB0C0 !important;
+  font-weight: 800 !important;
+}
+/* v3.40: прошедшие даты — кликабельные */
+.yc-cal-cell.past-tap { cursor: pointer; }
+.yc-cal-cell.past-tap:active { background: rgba(255,255,255,.12); }
 .light .yc-cal-cell { color:var(--text2); }
 .light .yc-cal-cell.period { background:rgba(192,57,89,.15); color:#C0392B; }
 .light .yc-cal-cell.predicted { background:rgba(124,58,237,.08); }
@@ -2209,6 +2219,24 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .gr-empty-t { font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--text); opacity:.55; font-weight:600; }
 .gr-empty-s { font-size:14px; color:var(--text3); line-height:1.6; max-width:260px; }
 .gr-empty-btn { padding:9px 22px; cursor:pointer; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.25); border-radius:20px; font-size:12px; font-weight:700; color:var(--accent); font-family:'Jost',sans-serif; }
+
+/* v3.39: пустое состояние когда нет данных за выбранный период */
+.gr-period-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px;
+  padding: 24px 20px; text-align: center;
+}
+.gr-period-empty-t {
+  font-size: 13px; color: var(--text3); font-style: italic;
+}
+.gr-period-empty-btn {
+  padding: 7px 18px; cursor: pointer;
+  background: rgba(188,207,255,.10); border: 1px solid rgba(188,207,255,.25);
+  border-radius: 16px; font-size: 12px; font-weight: 700;
+  color: var(--accent); font-family: 'Jost', sans-serif;
+  transition: all .2s;
+}
+.gr-period-empty-btn:active { background: rgba(188,207,255,.20); }
 
 /* ══ ДЕТАЛЬНЫЙ ГРАФИК v3.24 ══ */
 .gr-detail-hdr {
@@ -4872,6 +4900,31 @@ function buildPortraitContext() {
     if (genes) lines.push('Маркеры: ' + genes);
   }
 
+  // v3.39 FIX — ЗАДАЧА 6: Ясный цикл для женщин
+  if (S.gender === 'female') {
+    var cycleData = getCycleData();
+    var cycleCtxLine = getCycleContext();
+    if (cycleCtxLine || (cycleData.periods && cycleData.periods.length)) {
+      lines.push('\n=== МЕНСТРУАЛЬНЫЙ ЦИКЛ ===');
+      if (cycleCtxLine) lines.push(cycleCtxLine);
+      if (cycleData.periods && cycleData.periods.length) {
+        lines.push('История: ' + cycleData.periods.length + ' цикл(ов) записано');
+        lines.push('Средняя длина цикла: ' + (cycleData.avgLen || 28) + ' дней');
+        var latestPeriod = cycleData.periods[0];
+        if (latestPeriod) {
+          var durStr = latestPeriod.duration ? ', длился ' + latestPeriod.duration + ' дней' : '';
+          lines.push('Последняя менструация: ' + new Date(latestPeriod.start).toLocaleDateString('ru-RU', {day:'numeric', month:'long'}) + durStr);
+        }
+        var pd = getCyclePhase();
+        if (pd) {
+          lines.push('Текущая фаза: ' + pd.phaseName + ', день цикла ' + pd.day + ' из ' + pd.cycleLen);
+        }
+      } else if (cycleData.activePeriod && !cycleData.activePeriod.end) {
+        lines.push('Сейчас идут месячные');
+      }
+    }
+  }
+
   // Трекер — последние 30 дней
   var ypDays = getYpDays ? getYpDays() : {};
   var trackerLines = [];
@@ -4934,7 +4987,9 @@ async function buildPortrait() {
     '    { "category": "labs", "icon": "🩸", "label": "Анализы", "insight": "ключевая динамика или связь" },\n' +
     '    { "category": "dna", "icon": "🧬", "label": "ДНК + здоровье", "insight": "связь генов с реальными данными" },\n' +
     '    { "category": "lifestyle", "icon": "🌿", "label": "Образ жизни", "insight": "привычки, паттерны, факторы риска" },\n' +
-    '    { "category": "energy", "icon": "⚡", "label": "Энергия", "insight": "паттерн энергии и что на неё влияет" }\n' +
+    '    { "category": "energy", "icon": "⚡", "label": "Энергия", "insight": "паттерн энергии и что на неё влияет" }' +
+    (S.gender === 'female' ? ',\n    { "category": "cycle", "icon": "🌙", "label": "Цикл и гормоны", "insight": "паттерны цикла, связь фаз с самочувствием из дневника" }' : '') +
+    '\n' +
     '  ],\n' +
     '  "risks": ["риск 1", "риск 2"],\n' +
     '  "strengths": ["сильная сторона 1", "сильная сторона 2"]\n' +
@@ -4954,9 +5009,12 @@ async function buildPortrait() {
         messages: [{ role: 'user', content: prompt }] })
     });
     var data = await res.json();
+    if (data.error) { throw new Error(data.error.message || 'API error'); }
     var raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
-    var clean = raw.replace(/```json|```/g, '').trim();
-    var parsed = JSON.parse(clean);
+    // v3.39 FIX: надёжный JSON parse — ищем первое {...} в ответе
+    var jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) { throw new Error('JSON не найден в ответе AI'); }
+    var parsed = JSON.parse(jsonMatch[0]);
 
     var now = new Date();
     var dateStr = now.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
@@ -4966,8 +5024,9 @@ async function buildPortrait() {
     renderPortrait(parsed, dateStr + ' в ' + timeStr);
     toast('✓ Портрет обновлён');
   } catch(e) {
-    if (content) content.innerHTML = '<div style="font-size:13px;color:var(--danger);padding:8px 0">⚠️ Ошибка — проверь API-ключ</div>';
-    toast('⚠️ Не удалось обновить портрет');
+    var errMsg = e.message || 'Неизвестная ошибка';
+    if (content) content.innerHTML = '<div style="font-size:13px;color:var(--danger);padding:8px 0">⚠️ Ошибка: ' + errMsg.slice(0, 100) + '</div>';
+    toast('⚠️ Портрет: ' + errMsg.slice(0, 40));
   } finally {
     if (btn) {
       btn.classList.remove('loading');
@@ -5202,6 +5261,22 @@ function handleDecFile(input, type) {
 }
 
 function processDecFile(file) {
+  // v3.39 FIX — ЗАДАЧА 2: лимит 5 файлов при добавлении
+  var MAX_FILES = 5;
+  if (decFilesData.length >= MAX_FILES) {
+    toast('⚠️ Максимум ' + MAX_FILES + ' файлов за раз. Расшифруй текущие и добавляй снова.');
+    return;
+  }
+
+  // v3.39 FIX — ЗАДАЧА 3: предупреждение о дублях (имя + размер)
+  var isDuplicate = decFilesData.some(function(f) {
+    return f.name === file.name && f.size === file.size;
+  });
+  if (isDuplicate) {
+    toast('⚠️ «' + file.name.slice(0, 25) + '» похоже уже загружен — данные могут задвоиться на графике');
+    // Продолжаем загрузку — пользователь сам решает
+  }
+
   decFileName = file.name;
   var fileId = 'F-' + Date.now().toString(36).toUpperCase().slice(-5);
   var ext = file.name.split('.').pop().toUpperCase();
@@ -5214,7 +5289,7 @@ function processDecFile(file) {
   var reader = new FileReader();
   if (file.type.startsWith('image/')) {
     reader.onload = function(e) {
-      decFilesData.push({ name:file.name, type:'image', data:e.target.result, mime:file.type, fileId:fileId });
+      decFilesData.push({ name:file.name, size:file.size, type:'image', data:e.target.result, mime:file.type, fileId:fileId });
       addDecFileRow(file.name, ext, sizeKb, fileId, icon);
     };
     reader.readAsDataURL(file);
@@ -5248,7 +5323,7 @@ function processDecFile(file) {
       reader.onload = function(e) {
         extractPdfText(e.target.result).then(function(text) {
           if (!text.trim()) { toast('⚠️ PDF пустой или отсканированный — попробуй TXT'); return; }
-          decFilesData.push({ name:file.name, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
+          decFilesData.push({ name:file.name, size:file.size, type:'text', data:text, fileId:fileId, extractedDate:extractDateFromText(text) });
           saveDocFile(file.name, text, base64Orig);
           addDecFileRow(file.name, ext, sizeKb, fileId, icon);
         }).catch(function(err) { toast('⚠️ Ошибка чтения PDF: ' + err.message); });
@@ -5259,7 +5334,7 @@ function processDecFile(file) {
   } else {
     reader.onload = function(e) {
       var txt = e.target.result;
-      decFilesData.push({ name:file.name, type:'text', data:txt, fileId:fileId, extractedDate:extractDateFromText(txt) });
+      decFilesData.push({ name:file.name, size:file.size, type:'text', data:txt, fileId:fileId, extractedDate:extractDateFromText(txt) });
       // v3.30: для TXT сохраняем как data:text/plain;base64
       var b64 = 'data:text/plain;base64,' + btoa(unescape(encodeURIComponent(txt.slice(0,512000))));
       saveDocFile(file.name, txt, b64);
@@ -6358,22 +6433,9 @@ function togglePeriodStart() {
   toast('Отмечено ✓');
 }
 
-// v3.36: показывает/скрывает date picker под кнопкой «Начались»
-function togglePeriodStartPicker() {
-  var data = getCycleData();
-  if (data.activePeriod && !data.activePeriod.end) {
-    toast('Цикл уже отмечен как начавшийся');
-    return;
-  }
-  var wrap = document.getElementById('ycDatePickerWrap');
-  if (!wrap) return;
-  var isVisible = wrap.style.display !== 'none';
-  wrap.style.display = isVisible ? 'none' : 'block';
-  var btn = document.getElementById('ycStartBtn');
-  if (btn) btn.style.background = isVisible ? '' : 'rgba(255,90,90,.12)';
-}
+// v3.40: togglePeriodStartPicker удалена — вместо неё тап на дату в календаре (ycSelectStartDate)
 
-// v3.36: сохраняет выбранную дату начала цикла
+// v3.36 → v3.40: confirmPeriodStart оставлена как fallback (не вызывается из UI)
 function confirmPeriodStart() {
   var inp = document.getElementById('ycStartDateInput');
   if (!inp || !inp.value) { toast('Выбери дату'); return; }
@@ -6485,11 +6547,11 @@ function getCycleContext() {
   lines.push('Средний цикл: ' + avgLen + ' дней');
 
   if (data.activePeriod && !data.activePeriod.end) {
-    var day = Math.round((Date.now() - data.activePeriod.start) / (1000*60*60*24)) + 1;
+    var day = Math.floor((Date.now() - data.activePeriod.start) / (1000*60*60*24)) + 1;
     lines.push('Сейчас идут месячные, день ' + day);
   } else if (data.periods.length) {
     var lastStart = data.periods[0].start;
-    var cycleDay = Math.round((Date.now() - lastStart) / (1000*60*60*24)) + 1;
+    var cycleDay = Math.floor((Date.now() - lastStart) / (1000*60*60*24)) + 1;
     var daysLeft = avgLen - cycleDay;
     lines.push('Текущий день цикла: ' + cycleDay);
     if (daysLeft <= 0) lines.push('ЗАДЕРЖКА: ' + Math.abs(daysLeft) + ' дней');
@@ -6509,12 +6571,12 @@ function getCyclePhase() {
   var data = getCycleData();
   var avgLen = data.avgLen || 28;
   if (data.activePeriod && !data.activePeriod.end) {
-    var day = Math.round((Date.now() - data.activePeriod.start) / (1000*60*60*24)) + 1;
+    var day = Math.floor((Date.now() - data.activePeriod.start) / (1000*60*60*24)) + 1;
     return { day:day, phase:'menstruation', phaseName:'Менструация', cycleLen:avgLen, lastStart:data.activePeriod.start };
   }
   if (!data.periods || !data.periods.length) return null;
   var lastStart = data.periods[0].start;
-  var day = Math.round((Date.now() - lastStart) / (1000*60*60*24)) + 1;
+  var day = Math.floor((Date.now() - lastStart) / (1000*60*60*24)) + 1;
   var phase, phaseName;
   if (day <= 5)       { phase='menstruation'; phaseName='Менструация'; }
   else if (day <= 13) { phase='follicular';   phaseName='Фолликулярная'; }
@@ -6789,11 +6851,15 @@ function ycToggleCollapse() {
 }
 
 function openYasnyCycleSheet() {
-  ycCalOffset = 0; // всегда открываем с текущего месяца
+  ycCalOffset = 0;
+  ycSelectingDate = null; // v3.40: сбрасываем выбор при открытии
   document.getElementById('ycOverlay').classList.add('on');
   renderYcSheet();
 }
-function closeYcSheet() { document.getElementById('ycOverlay').classList.remove('on'); }
+function closeYcSheet() {
+  ycSelectingDate = null; // v3.40: сбрасываем выбор при закрытии
+  document.getElementById('ycOverlay').classList.remove('on');
+}
 function ycOverlayClick(e) { if (e.target === document.getElementById('ycOverlay')) closeYcSheet(); }
 
 function renderYcSheet() {
@@ -6813,18 +6879,22 @@ function renderYcSheet() {
   var isPeriodActive = data.activePeriod && !data.activePeriod.end;
   var startStyle = isPeriodActive ? 'background:rgba(255,90,90,.22);border-color:rgba(255,90,90,.5)' : '';
   var startTxt = isPeriodActive ? 'Идут сейчас' : 'Начались';
-  var todayIso = new Date().toISOString().split('T')[0];
-  // v3.36: date picker — видим только если период НЕ активен
-  var datePickerHtml = !isPeriodActive
-    ? '<div id="ycDatePickerWrap" style="display:none;margin-bottom:8px;animation:fin .25s ease">' +
-        '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Выбери первый день</div>' +
-        '<div style="display:flex;gap:8px;align-items:center">' +
-          '<input type="date" id="ycStartDateInput" max="' + todayIso + '" value="' + todayIso + '"' +
-            ' style="flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--rx);padding:10px 13px;font-family:Jost,sans-serif;font-size:15px;color:var(--text);outline:none;-webkit-appearance:none">' +
-          '<button onclick="confirmPeriodStart()" style="height:42px;padding:0 16px;border-radius:var(--rx);border:none;background:rgba(255,90,90,.20);border:1px solid rgba(255,90,90,.45);color:var(--danger);font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Подтвердить</button>' +
-        '</div>' +
-      '</div>'
-    : '';
+
+  // v3.40: кнопка подтверждения вместо date picker — появляется после тапа на дату
+  var confirmHtml = '';
+  if (!isPeriodActive && ycSelectingDate) {
+    var selDate = new Date(ycSelectingDate + 'T00:00:00');
+    var selDateStr = selDate.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+    confirmHtml =
+      '<div id="ycConfirmBtn" style="display:flex;align-items:center;gap:10px;padding:12px 14px;' +
+        'background:rgba(255,90,90,.12);border:1px solid rgba(255,90,90,.40);' +
+        'border-radius:var(--rx);margin-bottom:8px;animation:fin .25s ease">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg>' +
+        '<div style="flex:1;font-size:14px;font-weight:600;color:var(--text)">' + selDateStr + ' — первый день</div>' +
+        '<button onclick="ycConfirmSelectedDate()" style="height:36px;padding:0 14px;border-radius:var(--rx);border:none;background:rgba(255,90,90,.25);border:1px solid rgba(255,90,90,.55);color:var(--danger);font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">✓ Подтвердить</button>' +
+      '</div>';
+  }
+
   document.getElementById('ycSheetContent').innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">' +
       '<div style="font-family:Georgia,serif;font-size:26px;font-weight:600;color:var(--text)">Ясный цикл</div>' +
@@ -6836,15 +6906,16 @@ function renderYcSheet() {
       '<div class="yc-stat"><div class="yc-stat-val">' + (pd && avgLen - pd.day > 0 ? avgLen - pd.day : '—') + '</div><div class="yc-stat-lbl">до следующего</div></div>' +
       '<div class="yc-stat"><div class="yc-stat-val">' + avgLen + '</div><div class="yc-stat-lbl">дней цикл</div></div>' +
     '</div>' +
+    confirmHtml +
     '<div style="display:flex;gap:8px;margin-bottom:8px">' +
-      '<button class="cycle-btn cycle-btn-start" id="ycStartBtn" onclick="togglePeriodStartPicker()" style="' + startStyle + '">' +
+      '<button class="cycle-btn cycle-btn-start" id="ycStartBtn" style="' + startStyle + '" ' +
+        (isPeriodActive ? 'onclick="toast(\'Цикл уже активен\')"' : 'onclick="toast(\'Нажми на дату в календаре выше ↑\')"') + '>' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg> ' + startTxt +
       '</button>' +
       '<button class="cycle-btn cycle-btn-end" onclick="markPeriodEnd();renderYcSheet();renderYasnyCycle()">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Закончились' +
       '</button>' +
     '</div>' +
-    datePickerHtml +
     '<button onclick="cancelLastCycleAction();renderYcSheet();renderYasnyCycle()" style="width:100%;height:38px;border-radius:var(--rx);background:var(--glass);border:1px solid var(--glass-border);color:var(--text3);font-family:Jost,sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg> Отменить последнее' +
     '</button>' +
@@ -6864,6 +6935,7 @@ function renderYcSheet() {
 
 // Текущий просматриваемый месяц в шторке
 var ycCalOffset = 0; // 0 = текущий, 1 = следующий, -1 = предыдущий
+var ycSelectingDate = null; // v3.40: дата выбранная тапом в календаре (до подтверждения)
 
 function renderYcCalendar(data) {
   var now = new Date();
@@ -6932,17 +7004,31 @@ function renderYcCalendar(data) {
   ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(function(d){ html += '<div class="yc-cal-dow">' + d + '</div>'; });
   for (var i = 0; i < firstDay; i++) html += '<div class="yc-cal-cell"></div>';
   for (var day = 1; day <= daysInMonth; day++) {
+    var dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    var isFuture = dateStr > (now.toISOString().split('T')[0]);
     var cls = 'yc-cal-cell';
     if (periodDays.has(day)) cls += ' period';
     else if (predictedDays.has(day)) cls += ' predicted';
     if (isCurrentMonth && day === today) cls += ' today';
-    html += '<div class="' + cls + '">' + day + '</div>';
+    // v3.40: выбранная дата начала
+    if (dateStr === ycSelectingDate) cls += ' selecting';
+    // v3.40: кликабельность — только прошедшие и сегодня, не в активном периоде
+    var isPeriodActive = data.activePeriod && !data.activePeriod.end;
+    var clickable = !isFuture && !isPeriodActive;
+    var onclick = clickable ? ' onclick="ycSelectStartDate(\'' + dateStr + '\')"' : '';
+    if (clickable && !periodDays.has(day)) cls += ' past-tap';
+    html += '<div class="' + cls + '"' + onclick + '>' + day + '</div>';
   }
   // Легенда
+  var isPeriodActiveForLegend = data.activePeriod && !data.activePeriod.end;
+  var hint = !isPeriodActiveForLegend
+    ? '<div class="yc-cal-legend-item" style="color:var(--text2);font-weight:700">← Тапни на дату чтобы начать цикл</div>'
+    : '';
   var legend = '<div class="yc-cal-legend">' +
     '<div class="yc-cal-legend-item"><span class="yc-cal-legend-dot period"></span>Менструация</div>' +
     '<div class="yc-cal-legend-item"><span class="yc-cal-legend-dot predicted"></span>Прогноз</div>' +
     '<div class="yc-cal-legend-item"><span class="yc-cal-legend-dot today"></span>Сегодня</div>' +
+    hint +
   '</div>';
   return html + '</div>' + legend + '</div>';
 }
@@ -6952,6 +7038,46 @@ function ycCalNav(dir) {
   if (newOffset < -6 || newOffset > 3) return;
   ycCalOffset = newOffset;
   renderYcSheet();
+}
+
+// v3.40: тап на дату в календаре — выбираем как начало цикла
+function ycSelectStartDate(dateStr) {
+  var data = getCycleData();
+  // Если цикл уже активен — ничего не делаем
+  if (data.activePeriod && !data.activePeriod.end) {
+    toast('Цикл уже отмечен как начавшийся');
+    return;
+  }
+  // Переключаем выбор: тап на уже выбранную дату — снимаем выбор
+  if (ycSelectingDate === dateStr) {
+    ycSelectingDate = null;
+  } else {
+    ycSelectingDate = dateStr;
+  }
+  // Перерисовываем только шторку — calendar обновит подсветку
+  renderYcSheet();
+  // Скроллим к кнопке подтверждения
+  setTimeout(function() {
+    var confirmEl = document.getElementById('ycConfirmBtn');
+    if (confirmEl) confirmEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+// v3.40: подтверждение выбранной даты
+function ycConfirmSelectedDate() {
+  if (!ycSelectingDate) { toast('Выбери дату в календаре'); return; }
+  var data = getCycleData();
+  if (data.activePeriod && !data.activePeriod.end) { toast('Цикл уже активен'); return; }
+  var parts = ycSelectingDate.split('-');
+  var chosen = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]), 0, 0, 0);
+  data.activePeriod = { start: chosen.getTime(), end: null };
+  saveCycleData(data);
+  var dateStr = chosen.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+  chatThreads['general'].history.push({ role:'user', content:'Начались месячные ' + dateStr });
+  ycSelectingDate = null;
+  renderYcSheet();
+  renderYasnyCycle();
+  toast('Отмечено ✓ · ' + dateStr);
 }
 
 function ycQuickWrite() {
@@ -7742,7 +7868,8 @@ function filterByPeriod(points) {
   var months = GR_PERIOD === '3m' ? 3 : GR_PERIOD === '6m' ? 6 : 12;
   var cutoff = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
   var filtered = points.filter(function(p){ return new Date(p.date) >= cutoff; });
-  return filtered.length ? filtered : points; // fallback to all if none in period
+  // v3.39 FIX: убран fallback — пустой массив означает нет данных за выбранный период
+  return filtered;
 }
 
 function clearGrIndicator() {
@@ -7872,7 +7999,7 @@ function renderGraphs() {
 
   var cardsHtml = toRender.map(function(ind) {
     var pts = filterByPeriod(ind.points);
-    return renderGraphCard(ind, pts, isDemo);
+    return renderGraphCard(ind, pts, ind.points, isDemo);
   }).join('');
 
   var backHtml = GR_INDICATOR
@@ -7887,10 +8014,13 @@ function renderGraphs() {
   scroll.innerHTML = chipsHtml + backHtml + perHtml + cardsHtml + '<div style="height:16px"></div>';
 }
 
-function renderGraphCard(ind, points, isDemo) {
+function renderGraphCard(ind, points, allPoints, isDemo) {
+  // allPoints — все точки показателя (для fallback при пустом периоде)
+  var allPts = allPoints || points;
   var norm = GR_NORMS[ind.name];
   var normRange = norm ? (norm.both || (S.gender==='female' ? norm.f : norm.m)) : null;
-  var latest = points[points.length - 1];
+  // v3.39: last value берём из allPts (все данные), не из отфильтрованных
+  var latest = allPts.length ? allPts[allPts.length - 1] : (points.length ? points[points.length - 1] : null);
   var latestVal = latest ? latest.val : null;
 
   var status = 'ok';
@@ -7928,10 +8058,20 @@ function renderGraphCard(ind, points, isDemo) {
     '</div>';
   }
 
-  // SVG график — v3.24: передаём имя для кликабельных точек
-  var svgHtml = points.length >= 2
-    ? drawLineSVG(points, normRange, status, ind.name, false)
-    : drawSinglePoint(points[0], normRange, status);
+  // v3.39 FIX: пустое состояние когда нет данных за выбранный период
+  var svgHtml;
+  if (points.length === 0) {
+    var periodLabels = {'3m':'3 месяца', '6m':'6 месяцев', '1y':'год', 'all':'весь период'};
+    var periodLabel = periodLabels[GR_PERIOD] || GR_PERIOD;
+    svgHtml = '<div class="gr-period-empty">' +
+      '<div class="gr-period-empty-t">Нет данных за ' + periodLabel + '</div>' +
+      '<button class="gr-period-empty-btn" onclick="event.stopPropagation();var btn=document.querySelector(\'.gr-period[data-per=\\\'all\\\']\');if(btn)setGrPeriod(\'all\',btn);">Показать все данные</button>' +
+    '</div>';
+  } else if (points.length >= 2) {
+    svgHtml = drawLineSVG(points, normRange, status, ind.name, false);
+  } else {
+    svgHtml = drawSinglePoint(points[0], normRange, status);
+  }
 
   var safeInd = (ind.name||'').replace(/'/g,"\\'");
 
