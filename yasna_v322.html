@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ЯСНА v3.42</title>
+<title>ЯСНА v3.43</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -3995,16 +3995,22 @@ function go(name) {
   if (nb) nb.classList.add('on');
   var disc = document.getElementById('globalDisc');
   if (disc) disc.style.display = name === 'chat' ? 'none' : '';
-  if (name === 'chat' && !chatInited) {
-    chatInited = true;
-    if (chatThreads['general'].dom && chatThreads['general'].history.length) {
-      var mEl = document.getElementById('chatMsgs');
-      if (mEl) {
-        mEl.innerHTML = chatThreads['general'].dom;
-        setTimeout(function(){ mEl.scrollTop = mEl.scrollHeight; }, 50);
+  if (name === 'chat') {
+    if (!chatInited) {
+      chatInited = true;
+      if (chatThreads['general'].dom && chatThreads['general'].history.length) {
+        var mEl = document.getElementById('chatMsgs');
+        if (mEl) {
+          mEl.innerHTML = chatThreads['general'].dom;
+          setTimeout(function(){ mEl.scrollTop = mEl.scrollHeight; }, 50);
+        }
+      } else {
+        initWelcome();
       }
-    } else {
-      initWelcome();
+    } else if (activeThread !== 'general') {
+      // v3.43: при повторном входе в чат — всегда возвращаем в general тред
+      // чтобы не показывало ДНК/анализы/расшифровку которые были открыты раньше
+      switchThread('general');
     }
   }
   if (name === 'analyses') { renderAnalyses(); var as = document.getElementById('s-analyses'); if(as) as.scrollTop = 0; }
@@ -4103,10 +4109,8 @@ function send() {
   if (!S.key) { openSettings(); toast('Сначала добавь API-ключ'); return; }
   inp.value = ''; inp.style.height = '';
   saveDiaryEntry(txt);
-  if (!chatInited) { chatInited = true; }
-
-  // v3.34: Баг 6 — принудительно переключаем на general тред
-  // чтобы ответ не улетал в ДНК / расшифровку / другой открытый тред
+  // v3.43: перед переходом в чат — всегда переключаемся в general тред
+  // и восстанавливаем его DOM, даже если chatInited уже true
   if (activeThread !== 'general') {
     activeThread = 'general';
     document.querySelectorAll('.chat-thread-chip').forEach(function(c){ c.classList.remove('thread-active'); });
@@ -4117,6 +4121,15 @@ function send() {
     var backBtn = document.getElementById('chatBackBtn');
     if (backBtn) backBtn.style.display = 'none';
   }
+  // Принудительно восстанавливаем DOM general треда в chatMsgs до go('chat')
+  // чтобы addMessage() добавил сообщение в правильное место
+  var msgsPrep = document.getElementById('chatMsgs');
+  if (msgsPrep && chatThreads['general'].dom) {
+    msgsPrep.innerHTML = chatThreads['general'].dom;
+  } else if (msgsPrep && !chatInited) {
+    msgsPrep.innerHTML = '<div class="chat-day-sep">Сегодня</div>';
+  }
+  chatInited = true;
   chatHistory = chatThreads['general'].history.slice();
   chatHistory.push({ role: 'user', content: txt });
   chatThreads['general'].history = chatHistory.slice();
@@ -4127,28 +4140,64 @@ function send() {
   var chips = document.getElementById('chatChips');
   if (chips) chips.style.display = 'none';
   chipsVisible = false;
-  fetch('https://api.deepseek.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
-    body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, messages: [{role:'system',content:getChatSystemPrompt()}].concat(chatHistory) })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    showTyping(false);
-    var ans = '';
-    if (d.error) { ans = '⚠️ ' + (d.error.message || 'Проверь API-ключ в настройках'); }
-    else {
-      ans = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || 'Попробуй ещё раз.';
-      chatThreads['general'].history.push({ role: 'assistant', content: ans });
+
+  // v3.43: streaming — текст появляется по символам как в sendChat()
+  (async function() {
+    try {
+      var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+        body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true,
+          messages: [{role:'system',content:getChatSystemPrompt()}].concat(chatHistory) })
+      });
+      if (!res.ok || !res.body) {
+        showTyping(false);
+        var errData = await res.json().catch(function(){ return {}; });
+        addMessage('⚠️ ' + ((errData.error && errData.error.message) || 'Проверь API-ключ'), false);
+        return;
+      }
+      showTyping(false);
+      var msgDiv = addMessage('', false);
+      var bubble = msgDiv ? msgDiv.querySelector('.msg-bubble-ai') : null;
+      var fullText = '';
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = '';
+      while (true) {
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buffer += decoder.decode(chunk.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line.startsWith('data: ')) continue;
+          var data = line.slice(6);
+          if (data === '[DONE]') break;
+          try {
+            var parsed = JSON.parse(data);
+            var delta = (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content) || '';
+            if (delta) {
+              fullText += delta;
+              if (bubble) bubble.innerHTML = parseMarkdown(fullText);
+              var msgsEl = document.getElementById('chatMsgs');
+              if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
+            }
+          } catch(e) {}
+        }
+      }
+      if (!fullText) fullText = 'Попробуй ещё раз.';
+      chatThreads['general'].history.push({ role: 'assistant', content: fullText });
       if (chatThreads['general'].history.length > 100) chatThreads['general'].history = chatThreads['general'].history.slice(-100);
       chatHistory = chatThreads['general'].history.slice();
+      var msgsEl2 = document.getElementById('chatMsgs');
+      if (msgsEl2) chatThreads['general'].dom = msgsEl2.innerHTML;
+      saveChatHistory();
+    } catch(e) {
+      showTyping(false);
+      addMessage('⚠️ Нет соединения. Проверь интернет.', false);
     }
-    addMessage(ans, false);
-    var msgsEl = document.getElementById('chatMsgs');
-    if (msgsEl) chatThreads['general'].dom = msgsEl.innerHTML;
-    saveChatHistory();
-  })
-  .catch(function() { showTyping(false); addMessage('⚠️ Нет соединения. Проверь интернет.', false); });
+  })();
 }
 
 var chatHistory = [];
@@ -5272,7 +5321,31 @@ var decMethod = 'photo';
 var decFilesData = [];
 var decFileName = '';
 var decLastResult = '';
-var decDocResults = {}; // fileId → { name, conclusion, markers }
+// v3.43: decDocResults хранится в localStorage чтобы не терялся при смене экрана
+var decDocResults = {}; // fileId → { name, conclusion, markers } — кэш в памяти
+
+function saveDecDocResult(fileId, data) {
+  decDocResults[fileId] = data; // кэш в памяти
+  try {
+    var sv = JSON.parse(localStorage.getItem('yasna_decode_results') || '{}');
+    sv[fileId] = data;
+    // Не храним base64 — только текст и маркеры. Чистим старые (>20)
+    var keys = Object.keys(sv);
+    if (keys.length > 20) {
+      keys.slice(0, keys.length - 20).forEach(function(k){ delete sv[k]; });
+    }
+    localStorage.setItem('yasna_decode_results', JSON.stringify(sv));
+  } catch(e) {}
+}
+
+function getDecDocResult(fileId) {
+  if (decDocResults[fileId]) return decDocResults[fileId];
+  try {
+    var sv = JSON.parse(localStorage.getItem('yasna_decode_results') || '{}');
+    if (sv[fileId]) { decDocResults[fileId] = sv[fileId]; return sv[fileId]; }
+  } catch(e) {}
+  return null;
+}
 
 function setDecMethod(m) {
   decMethod = m;
@@ -5681,8 +5754,16 @@ async function runDecode() {
     if (decMethod === 'dna') {
       msg0 = 'Это ДНК-файл пользователя (формат VCF/TXT от 23andMe, MyHeritage, Генотеки или Атласа):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n1. Найди все значимые SNP-маркеры (MTHFR, APOE, COMT, VDR, CYP1A2, ACTN3, HFE, TCF7L2, PPARG, KCNJ11, BRCA1, BRCA2, FTO, LCT, MCM6, SLC6A4, BDNF, DRD4 и другие найденные)\n2. Для каждого найденного гена укажи: название, генотип (если есть), краткое значение\n3. Дай общий вывод о профиле здоровья\n\nОтветь строго в формате:\n[ГЕНЫ]\nГен: генотип — краткое значение\n...\n[ВЫВОД]\nОбщий персональный вывод по ДНК-профилю (3-5 предложений)';
     } else {
-      // v3.34: doc промпт — объяснение документа + числовые показатели если есть
-      msg0 = 'Это медицинский документ типа «' + decDocType + '» (текст):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\nЕсли в документе есть числовые показатели — выведи их ПЕРВЫМИ в формате:\n[ПОКАЗАТЕЛИ]\nНазвание: значение единица (норма мин-макс) — статус\n\nЗатем обязательно:\n[ВЫВОД]\nОбъясни медицинские термины простыми словами. Что найдено, что это значит для пациента. Без диагнозов. Минимум 3-5 предложений.';
+      // v3.43: doc промпт — детальный для ЭКГ, УЗИ, МРТ
+      var docHint = '';
+      if (decDocType === 'ЭКГ') {
+        docHint = '\n\nДля ЭКГ ищи значения: ЧСС (ЧСС, HR, уд/мин), ритм (синусовый/не синусовый), интервалы PQ/PR (норма 0.12-0.20 с), QRS (норма до 0.10 с), QT/QTc (норма до 0.44 с), электрическая ось сердца (ЭОС, норма -30° до +90°). Если данных нет в цифрах — опиши заключение словами.\nФормат для числовых значений:\n[ПОКАЗАТЕЛИ]\nЧСС: значение уд/мин (норма 60-100) — статус\nИнтервал PQ: значение с (норма 0.12-0.20) — статус\nи т.д.';
+      } else if (decDocType === 'УЗИ') {
+        docHint = '\n\nДля УЗИ ищи размеры органов (мм, см), объёмы (мл), эхогенность, структуру. Числовые размеры выводи в [ПОКАЗАТЕЛИ]. Текстовые находки — в [ВЫВОД].';
+      } else if (decDocType === 'МРТ / КТ') {
+        docHint = '\n\nДля МРТ/КТ ищи размеры образований (мм), описания находок. Числовые размеры выводи в [ПОКАЗАТЕЛИ]. Медицинские термины объясни простыми словами в [ВЫВОД].';
+      }
+      msg0 = 'Это медицинский документ типа «' + decDocType + '» (текст):\n---\n' + textContent + '\n---\n\nПрофиль: ' + getProfileLine() + docHint + '\n\nЗадача:\nЕсли в документе есть числовые показатели — выведи их ПЕРВЫМИ в формате:\n[ПОКАЗАТЕЛИ]\nНазвание: значение единица (норма мин-макс) — статус\n(статус: «норма» / «↑ выше нормы» / «↓ ниже нормы»)\n\nЗатем ОБЯЗАТЕЛЬНО:\n[ВЫВОД]\nОбъясни медицинские термины простыми словами. Что найдено, что это значит для пациента. Без диагнозов. Минимум 3-5 предложений. Что важно обсудить с врачом.';
     }
     document.getElementById('decResult').classList.add('show');
     document.getElementById('decYasnaBody').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
@@ -5723,7 +5804,12 @@ async function runDecode() {
         toast('🧬 ДНК сохранён · найдено ' + parsedGenes.length + ' маркеров');
       } else {
         document.getElementById('decYasnaBody').innerHTML = ans.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-        saveDecodeAsAnalysis([{name:decDocType,val:'—',unit:'',status:{cls:'status-ok'}}],'','',document.getElementById('decYasnaBody').textContent.slice(0,2000),'doc');
+        var docConclusion = document.getElementById('decYasnaBody').textContent.slice(0,2000);
+        saveDecodeAsAnalysis([{name:decDocType,val:'—',unit:'',status:{cls:'status-ok'}}],'','',docConclusion,'doc');
+        // v3.43: сохраняем результат чтобы «задать вопрос» работало
+        if (fd0 && fd0.fileId) {
+          saveDecDocResult(fd0.fileId, { name: fd0.name, conclusion: docConclusion, markers: [] });
+        }
       }
     } catch(e) { document.getElementById('decYasnaBody').textContent = '⚠️ Нет соединения.'; }
 
@@ -6052,13 +6138,13 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
     fd.extractedDate || (document.getElementById('decDate')?document.getElementById('decDate').value:''),
     document.getElementById('decLab')?document.getElementById('decLab').value:'',
     conclusionFull, null, fd.docFileId || fd.fileId || null); // v3.42: передаём docFileId
-  // Сохраняем контекст документа для передачи в чат (Баг 5 v3.37)
+  // v3.43: сохраняем в localStorage чтобы контекст не терялся при смене экрана
   if (fd.fileId) {
-    decDocResults[fd.fileId] = {
+    saveDecDocResult(fd.fileId, {
       name: fd.name,
       conclusion: conclusionFull,
       markers: rows
-    };
+    });
   }
 }
 
@@ -6098,20 +6184,26 @@ function renderTable(rows, date, lab) {
 
 function sendDecodeToChat() {
   // Если есть файл с результатом — передаём контекст
-  if (decFilesData.length && decFilesData[0].fileId && decDocResults[decFilesData[0].fileId]) {
-    sendDocToChat(decFilesData[0].fileId);
-    return;
+  if (decFilesData.length && decFilesData[0].fileId) {
+    var res0 = getDecDocResult(decFilesData[0].fileId);
+    if (res0) { sendDocToChat(decFilesData[0].fileId); return; }
   }
+  // Fallback: просто открываем тред decode с последним результатом
   if (decLastResult) {
     chatThreads['decode'].history.push({ role:'assistant', content:'Вот результаты твоих анализов:\n' + decLastResult });
   }
   openChatThread('decode', 'Объясни подробнее мои анализы');
 }
 
-// v3.37: передаёт контекст конкретного документа в тред decode
+// v3.43: передаёт контекст конкретного документа в тред decode
+// Читает из localStorage — не теряется при смене экрана
 function sendDocToChat(fileId) {
-  var result = fileId ? decDocResults[fileId] : null;
-  if (!result) { sendDecodeToChat(); return; }
+  var result = fileId ? getDecDocResult(fileId) : null;
+  if (!result) {
+    // Нет сохранённого результата — открываем decode без контекста
+    openChatThread('decode', 'Объясни подробнее мои последние анализы');
+    return;
+  }
 
   // Строим контекстное сообщение с показателями и выводом
   var contextMsg = '📄 Документ: **' + result.name + '**\n\n';
@@ -7914,8 +8006,12 @@ function normalizeIndicatorName(rawName) {
 }
 
 function buildIndicatorsFromAnalyses() {
-  // Собираем все показатели из реальных анализов
-  var list = getAnalyses().filter(function(a){ return !a.isDemo && a.markers && a.markers.length; });
+  // v3.43: исключаем doc и dna из графиков — ЭКГ/УЗИ/МРТ не имеют числовых рядов
+  // для графика. Оставляем blood и urine.
+  var GRAPH_CATEGORIES = { blood: true, urine: true };
+  var list = getAnalyses().filter(function(a){
+    return !a.isDemo && a.markers && a.markers.length && GRAPH_CATEGORIES[a.category || 'blood'];
+  });
   var map = {};
   list.forEach(function(a) {
     (a.markers||[]).forEach(function(m) {
@@ -7926,8 +8022,9 @@ function buildIndicatorsFromAnalyses() {
       var unit = (m.unit || '').trim();
       // v3.41 FIX: ключ = normName + unit — Тромбоциты ×10⁹/л и Тромбоциты% не смешиваются
       var mapKey = normName + '||' + unit;
-      if (!map[mapKey]) map[mapKey] = { name:normName, unit:unit, points:[] };
-      map[mapKey].points.push({ date:a.date, val:v, lab:a.lab });
+      if (!map[mapKey]) map[mapKey] = { name:normName, unit:unit, points:[], category: a.category||'blood' };
+      // v3.43: добавляем category на точку чтобы знать источник
+      map[mapKey].points.push({ date:a.date, val:v, lab:a.lab, category: a.category||'blood' });
     });
   });
   // Sort points by date
@@ -8014,7 +8111,7 @@ function renderGraphs() {
   if (!scroll) return;
 
   var all = getIndicators();
-  var isDemo = false; // демо больше не используем
+  var isDemo = false;
 
   if (!all.length) {
     scroll.innerHTML =
@@ -8033,17 +8130,16 @@ function renderGraphs() {
     ? all.filter(function(i) { return i.name.toLowerCase().indexOf(GR_SEARCH) !== -1; })
     : all;
 
-  if (sub) sub.textContent = isDemo
-    ? 'Демо-данные · добавь анализы через Расшифровку'
-    : all.length + ' показател' + (all.length===1?'ь':all.length<5?'я':'ей');
+  if (sub) sub.textContent = all.length + ' показател' + (all.length===1?'ь':all.length<5?'я':'ей');
 
   if (!forCards.length && GR_SEARCH) {
     scroll.innerHTML = '<div class="gr-empty"><div style="font-size:40px;opacity:.3">🔍</div><div class="gr-empty-t">Ничего не найдено</div><div class="gr-empty-s">Попробуй другой запрос</div></div>';
     return;
   }
 
-  // Топ-3 чипа — всегда из полного списка, не из поиска
-  var top3 = getTop3(all); // top-5 displayed as horizontal scroll
+  // Топ-чипы — только blood, без urine (у мочи нет норм в GR_NORMS для сравнения)
+  var bloodAll = all.filter(function(i){ return i.category !== 'urine'; });
+  var top3 = getTop3(bloodAll.length ? bloodAll : all);
   var chipsHtml = '<div class="gr-indicators">';
   top3.forEach(function(ind) {
     var norm = GR_NORMS[ind.name];
@@ -8072,16 +8168,6 @@ function renderGraphs() {
     }).join('') +
   '</div>';
 
-  // Карточки: если выбран чип — только его, иначе все из поиска (или все если нет поиска)
-  var toRender = GR_INDICATOR
-    ? all.filter(function(i) { return i.name === GR_INDICATOR; })
-    : forCards;
-
-  var cardsHtml = toRender.map(function(ind) {
-    var pts = filterByPeriod(ind.points);
-    return renderGraphCard(ind, pts, ind.points, isDemo);
-  }).join('');
-
   var backHtml = GR_INDICATOR
     ? '<button onclick="clearGrIndicator()" style="display:flex;align-items:center;gap:7px;' +
       'background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;' +
@@ -8091,7 +8177,36 @@ function renderGraphs() {
       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>' +
       '← Все графики</button>'
     : '';
-  scroll.innerHTML = chipsHtml + backHtml + perHtml + cardsHtml + '<div style="height:16px"></div>';
+
+  // v3.43: если выбран конкретный показатель — просто его
+  if (GR_INDICATOR) {
+    var toRender = all.filter(function(i) { return i.name === GR_INDICATOR; });
+    var cardsHtml = toRender.map(function(ind) {
+      var pts = filterByPeriod(ind.points);
+      return renderGraphCard(ind, pts, ind.points, isDemo);
+    }).join('');
+    scroll.innerHTML = chipsHtml + backHtml + perHtml + cardsHtml + '<div style="height:16px"></div>';
+    return;
+  }
+
+  // v3.43: разбиваем на секции — Кровь и Моча
+  var bloodCards = forCards.filter(function(i){ return i.category !== 'urine'; });
+  var urineCards = forCards.filter(function(i){ return i.category === 'urine'; });
+
+  var bloodHtml = bloodCards.map(function(ind) {
+    var pts = filterByPeriod(ind.points);
+    return renderGraphCard(ind, pts, ind.points, isDemo);
+  }).join('');
+
+  var urineHtml = urineCards.length
+    ? '<div class="an-month-sep" style="margin-top:8px">Моча (ОАМ)</div>' +
+      urineCards.map(function(ind) {
+        var pts = filterByPeriod(ind.points);
+        return renderGraphCard(ind, pts, ind.points, isDemo);
+      }).join('')
+    : '';
+
+  scroll.innerHTML = chipsHtml + backHtml + perHtml + bloodHtml + urineHtml + '<div style="height:16px"></div>';
 }
 
 function renderGraphCard(ind, points, allPoints, isDemo) {
@@ -8108,9 +8223,20 @@ function renderGraphCard(ind, points, allPoints, isDemo) {
     if (latestVal < normRange[0]) status = 'lo';
     else if (latestVal > normRange[1]) status = 'hi';
   }
-  var statusTxt = !normRange ? '— нет нормы' : status==='ok' ? '&#10003; норма' : status==='hi' ? '&#8593; выше нормы' : '&#8595; ниже нормы';
 
-  // Тренд — v3.24: цвет + стрелка + процент
+  // v3.43: крупный читаемый статус-бейдж
+  var statusBadge = '';
+  if (!normRange) {
+    statusBadge = '<span style="font-size:11px;color:var(--text3);font-family:Jost,sans-serif">нормы нет в базе</span>';
+  } else if (status === 'ok') {
+    statusBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(122,255,212,.14);color:var(--accent3);border:1px solid rgba(122,255,212,.3)">✓ норма</span>';
+  } else if (status === 'hi') {
+    statusBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(255,144,144,.14);color:var(--danger);border:1px solid rgba(255,144,144,.3)">↑ выше нормы</span>';
+  } else {
+    statusBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(255,180,80,.14);color:#FFB450;border:1px solid rgba(255,180,80,.3)">↓ ниже нормы</span>';
+  }
+
+  // Тренд
   var trendHtml = '';
   if (points.length >= 2) {
     var first = points[0].val;
@@ -8122,7 +8248,6 @@ function renderGraphCard(ind, points, allPoints, isDemo) {
     if (Math.abs(diff) < 0.05) {
       trendCol = 'var(--accent3)'; trendArrow = '→'; trendWord = 'стабильно';
     } else if (diff > 0) {
-      // Растёт: хорошо если в норме, плохо если выше нормы
       trendCol = (status === 'hi') ? 'var(--danger)' : 'var(--accent3)';
       trendArrow = '↑'; trendWord = '+' + diffAbs + ' (' + pct + '%)';
     } else {
@@ -8134,7 +8259,7 @@ function renderGraphCard(ind, points, allPoints, isDemo) {
       '<span style="font-size:16px;font-weight:700;color:' + trendCol + '">' + trendArrow + '</span>' +
       '<span style="font-size:12px;font-weight:700;color:' + trendCol + '">' + trendWord + '</span>' +
       '<span style="font-size:11px;color:var(--text3)">за ' + points.length + ' ' + (points.length===1?'замер':points.length<5?'замера':'замеров') + '</span>' +
-      '<span style="margin-left:auto;font-size:11px;color:var(--text3)">нажми для деталей →</span>' +
+      '<span style="margin-left:auto;font-size:11px;color:var(--text3)">детали →</span>' +
     '</div>';
   }
 
@@ -8153,22 +8278,41 @@ function renderGraphCard(ind, points, allPoints, isDemo) {
     svgHtml = drawSinglePoint(points[0], normRange, status);
   }
 
+  // v3.43: легенда — объясняем что означают цвета на графике
+  var legendHtml = normRange
+    ? '<div style="display:flex;gap:14px;padding:6px 2px 0;flex-wrap:wrap">' +
+        '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(122,255,212,0.8);font-weight:600">' +
+          '<div style="width:20px;height:2px;background:rgba(122,255,212,0.6);border-radius:1px"></div>зона нормы' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--accent3);font-weight:600">' +
+          '<div style="width:8px;height:8px;border-radius:50%;background:var(--accent3)"></div>в норме' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--danger);font-weight:600">' +
+          '<div style="width:8px;height:8px;border-radius:50%;background:var(--danger)"></div>выше нормы' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#FFB450;font-weight:600">' +
+          '<div style="width:8px;height:8px;border-radius:50%;background:#FFB450"></div>ниже нормы' +
+        '</div>' +
+      '</div>'
+    : '';
+
   var safeInd = (ind.name||'').replace(/'/g,"\\'");
 
   return '<div class="gr-card" style="cursor:pointer" onclick="openGraphDetail(\'' + safeInd + '\')">' +
     '<div class="gr-card-top">' +
       '<div>' +
         '<div class="gr-card-name">' + ind.name + '</div>' +
-        '<div class="gr-card-unit">' + (ind.unit||'') +
-          (normRange ? ' &nbsp;·&nbsp; <span style="color:rgba(122,255,212,0.8);font-weight:600">норма ' + normRange[0] + '–' + normRange[1] + '</span>' : ' &nbsp;·&nbsp; <span style="color:rgba(245,242,255,0.35);font-size:10px">нормы нет в базе</span>') +
+        '<div class="gr-card-unit" style="margin-top:2px">' + (ind.unit||'') +
+          (normRange ? ' &nbsp;·&nbsp; норма <span style="color:rgba(122,255,212,0.85);font-weight:700">' + normRange[0] + '–' + normRange[1] + '</span>' : '') +
         '</div>' +
       '</div>' +
-      (latestVal !== null ? '<div class="gr-card-latest">' +
+      (latestVal !== null ? '<div style="text-align:right">' +
         '<div class="gr-card-val ' + status + '">' + latestVal + '</div>' +
-        '<div class="gr-card-status">' + statusTxt + '</div>' +
+        statusBadge +
       '</div>' : '') +
     '</div>' +
     '<div class="gr-canvas-wrap">' + svgHtml + '</div>' +
+    legendHtml +
     trendHtml +
   '</div>';
 }
