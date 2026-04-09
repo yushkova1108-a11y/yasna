@@ -435,11 +435,12 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .nav-items { display:flex;justify-content:space-around;align-items:center; }
 .ni {
   display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:6px 8px;border-radius:var(--rx);
+  padding:6px 4px;border-radius:var(--rx);
   cursor:pointer;border:none;background:none;
-  color:var(--text3);min-width:48px;min-height:44px;
+  color:var(--text3);min-width:44px;min-height:44px;
   transition:all .2s; position:relative;
   font-family:'Jost',sans-serif;
+  flex:1;
 }
 .ni:hover,.ni.on { color:var(--text); }
 .ni.on::before {
@@ -458,12 +459,13 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .ni.on .ni-ic { stroke: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
 .ni-lb {
   font-size: 11px; font-weight: 800;
-  letter-spacing: .6px; text-transform: uppercase;
+  letter-spacing: 0; text-transform: uppercase;
   color: inherit;
+  white-space: nowrap;
 }
 .light .ni { color: rgba(18,10,56,0.50); }
 .light .ni.on { color: var(--accent); }
-.light .ni-lb { font-weight: 800; letter-spacing: .5px; }
+.light .ni-lb { font-weight: 800; letter-spacing: 0; }
 
 /* ══════════════════ ЭКРАНЫ ══════════════════ */
 .screen { display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0; }
@@ -506,7 +508,24 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
   -webkit-overflow-scrolling: touch;
 }
 @keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sh-handle { width:38px;height:4px;background:var(--glass-border);border-radius:2px;margin:0 auto 22px; }
+.sh-handle { width:38px;height:4px;background:var(--glass-border);border-radius:2px;margin:0 auto 16px; }
+/* B1 v3.46: кнопка закрытия детального графика */
+.gr-detail-close-row {
+  display:flex;justify-content:flex-end;margin-bottom:10px;
+  position:sticky;top:0;z-index:10;
+  background:var(--bg2);padding:0 0 6px;
+  margin-left:-22px;margin-right:-22px;padding-left:22px;padding-right:22px;
+}
+.gr-detail-close-btn {
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:20px;border:1px solid var(--glass-border);
+  background:var(--glass-inner);color:var(--text3);
+  font-family:'Jost',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;min-height:44px;min-width:44px;
+  transition:all .2s;
+}
+.gr-detail-close-btn:active { opacity:.7; }
+.light .gr-detail-close-btn { background:rgba(255,255,255,.6); }
 .sh-title { font-family:'Cormorant Garamond',serif;font-size:26px;margin-bottom:20px;color:var(--text); }
 .sg { margin-bottom:18px; }
 .sg-lbl { font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px; }
@@ -1629,6 +1648,25 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 /* v3.40: прошедшие даты — кликабельные */
 .yc-cal-cell.past-tap { cursor: pointer; }
 .yc-cal-cell.past-tap:active { background: rgba(255,255,255,.12); }
+/* v3.49: выбранный день для операции с циклом — розовое кольцо */
+.yc-cal-cell.period-pending {
+  box-shadow: 0 0 0 2px #FF6B8A;
+  background: rgba(255,107,138,.15);
+  color: #FF6B8A;
+  font-weight: 800;
+}
+.light .yc-cal-cell.period-pending {
+  box-shadow: 0 0 0 2px #C0392B;
+  background: rgba(192,57,89,.12);
+  color: #C0392B;
+}
+/* A5 v3.47: индикатор данных трекера в ячейке */
+.yc-cal-cell.has-data::after {
+  content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%;
+  background:var(--accent2); opacity:.7;
+}
+.yc-cal-cell { position:relative; }
 .light .yc-cal-cell { color:var(--text2); }
 .light .yc-cal-cell.period { background:rgba(192,57,89,.15); color:#C0392B; }
 .light .yc-cal-cell.predicted { background:rgba(124,58,237,.08); }
@@ -2183,6 +2221,89 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .light .gr-period.on {
   background:rgba(58,106,224,.10); border-color:var(--accent);
   color:var(--accent); box-shadow:0 0 0 1.5px var(--accent);
+}
+
+/* v3.51: табы Анализы / Тело */
+.gr-tabs {
+  display:flex; gap:6px;
+  padding:10px 16px 0;
+  border-bottom:1px solid var(--glass-border);
+  background:var(--bg1);
+}
+.gr-tab {
+  flex:1; height:36px; border-radius:10px 10px 0 0; cursor:pointer;
+  background:transparent; border:none;
+  font-family:'Jost',sans-serif; font-size:13px; font-weight:600; color:var(--text3);
+  transition:all .2s; position:relative;
+}
+.gr-tab.on { color:var(--accent); }
+.gr-tab.on::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px;
+  background:var(--accent); border-radius:2px 2px 0 0;
+}
+.light .gr-tab { color:rgba(18,10,56,.45); }
+.light .gr-tab.on { color:var(--accent); }
+
+/* v3.51: карточка метрики тела */
+.body-metric-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:var(--r); padding:18px 16px 14px; margin-bottom:14px;
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+}
+.body-metric-title {
+  font-family:'Jost',sans-serif; font-size:12px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; color:var(--text3); margin-bottom:12px;
+}
+.body-metric-row {
+  display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;
+}
+.body-metric-val {
+  font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:600; color:var(--text);
+  line-height:1;
+}
+.body-metric-unit { font-size:13px; color:var(--text3); font-family:'Jost',sans-serif; }
+.body-metric-delta {
+  font-size:12px; font-weight:700; font-family:'Jost',sans-serif; padding:3px 8px;
+  border-radius:8px;
+}
+.body-metric-delta.up   { color:#FF9090; background:rgba(255,144,144,.12); }
+.body-metric-delta.down { color:var(--accent3); background:rgba(10,152,112,.12); }
+.body-metric-delta.same { color:var(--text3); background:var(--glass); }
+
+/* v3.51: кнопка входа в объёмы */
+.body-volumes-btn {
+  width:100%; padding:16px; border-radius:var(--r);
+  background:var(--glass); border:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:space-between;
+  cursor:pointer; margin-bottom:14px;
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  transition:all .2s;
+}
+.body-volumes-btn:active { opacity:.75; }
+.light .body-volumes-btn { background:rgba(255,255,255,.8); }
+
+/* v3.51: лента тренировок */
+.workout-log-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 0; border-bottom:1px solid var(--glass-border);
+}
+.workout-log-item:last-child { border-bottom:none; }
+.workout-log-dot {
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  background:rgba(124,58,237,.15); border:1px solid rgba(124,58,237,.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px;
+}
+.workout-log-info { flex:1; min-width:0; }
+.workout-log-type { font-size:14px; font-weight:700; color:var(--text); }
+.workout-log-meta { font-size:11px; color:var(--text3); margin-top:2px; }
+.workout-log-dur {
+  font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600;
+  color:var(--text2); white-space:nowrap;
+}
+.body-month-sep {
+  font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:var(--text3); padding:14px 0 8px; font-family:'Jost',sans-serif;
 }
 
 /* Карточка графика */
@@ -3509,7 +3630,12 @@ button:focus-visible,
         <div class="gr-hdr-sub" id="grSub">Выбери показатель</div>
       </div>
     </div>
-    <div class="gr-search-wrap">
+    <!-- v3.51: табы Анализы / Тело -->
+    <div class="gr-tabs">
+      <button class="gr-tab on" id="grTabAnalyses" onclick="setGrTab('analyses')">Анализы</button>
+      <button class="gr-tab" id="grTabBody" onclick="setGrTab('body')">Тело</button>
+    </div>
+    <div class="gr-search-wrap" id="grSearchWrap">
       <div class="gr-search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
         <input class="gr-search-inp" id="grSearchInp" placeholder="Холестерин, витамин D, ТТГ..." oninput="grSearch(this.value)" autocomplete="off">
@@ -3571,7 +3697,7 @@ button:focus-visible,
       </button>
       <button class="ni" id="n-decode" onclick="go('decode')" aria-label="Расшифровка анализов">
         <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="5"/><path d="M11 8v3l2 2"/><path d="M20 20l-3-3"/><path d="M6 2h4v2H6zM14 2h4v2h-4z" stroke-width="1.2"/><path d="M8 6v2M16 6v2" stroke-width="1.4"/></svg>
-        <span class="ni-lb">Расшифровка</span>
+        <span class="ni-lb">Дешифр.</span>
       </button>
       <button class="ni" id="n-graphs" onclick="go('graphs')" aria-label="Графики показателей">
         <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M3 20V8m0 12l4-5 4 3 4-7 4 4"/><circle cx="7" cy="15" r="1.2" fill="currentColor"/><circle cx="11" cy="11" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="7" r="1.2" fill="currentColor" stroke="none"/><circle cx="19" cy="10" r="1.2" fill="currentColor" stroke="none"/></svg>
@@ -3776,6 +3902,13 @@ button:focus-visible,
 <div class="overlay" id="grDetailOverlay" onclick="grDetailOverlayClick(event)">
   <div class="sheet" id="grDetailSheet" style="max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(32px,env(safe-area-inset-bottom))">
     <div class="sh-handle"></div>
+    <!-- B1 v3.46: кнопка возврата — всегда видна при скролле -->
+    <div class="gr-detail-close-row">
+      <button class="gr-detail-close-btn" onclick="closeGraphDetail()" aria-label="Закрыть график">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Назад
+      </button>
+    </div>
     <div id="grDetailContent"></div>
   </div>
 </div>
@@ -5106,25 +5239,47 @@ function buildPortraitContext() {
     }
   }
 
-  // Трекер — последние 30 дней
-  var ypDays = getYpDays ? getYpDays() : {};
+  // v3.52 Правка 2: читаем трекер по полу — женский YC, мужской YP, оба если не задан
+  var trackerDays = S.gender === 'female'
+    ? (getYcDays ? getYcDays() : {})
+    : S.gender === 'male'
+      ? (getYpDays ? getYpDays() : {})
+      : Object.assign({}, getYcDays ? getYcDays() : {}, getYpDays ? getYpDays() : {});
+
   var trackerLines = [];
+  // Берём последние 30 дней
   for (var i = 0; i < 30; i++) {
     var d = new Date(); d.setDate(d.getDate() - i);
     var key = d.toISOString().split('T')[0];
-    var day = ypDays[key] || {};
+    var day = trackerDays[key] || {};
     var parts = [];
-    if (day.sleep)   parts.push('сон:' + day.sleep + (day.sleepHours ? '/' + day.sleepHours + 'ч' : ''));
-    if (day.energy)  parts.push('энергия:' + day.energy);
-    if (day.stress)  parts.push('стресс:' + day.stress);
-    if (day.workoutType) parts.push('тренировка:' + day.workoutType + (day.workoutIntensity ? '/' + day.workoutIntensity : '') + (day.workoutMin ? '/' + day.workoutMin + 'мин' : ''));
+    if (day.sleep)      parts.push('сон:' + day.sleep + (day.sleepHours ? '/' + day.sleepHours + 'ч' : ''));
+    if (day.energy)     parts.push('энергия:' + day.energy);
+    if (day.stress)     parts.push('стресс:' + day.stress);
+    if (day.workoutType) parts.push('тренировка:' + (WORKOUT_LABELS[day.workoutType]||day.workoutType) + (day.workoutCustom?'/'+day.workoutCustom:'') + (day.workoutIntensity?'/'+day.workoutIntensity:'') + (day.workoutMin?'/'+day.workoutMin+'мин':''));
     if (day.alcohol && day.alcohol !== 'no') parts.push('алкоголь:' + day.alcohol);
-    if (day.steps)   parts.push('шаги:' + day.steps);
-    if (parts.length) trackerLines.push(key + ': ' + parts.join(', '));
+    if (day.steps)      parts.push('шаги:' + day.steps);
+    // v3.52: вес и объёмы из трекера
+    if (day.weight)     parts.push('вес:' + day.weight + 'кг');
+    if (day.waist)      parts.push('талия:' + day.waist + 'см');
+    if (day.hips)       parts.push('бёдра:' + day.hips + 'см');
+    if (day.chest)      parts.push('грудь:' + day.chest + 'см');
+    if (parts.length)   trackerLines.push(key + ': ' + parts.join(', '));
   }
+
+  // Месячная сводка по тренировкам для AI
+  var monthStats = S.gender === 'female'
+    ? (typeof getYcMonthStats === 'function' ? getYcMonthStats() : null)
+    : (typeof getYpMonthStats === 'function' ? getYpMonthStats() : null);
+
   if (trackerLines.length) {
-    lines.push('\n=== ТРЕКЕР (30 дней) ===');
+    lines.push('\n=== ТРЕКЕР ' + (S.gender === 'female' ? 'ЯСНЫЙ ЦИКЛ' : 'ЯСНЫЙ ПУЛЬС') + ' (30 дней) ===');
     lines.push(trackerLines.join('\n'));
+  }
+  if (monthStats && monthStats.workouts) {
+    var breakdown = monthStats.typeBreakdown || {};
+    var bkStr = Object.keys(breakdown).map(function(t){ return (WORKOUT_LABELS[t]||t) + '×' + breakdown[t]; }).join(', ');
+    lines.push('\nТренировки этот месяц: ' + monthStats.workouts + ' (' + bkStr + ')' + (monthStats.avgMin ? ', в среднем ' + monthStats.avgMin + ' мин' : ''));
   }
 
   // Дневник
@@ -6303,8 +6458,9 @@ function sendDecodeToChat() {
 function sendDocToChat(fileId) {
   var result = fileId ? getDecDocResult(fileId) : null;
   if (!result) {
-    // Нет сохранённого результата — открываем decode без контекста
-    openChatThread('decode', 'Объясни подробнее мои последние анализы');
+    // B4 v3.46: нет сохранённой расшифровки — подсказываем пользователю, не открываем пустой тред
+    toast('Нет данных расшифровки. Открой файл и нажми «Расшифровать»');
+    go('decode');
     return;
   }
 
@@ -6899,6 +7055,90 @@ function getCollapsedPhrase(pd) {
 
 // ══════════════════ ЯСНЫЙ ЦИКЛ — AI-СОВЕТЫ ══════════════════
 var YC_ADVICE_CACHE_KEY = 'yasna_yc_advice_cache';
+// Правка 3 v3.48: строка разбивки тренировок по типам для сводки
+function buildWorkoutBreakdownHtml(typeBreakdown, avgMin) {
+  var entries = Object.keys(typeBreakdown || {});
+  if (!entries.length) return '';
+  // Сортируем по убыванию кол-ва
+  entries.sort(function(a,b){ return typeBreakdown[b] - typeBreakdown[a]; });
+  var parts = entries.map(function(t) {
+    return (WORKOUT_LABELS[t] || t) + '\u00a0×\u00a0' + typeBreakdown[t];
+  });
+  var avgStr = avgMin ? ' · ' + avgMin + '\u00a0мин в среднем' : '';
+  return '<div style="font-size:11px;color:var(--text3);font-family:\'Jost\',sans-serif;' +
+    'font-weight:600;margin-top:6px;margin-bottom:14px;line-height:1.6;letter-spacing:0">' +
+    parts.join(' · ') + avgStr +
+  '</div>';
+}
+
+// A1 v3.47: хранение дневных данных Ясного цикла
+var YC_DAYS_KEY = 'yasna_yc_days';
+// Правка 1 v3.48: единый словарь типов тренировок — используется везде
+var WORKOUT_LABELS = {
+  gym:   'Зал',
+  run:   'Бег',
+  walk:  'Ходьба',
+  swim:  'Плавание',
+  yoga:  'Йога',
+  bike:  'Велосипед',
+  tennis:'Теннис',
+  dance: 'Танцы',
+  other: 'Своя'
+};
+var WORKOUT_CLS = {
+  gym:   'sel-blue',
+  run:   'sel-green',
+  walk:  'sel-accent',
+  swim:  'sel-blue',
+  yoga:  'sel-purple',
+  bike:  'sel-green',
+  tennis:'sel-accent',
+  dance: 'sel-purple',
+  other: 'sel-yellow'
+};
+function getYcDays() {
+  try { return JSON.parse(localStorage.getItem(YC_DAYS_KEY) || '{}'); } catch(e) { return {}; }
+}
+function getYcDay(dateStr) {
+  return getYcDays()[dateStr] || {};
+}
+function saveYcDay(dateStr, data) {
+  try {
+    var days = getYcDays();
+    days[dateStr] = Object.assign(days[dateStr] || {}, data);
+    localStorage.setItem(YC_DAYS_KEY, JSON.stringify(days));
+  } catch(e) {}
+}
+function getYcMonthStats() {
+  var days = getYcDays();
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  // Правка 2 v3.48: расширенная статистика
+  var workouts = 0, minutesSum = 0, minutesCount = 0;
+  var weightSum = 0, weightCount = 0, stepsSum = 0, stepsCount = 0;
+  var typeBreakdown = {};
+  for (var d = 1; d <= daysInMonth; d++) {
+    var key = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var day = days[key] || {};
+    if (day.workoutType) {
+      workouts++;
+      typeBreakdown[day.workoutType] = (typeBreakdown[day.workoutType] || 0) + 1;
+      if (day.workoutMin) { minutesSum += parseInt(day.workoutMin) || 0; minutesCount++; }
+    }
+    if (day.weight) { weightSum += parseFloat(day.weight) || 0; weightCount++; }
+    if (day.steps)  { stepsSum  += parseInt(day.steps)  || 0; stepsCount++; }
+  }
+  return {
+    workouts: workouts,
+    minutes: minutesSum,
+    avgMin: minutesCount ? Math.round(minutesSum / minutesCount) : 0,
+    weight: weightCount ? (weightSum / weightCount).toFixed(1) : '—',
+    steps: stepsCount ? Math.round(stepsSum / stepsCount).toLocaleString('ru') : '—',
+    typeBreakdown: typeBreakdown
+  };
+}
 
 function buildYcPrompt() {
   var pd = getCyclePhase();
@@ -6932,10 +7172,34 @@ function buildYcPrompt() {
     vitD     ? 'Витамин D: '  + vitD.val    + ' ' + (vitD.unit||'')    + ' (' + vitD.status    + ')' : '',
     hb       ? 'Гемоглобин: ' + hb.val      + ' ' + (hb.unit||'')      + ' (' + hb.status      + ')' : '',
   ].filter(Boolean).join(', ') || 'Анализов по этой теме нет.';
+  // A6 v3.47: данные трекера текущего дня из yasna_yc_days
+  var todayYcKey = new Date().toISOString().split('T')[0];
+  var todayYcData = getYcDay(todayYcKey);
+  var ycTrackerLines = [];
+  if (todayYcData.energy)      ycTrackerLines.push('Энергия: ' + todayYcData.energy + '/5');
+  if (todayYcData.workoutType) ycTrackerLines.push(
+    'Тренировка: ' + (WORKOUT_LABELS[todayYcData.workoutType] || todayYcData.workoutType) +
+    (todayYcData.workoutCustom ? ' (' + todayYcData.workoutCustom + ')' : '') +
+    (todayYcData.workoutIntensity ? ', ' + {easy:'лёгкая',mid:'средняя',hard:'тяжёлая'}[todayYcData.workoutIntensity] : '') +
+    (todayYcData.workoutMin ? ', ' + todayYcData.workoutMin + ' мин' : '')
+  );
+  if (todayYcData.steps)       ycTrackerLines.push('Шаги: ' + todayYcData.steps);
+  if (todayYcData.weight)      ycTrackerLines.push('Вес: ' + todayYcData.weight + ' кг');
+  if (todayYcData.waist)       ycTrackerLines.push('Талия: ' + todayYcData.waist + ' см');
+  if (todayYcData.hips)        ycTrackerLines.push('Бёдра: ' + todayYcData.hips + ' см');
+  if (todayYcData.chest)       ycTrackerLines.push('Грудь: ' + todayYcData.chest + ' см');
+  var ycTrackerCtx = ycTrackerLines.length ? 'Трекер сегодня: ' + ycTrackerLines.join(', ') + '\n' : '';
+
   return 'Ты ЯСНА — AI-агент здоровья. Женский профиль.\n\n' +
     'ДАННЫЕ:\n' +
-    'Имя: ' + name + (S.age ? ', ' + S.age + ' лет' : '') + '\n' +
+    'Имя: ' + name + (S.age ? ', ' + S.age + ' лет' : '') +
+    // B5 v3.46: измерения тела из профиля
+    (S.height ? ', рост ' + S.height + ' см' : '') +
+    (S.weight ? ', вес ' + S.weight + ' кг' : '') +
+    (S.waist  ? ', талия ' + S.waist + ' см' : '') +
+    (S.hips   ? ', бёдра ' + S.hips + ' см' : '') + '\n' +
     phaseCtx + '\n' +
+    ycTrackerCtx +
     'Анализы: ' + anCtx + '\n' +
     'Дневник самочувствия:\n' + diaryCtx + '\n\n' +
     'СТАТУС ОТНОШЕНИЙ: ' + relCtx + '\n\n' +
@@ -7112,9 +7376,41 @@ function ycToggleCollapse() {
   renderYasnyCycle();
 }
 
+// v3.52 Правка 3: быстрая навигация между трекером и вкладкой Тело
+function openBodyGraphsFromTracker() {
+  closeYcSheet();
+  closeYpSheet();
+  GR_TAB = 'body';
+  GR_BODY_SECTION = 'main';
+  go('graphs');
+  // Обновляем визуальное состояние табов
+  setTimeout(function() {
+    var ta = document.getElementById('grTabAnalyses');
+    var tb = document.getElementById('grTabBody');
+    if (ta) ta.classList.remove('on');
+    if (tb) tb.classList.add('on');
+    var sw = document.getElementById('grSearchWrap');
+    if (sw) sw.style.display = 'none';
+    var sub = document.getElementById('grSub');
+    if (sub) sub.textContent = 'Вес · Объёмы · Тренировки';
+  }, 50);
+}
+
+function openTrackerFromBodyGraphs() {
+  closeYcSheet();
+  closeYpSheet();
+  go('home');
+  setTimeout(function() {
+    if (S.gender === 'female') openYasnyCycleSheet();
+    else openYpSheet();
+  }, 200);
+}
+
+function openYcSheet() { openYasnyCycleSheet(); }
+
 function openYasnyCycleSheet() {
   ycCalOffset = 0;
-  ycSelectingDate = null; // v3.40: сбрасываем выбор при открытии
+  ycSelectingDate = null;
   document.getElementById('ycOverlay').classList.add('on');
   renderYcSheet();
 }
@@ -7124,80 +7420,326 @@ function closeYcSheet() {
 }
 function ycOverlayClick(e) { if (e.target === document.getElementById('ycOverlay')) closeYcSheet(); }
 
+// A2–A5 v3.47: редизайн renderYcSheet — мини-сводка, баг конца цикла, панель дня
+var _ycSelectedDay = null; // выбранный день для панели трекера
+
 function renderYcSheet() {
   var data = getCycleData();
   var pd = getCyclePhase();
   var avgLen = data.avgLen || 28;
   var calHtml = renderYcCalendar(data);
+  var stats = getYcMonthStats();
+  var isPeriodActive = data.activePeriod && !data.activePeriod.end;
+
+  // Прогноз следующего цикла
   var predictHtml = '';
   if (data.periods && data.periods.length) {
     var nextStart = new Date(data.periods[0].start + avgLen*24*60*60*1000);
     var daysLeft = pd ? (avgLen - pd.day) : null;
     var dateStr = nextStart.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
     predictHtml = daysLeft !== null && daysLeft <= 0
-      ? '<div class="yc-predict-note">⚠️ Возможна <strong>задержка</strong> — ожидался ' + Math.abs(daysLeft) + ' дн. назад</div>'
+      ? '<div class="yc-predict-note">Возможна задержка — ожидался ' + Math.abs(daysLeft) + ' дн. назад</div>'
       : '<div class="yc-predict-note">Следующий цикл ожидается <strong>~' + dateStr + '</strong>' + (daysLeft !== null ? ' · через ' + daysLeft + ' дн.' : '') + '</div>';
   }
-  var isPeriodActive = data.activePeriod && !data.activePeriod.end;
-  var startStyle = isPeriodActive ? 'background:rgba(255,90,90,.22);border-color:rgba(255,90,90,.5)' : '';
-  var startTxt = isPeriodActive ? 'Идут сейчас' : 'Начались';
 
-  // v3.40: кнопка подтверждения вместо date picker — появляется после тапа на дату
-  var confirmHtml = '';
-  if (!isPeriodActive && ycSelectingDate) {
-    var selDate = new Date(ycSelectingDate + 'T00:00:00');
-    var selDateStr = selDate.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-    confirmHtml =
-      '<div id="ycConfirmBtn" style="display:flex;align-items:center;gap:10px;padding:12px 14px;' +
-        'background:rgba(255,90,90,.12);border:1px solid rgba(255,90,90,.40);' +
-        'border-radius:var(--rx);margin-bottom:8px;animation:fin .25s ease">' +
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg>' +
-        '<div style="flex:1;font-size:14px;font-weight:600;color:var(--text)">' + selDateStr + ' — первый день</div>' +
-        '<button onclick="ycConfirmSelectedDate()" style="height:36px;padding:0 14px;border-radius:var(--rx);border:none;background:rgba(255,90,90,.25);border:1px solid rgba(255,90,90,.55);color:var(--danger);font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">✓ Подтвердить</button>' +
-      '</div>';
-  }
+  // Мини-сводка за месяц
+  var statsHtml =
+    '<div class="yp-tracker-summary" style="margin-bottom:6px">' +
+      '<div class="yp-tracker-stat"><div class="yp-tracker-stat-val">' + (pd ? pd.day : '—') + '</div><div class="yp-tracker-stat-lbl">день цикла</div></div>' +
+      '<div class="yp-tracker-stat"><div class="yp-tracker-stat-val">' + stats.workouts + '</div><div class="yp-tracker-stat-lbl">тренировок</div></div>' +
+      '<div class="yp-tracker-stat"><div class="yp-tracker-stat-val">' + stats.weight + '</div><div class="yp-tracker-stat-lbl">кг (ср.)</div></div>' +
+      '<div class="yp-tracker-stat"><div class="yp-tracker-stat-val">' + stats.steps + '</div><div class="yp-tracker-stat-lbl">шаги (ср.)</div></div>' +
+    '</div>' +
+    // Правка 3 v3.48: разбивка по типам тренировок
+    buildWorkoutBreakdownHtml(stats.typeBreakdown, stats.avgMin);
 
-  document.getElementById('ycSheetContent').innerHTML =
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">' +
-      '<div style="font-family:Georgia,serif;font-size:26px;font-weight:600;color:var(--text)">Ясный цикл</div>' +
-      '<button onclick="closeYcSheet()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px;line-height:1">✕</button>' +
+  // v3.49: метка выбранного дня для кнопок
+  var pendingD = _ycCalPendingDate ? new Date(_ycCalPendingDate + 'T00:00:00') : new Date();
+  var pendingMonths = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  var pendingLabel = pendingD.getDate() + ' ' + pendingMonths[pendingD.getMonth()];
+
+  // Кнопки управления циклом
+  var cycleCtrlHtml =
+    '<div style="font-size:11px;color:var(--text3);font-family:\'Jost\',sans-serif;font-weight:600;' +
+      'letter-spacing:.5px;margin-bottom:6px;text-align:center">' +
+      'Выбрана дата: <span id="ycPendingLabel" style="color:var(--accent)">' + pendingLabel + '</span>' +
+      ' · тапни другое число чтобы изменить' +
     '</div>' +
-    calHtml + predictHtml +
-    '<div class="yc-stats">' +
-      '<div class="yc-stat"><div class="yc-stat-val">' + (pd ? pd.day : '—') + '</div><div class="yc-stat-lbl">день цикла</div></div>' +
-      '<div class="yc-stat"><div class="yc-stat-val">' + (pd && avgLen - pd.day > 0 ? avgLen - pd.day : '—') + '</div><div class="yc-stat-lbl">до следующего</div></div>' +
-      '<div class="yc-stat"><div class="yc-stat-val">' + avgLen + '</div><div class="yc-stat-lbl">дней цикл</div></div>' +
-    '</div>' +
-    confirmHtml +
     '<div style="display:flex;gap:8px;margin-bottom:8px">' +
-      '<button class="cycle-btn cycle-btn-start" id="ycStartBtn" style="' + startStyle + '" ' +
-        (isPeriodActive ? 'onclick="toast(\'Цикл уже активен\')"' : 'onclick="toast(\'Нажми на дату в календаре выше ↑\')"') + '>' +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg> ' + startTxt +
+      '<button class="cycle-btn cycle-btn-start' + (isPeriodActive ? '' : '') + '" onclick="ycStartOnPending()">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg> ' +
+        'Начались' +
       '</button>' +
-      '<button class="cycle-btn cycle-btn-end" onclick="markPeriodEnd();renderYcSheet();renderYasnyCycle()">' +
+      '<button class="cycle-btn cycle-btn-end" onclick="ycEndOnPending()">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Закончились' +
       '</button>' +
     '</div>' +
-    '<button onclick="cancelLastCycleAction();renderYcSheet();renderYasnyCycle()" style="width:100%;height:38px;border-radius:var(--rx);background:var(--glass);border:1px solid var(--glass-border);color:var(--text3);font-family:Jost,sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">' +
+    '<button onclick="cancelLastCycleAction();renderYcSheet();renderYasnyCycle()" style="width:100%;height:38px;border-radius:var(--rx);background:var(--glass);border:1px solid var(--glass-border);color:var(--text3);font-family:Jost,sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg> Отменить последнее' +
     '</button>' +
-    '<button id="ycResetBtn2" style="width:100%;height:38px;border-radius:var(--rx);background:rgba(255,90,90,.08);border:1px solid rgba(255,90,90,.2);color:var(--danger);font-family:Jost,sans-serif;font-size:12px;font-weight:600;cursor:pointer">Сбросить данные цикла</button>';
+    '<button id="ycResetBtn2" style="width:100%;height:38px;border-radius:var(--rx);background:rgba(255,90,90,.08);border:1px solid rgba(255,90,90,.2);color:var(--danger);font-family:Jost,sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px">Сбросить данные цикла</button>';
+
+  // Панель выбранного дня (трекер)
+  if (!_ycSelectedDay) {
+    _ycSelectedDay = new Date().toISOString().split('T')[0];
+  }
+  var dayPanelHtml = '<div id="ycDayPanel">' + renderYcDayPanel(_ycSelectedDay) + '</div>';
+
+  // v3.52 Правка 3: кнопка быстрого перехода в Графики тела
+  var bodyGraphsBtnHtml =
+    '<button onclick="openBodyGraphsFromTracker()" style="width:100%;height:42px;margin-bottom:16px;' +
+      'border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);' +
+      'color:var(--accent);font-family:\'Jost\',sans-serif;font-size:13px;font-weight:700;' +
+      'cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;' +
+      'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M3 20V8m0 12l4-5 4 3 4-7 4 4"/></svg>' +
+      'Графики тела' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '</button>';
+
+  document.getElementById('ycSheetContent').innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">' +
+      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:26px;font-weight:600;color:var(--text)">Ясный цикл</div>' +
+      '<button onclick="closeYcSheet()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px;line-height:1">✕</button>' +
+    '</div>' +
+    statsHtml + calHtml + predictHtml + cycleCtrlHtml + bodyGraphsBtnHtml + dayPanelHtml;
+
+  // Сброс цикла
   var rb = document.getElementById('ycResetBtn2');
   if (rb) rb.onclick = function() {
     if (this.dataset.confirm !== 'yes') {
-      this.dataset.confirm = 'yes'; this.textContent = '⚠️ Нажми ещё раз';
+      this.dataset.confirm = 'yes'; this.textContent = 'Нажми ещё раз для подтверждения';
       var s = this; setTimeout(function(){ s.dataset.confirm=''; s.textContent='Сбросить данные цикла'; }, 3000); return;
     }
     var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
     sv.cycle = { periods:[], avgLen:28, activePeriod:null };
     localStorage.setItem('yasna', JSON.stringify(sv));
-    closeYcSheet(); renderYasnyCycle(); toast('Данные цикла сброшены ✓');
+    closeYcSheet(); renderYasnyCycle(); toast('Данные цикла сброшены');
   };
+}
+
+// v3.49: начало цикла на выбранный день (или сегодня если ничего не выбрано)
+function ycStartOnPending() {
+  var dateStr = _ycCalPendingDate || new Date().toISOString().split('T')[0];
+  var data = getCycleData();
+  if (data.activePeriod && !data.activePeriod.end) {
+    toast('Цикл уже идёт — сначала отметь когда закончился');
+    return;
+  }
+  var ts = new Date(dateStr + 'T08:00:00').getTime();
+  data.activePeriod = { start: ts, end: null };
+  if (!data.periods) data.periods = [];
+  data.periods.unshift({ start: ts, end: null });
+  // Пересчёт avgLen
+  if (data.periods.length >= 2) {
+    var prev = data.periods[1];
+    if (prev && prev.start) {
+      var diff = Math.round((ts - prev.start) / (24*60*60*1000));
+      if (diff > 14 && diff < 60) {
+        data.avgLen = Math.round(((data.avgLen || 28) * (data.periods.length - 2) + diff) / (data.periods.length - 1));
+      }
+    }
+  }
+  saveCycleData(data);
+  var d = new Date(ts);
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  toast('Цикл начался ' + d.getDate() + ' ' + months[d.getMonth()]);
+  renderYcSheet();
+  renderYasnyCycle();
+}
+
+// v3.49: конец цикла на выбранный день — весь диапазон краснеет
+function ycEndOnPending() {
+  var dateStr = _ycCalPendingDate || new Date().toISOString().split('T')[0];
+  var data = getCycleData();
+  if (!data.activePeriod || data.activePeriod.end) {
+    toast('Нет активного цикла — сначала отметь начало');
+    return;
+  }
+  var endTs = new Date(dateStr + 'T20:00:00').getTime();
+  var startTs = data.activePeriod.start;
+  if (endTs < startTs) { toast('Дата окончания раньше начала'); return; }
+  var duration = Math.round((endTs - startTs) / (1000*60*60*24));
+  data.activePeriod = { start: startTs, end: endTs, duration: duration };
+  // Обновляем запись в periods
+  data.periods = data.periods.map(function(p) {
+    return p.start === startTs ? { start: startTs, end: endTs, duration: duration } : p;
+  });
+  data.activePeriod = null; // цикл завершён
+  saveCycleData(data);
+  var d = new Date(endTs);
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  toast('Цикл завершён ' + d.getDate() + ' ' + months[d.getMonth()] + ' · ' + duration + ' дн.');
+  renderYcSheet();
+  renderYasnyCycle();
+}
+
+// A3 v3.47: завершить цикл выбранной датой (из панели дня)
+function ycEndCycleOnDate(dateStr) {
+  var data = getCycleData();
+  var isPeriodActive = data.activePeriod && !data.activePeriod.end;
+  if (!isPeriodActive) { toast('Нет активного цикла'); return; }
+  var endTs = new Date(dateStr + 'T12:00:00').getTime();
+  var startTs = data.activePeriod.start;
+  if (endTs < startTs) { toast('Дата окончания раньше начала'); return; }
+  var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
+  if (!sv.cycle) sv.cycle = {};
+  sv.cycle.activePeriod = { start: startTs, end: endTs };
+  if (!sv.cycle.periods) sv.cycle.periods = [];
+  // Обновляем или добавляем запись
+  var found = false;
+  sv.cycle.periods = sv.cycle.periods.map(function(p) {
+    if (p.start === startTs) { found = true; return { start: startTs, end: endTs }; }
+    return p;
+  });
+  if (!found) sv.cycle.periods.unshift({ start: startTs, end: endTs });
+  localStorage.setItem('yasna', JSON.stringify(sv));
+  renderYcSheet();
+  renderYasnyCycle();
+  toast('Цикл завершён ' + new Date(endTs).toLocaleDateString('ru-RU',{day:'numeric',month:'long'}));
+}
+
+// A4 v3.47: renderYcDayPanel — полный дневной трекер Ясного цикла
+function renderYcDayPanel(dateStr) {
+  var d = new Date(dateStr + 'T00:00:00');
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  var weekDays = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  var title = d.getDate() + ' ' + months[d.getMonth()] + ', ' + weekDays[d.getDay()];
+  var data = getYcDay(dateStr);
+  var ds = "'" + dateStr + "'";
+
+  // Энергия
+  var energyHtml = '<div class="yp-field-label">Энергия</div>' +
+    '<div class="yp-btn-row">' +
+    [1,2,3,4,5].map(function(v) {
+      var active = data.energy == v ? ' sel-accent' : '';
+      return '<button class="yp-wide-btn' + active + '" style="justify-content:center;font-size:16px;padding:12px 6px" onclick="ycSaveDayField(' + ds + ',\'energy\',' + v + ',this,\'energy\')">' + v + '</button>';
+    }).join('') +
+    '</div>';
+
+  // Тренировка — Правка 5 v3.48: сетка 3×3, 9 типов + поле "Своя"
+  var wiLabels = { easy:'Лёгкая', mid:'Средняя', hard:'Тяжёлая' };
+  var wiCls    = { easy:'sel-green', mid:'sel-yellow', hard:'sel-red' };
+  var workoutTypes = ['gym','run','walk','swim','yoga','bike','tennis','dance','other'];
+  var workoutHtml = '<div class="yp-field-label">Тренировка</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">' +
+    workoutTypes.map(function(v) {
+      var active = data.workoutType === v ? ' ' + (WORKOUT_CLS[v]||'sel-accent') : '';
+      return '<button class="yp-wide-btn' + active + '" style="justify-content:center;padding:10px 4px;font-size:12px" onclick="ycSaveDayField(' + ds + ',\'workoutType\',\'' + v + '\',this,\'workoutType\')">' + (WORKOUT_LABELS[v]||v) + '</button>';
+    }).join('') +
+    '</div>';
+  if (data.workoutType === 'other') {
+    workoutHtml += '<input class="yp-day-input" placeholder="Название тренировки" value="' + (data.workoutCustom || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'workoutCustom\',this.value)">';
+  }
+  if (data.workoutType) {
+    workoutHtml +=
+      '<div class="yp-field-label" style="margin-top:4px">Интенсивность</div>' +
+      '<div class="yp-btn-row">' +
+      ['easy','mid','hard'].map(function(v) {
+        var active = data.workoutIntensity === v ? ' ' + wiCls[v] : '';
+        return '<button class="yp-wide-btn' + active + '" onclick="ycSaveDayField(' + ds + ',\'workoutIntensity\',\'' + v + '\',this,\'workoutIntensity\')">' + wiLabels[v] + '</button>';
+      }).join('') +
+      '</div>' +
+      '<input class="yp-day-input" type="number" min="5" max="300" step="5" placeholder="Минут тренировки" value="' + (data.workoutMin || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'workoutMin\',this.value)">';
+  }
+
+  // Шаги
+  var stepsHtml = '<div class="yp-field-label">Шаги</div>' +
+    '<input class="yp-day-input" type="number" min="0" max="100000" step="500" placeholder="Сколько шагов?" value="' + (data.steps || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'steps\',this.value)">';
+
+  // Замеры тела
+  var bodyHtml =
+    '<div class="yp-field-label">Вес и объёмы</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Вес, кг</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="30" max="300" step="0.1" placeholder="0.0" value="' + (data.weight || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'weight\',this.value)"></div>' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Талия, см</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="40" max="200" step="0.5" placeholder="0" value="' + (data.waist || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'waist\',this.value)"></div>' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Бёдра, см</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="40" max="200" step="0.5" placeholder="0" value="' + (data.hips || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'hips\',this.value)"></div>' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Грудь, см</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="40" max="200" step="0.5" placeholder="0" value="' + (data.chest || '') + '" onchange="ycSaveFieldDirect(' + ds + ',\'chest\',this.value)"></div>' +
+    '</div>';
+
+  return '<div class="yp-day-panel">' +
+    '<div class="yp-day-panel-title">' + title + '</div>' +
+    energyHtml + workoutHtml + stepsHtml + bodyHtml +
+    '<button onclick="toast(\'Сохранено\')" style="width:100%;margin-top:10px;height:46px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:\'Jost\',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Готово</button>' +
+  '</div>';
+}
+
+// A3 v3.47: начало цикла задним числом из панели дня
+function ycStartCycleOnDate(dateStr) {
+  var ts = new Date(dateStr + 'T08:00:00').getTime();
+  var sv = JSON.parse(localStorage.getItem('yasna')||'{}');
+  if (!sv.cycle) sv.cycle = { periods:[], avgLen:28, activePeriod:null };
+  sv.cycle.activePeriod = { start: ts, end: null };
+  if (!sv.cycle.periods) sv.cycle.periods = [];
+  sv.cycle.periods.unshift({ start: ts, end: null });
+  // Пересчёт avgLen если есть предыдущий цикл
+  if (sv.cycle.periods.length >= 2) {
+    var prev = sv.cycle.periods[1];
+    if (prev && prev.start) {
+      var diff = Math.round((ts - prev.start) / (24*60*60*1000));
+      if (diff > 14 && diff < 60) {
+        sv.cycle.avgLen = Math.round((sv.cycle.avgLen * (sv.cycle.periods.length - 2) + diff) / (sv.cycle.periods.length - 1));
+      }
+    }
+  }
+  localStorage.setItem('yasna', JSON.stringify(sv));
+  renderYcSheet(); renderYasnyCycle();
+  toast('Начало цикла — ' + new Date(ts).toLocaleDateString('ru-RU',{day:'numeric',month:'long'}));
+}
+
+// A5 v3.47: функции сохранения YC — по образцу YP
+function ycSaveDayField(dateStr, field, val, btn, group) {
+  saveYcDay(dateStr, (function(obj){ obj[field] = val; return obj; })({}));
+  if (group) {
+    var panel = document.getElementById('ycDayPanel');
+    if (panel) panel.innerHTML = renderYcDayPanel(dateStr);
+  }
+}
+function ycSaveFieldDirect(dateStr, field, val) {
+  saveYcDay(dateStr, (function(obj){ obj[field] = val; return obj; })({}));
+}
+
+// v3.49: тап на день — выбираем для трекера И для операций с циклом
+function ycSelectDay(dateStr) {
+  _ycSelectedDay = dateStr;
+  _ycCalPendingDate = dateStr;   // v3.49: запоминаем для Начались/Закончились
+  ycSelectingDate = null;
+  // Обновляем панель дня
+  var panel = document.getElementById('ycDayPanel');
+  if (panel) panel.innerHTML = renderYcDayPanel(dateStr);
+  // Перерисовываем календарь чтобы подсветить выбранный день
+  var calWrap = document.querySelector('#ycSheetContent .yc-cal-wrap');
+  if (calWrap) {
+    var newCal = document.createElement('div');
+    newCal.innerHTML = renderYcCalendar(getCycleData());
+    var newWrap = newCal.firstElementChild;
+    if (newWrap) calWrap.parentNode.replaceChild(newWrap, calWrap);
+  }
+  // Обновляем кнопки управления — показываем выбранную дату
+  ycUpdateCycleCtrlLabel();
+  // Скролл к панели
+  var sheet = document.getElementById('ycSheet');
+  if (sheet) setTimeout(function(){ sheet.scrollTop = sheet.scrollHeight; }, 100);
+}
+
+// v3.49: обновляем подпись в кнопках «Начались» / «Закончились» под выбранной датой
+function ycUpdateCycleCtrlLabel() {
+  var el = document.getElementById('ycPendingLabel');
+  if (!el || !_ycCalPendingDate) return;
+  var d = new Date(_ycCalPendingDate + 'T00:00:00');
+  var months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  el.textContent = d.getDate() + ' ' + months[d.getMonth()];
 }
 
 // Текущий просматриваемый месяц в шторке
 var ycCalOffset = 0; // 0 = текущий, 1 = следующий, -1 = предыдущий
-var ycSelectingDate = null; // v3.40: дата выбранная тапом в календаре (до подтверждения)
+var ycSelectingDate = null; // v3.40: совместимость
+// v3.49: дата выбранная тапом в календаре для операций начала/конца цикла
+var _ycCalPendingDate = new Date().toISOString().split('T')[0]; // по умолчанию сегодня
 
 function renderYcCalendar(data) {
   var now = new Date();
@@ -7272,25 +7814,27 @@ function renderYcCalendar(data) {
     if (periodDays.has(day)) cls += ' period';
     else if (predictedDays.has(day)) cls += ' predicted';
     if (isCurrentMonth && day === today) cls += ' today';
-    // v3.40: выбранная дата начала
-    if (dateStr === ycSelectingDate) cls += ' selecting';
-    // v3.40: кликабельность — только прошедшие и сегодня, не в активном периоде
-    var isPeriodActive = data.activePeriod && !data.activePeriod.end;
-    var clickable = !isFuture && !isPeriodActive;
-    var onclick = clickable ? ' onclick="ycSelectStartDate(\'' + dateStr + '\')"' : '';
-    if (clickable && !periodDays.has(day)) cls += ' past-tap';
+    // A5 v3.47: выделяем дни с данными трекера
+    var ycDayData = getYcDay(dateStr);
+    if (!isFuture && (ycDayData.weight || ycDayData.energy || ycDayData.workoutType || ycDayData.steps)) {
+      cls += ' has-data';
+    }
+    // v3.49: подсвечиваем pending-день розовым кольцом (выбранный для начала/конца цикла)
+    if (dateStr === _ycCalPendingDate && !periodDays.has(day)) cls += ' period-pending';
+    // A5 v3.47: выбранный день панели трекера (purple)
+    if (dateStr === _ycSelectedDay && !periodDays.has(day) && dateStr !== _ycCalPendingDate) cls += ' selecting';
+    // A5 v3.47: все прошедшие дни и сегодня кликабельны — открывают панель трекера
+    var clickable = !isFuture;
+    var onclick = clickable ? ' onclick="ycSelectDay(\'' + dateStr + '\')"' : '';
+    if (clickable) cls += ' past-tap';
     html += '<div class="' + cls + '"' + onclick + '>' + day + '</div>';
   }
-  // Легенда
-  var isPeriodActiveForLegend = data.activePeriod && !data.activePeriod.end;
-  var hint = !isPeriodActiveForLegend
-    ? '<div class="yc-cal-legend-item" style="color:var(--text2);font-weight:700">← Тапни на дату чтобы начать цикл</div>'
-    : '';
+  // v3.49: легенда всегда показывает инструкцию
   var legend = '<div class="yc-cal-legend">' +
     '<div class="yc-cal-legend-item"><span class="yc-cal-legend-dot period"></span>Менструация</div>' +
     '<div class="yc-cal-legend-item"><span class="yc-cal-legend-dot predicted"></span>Прогноз</div>' +
     '<div class="yc-cal-legend-item"><span class="yc-cal-legend-dot today"></span>Сегодня</div>' +
-    hint +
+    '<div class="yc-cal-legend-item" style="color:var(--text2);font-weight:700">← Тапни дату → Начались / Закончились</div>' +
   '</div>';
   return html + '</div>' + legend + '</div>';
 }
@@ -7782,6 +8326,10 @@ function checkWellbeingSave() {
 var GR_INDICATOR = null;
 var GR_PERIOD = '6m';
 var GR_SEARCH = '';
+// v3.51: вкладка Тело
+var GR_TAB = 'analyses';           // 'analyses' | 'body'
+var GR_BODY_SECTION = 'main';      // 'main' | 'measurements'
+var GR_BODY_PERIOD = '1m';         // '2w' | '1m' | '3m' | '6m'
 
 // Нормы для графиков (мин, макс)
 // v3.25: расширенная база норм — ОАК, биохимия, гормоны, витамины, ОАМ, свёртывание
@@ -8228,10 +8776,296 @@ function getTop3(all) {
   return scored.slice(0, 5).map(function(s) { return s.ind; });
 }
 
+// ══════════════════ ВКЛАДКА ТЕЛО v3.51 ══════════════════
+
+function setGrTab(tab) {
+  GR_TAB = tab;
+  GR_BODY_SECTION = 'main';
+  document.getElementById('grTabAnalyses').classList.toggle('on', tab === 'analyses');
+  document.getElementById('grTabBody').classList.toggle('on', tab === 'body');
+  var sw = document.getElementById('grSearchWrap');
+  if (sw) sw.style.display = tab === 'body' ? 'none' : '';
+  var sub = document.getElementById('grSub');
+  if (sub) sub.textContent = tab === 'body' ? 'Вес · Объёмы · Тренировки' : (getIndicators().length + ' показател' + (getIndicators().length===1?'ь':getIndicators().length<5?'я':'ей'));
+  renderGraphs();
+}
+
+function setGrBodyPeriod(p) {
+  GR_BODY_PERIOD = p;
+  renderGraphs();
+}
+
+// Объединяем данные из yc_days и yp_days в единую историю
+// v3.52 Правка 1: изоляция данных по полу — женский профиль только YC, мужской только YP
+function buildBodyData() {
+  if (S.gender === 'female') {
+    return getYcDays ? getYcDays() : {};
+  }
+  if (S.gender === 'male') {
+    return getYpDays ? getYpDays() : {};
+  }
+  // Профиль не выбран — объединяем оба источника
+  var ycDays = getYcDays ? getYcDays() : {};
+  var ypDays = getYpDays ? getYpDays() : {};
+  var allKeys = {};
+  Object.keys(ycDays).forEach(function(k){ allKeys[k] = Object.assign({}, ycDays[k]); });
+  Object.keys(ypDays).forEach(function(k){ allKeys[k] = Object.assign(allKeys[k] || {}, ypDays[k]); });
+  return allKeys;
+}
+
+// Фильтрует bodyData по выбранному периоду
+function filterBodyPeriod(allKeys) {
+  var now = new Date();
+  var days = GR_BODY_PERIOD === '2w' ? 14 : GR_BODY_PERIOD === '1m' ? 30 : GR_BODY_PERIOD === '3m' ? 90 : 180;
+  var cutoff = new Date(now.getTime() - days * 24*60*60*1000);
+  var cutStr = cutoff.toISOString().split('T')[0];
+  var filtered = {};
+  Object.keys(allKeys).forEach(function(k){ if (k >= cutStr) filtered[k] = allKeys[k]; });
+  return filtered;
+}
+
+// SVG-линейный график для одной метрики тела
+function buildBodySvgChart(points, color, unit) {
+  // points: [{date, val}, ...] отсортированные по дате
+  if (!points.length) return '<div style="text-align:center;padding:30px 0;font-size:12px;color:var(--text3)">Нет данных за период</div>';
+  var W = 320, H = 100;
+  var PAD = { l:32, r:10, t:8, b:22 };
+  var vals = points.map(function(p){ return p.val; });
+  var minV = Math.min.apply(null, vals);
+  var maxV = Math.max.apply(null, vals);
+  var range = maxV - minV || 1;
+  var pad = range * 0.15;
+  minV -= pad; maxV += pad;
+
+  function xPos(i) { return PAD.l + (i / Math.max(points.length-1,1)) * (W - PAD.l - PAD.r); }
+  function yPos(v) { return PAD.t + (1 - (v - minV) / (maxV - minV)) * (H - PAD.t - PAD.b); }
+
+  var gradId = 'bg' + Math.random().toString(36).slice(2,7);
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="gr-canvas" style="overflow:visible" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<defs><linearGradient id="' + gradId + '" x1="0" x2="0" y1="0" y2="1">' +
+    '<stop offset="0%" stop-color="' + color + '" stop-opacity="0.25"/>' +
+    '<stop offset="100%" stop-color="' + color + '" stop-opacity="0"/>' +
+    '</linearGradient></defs>';
+
+  // Сетка — 3 горизонтальные линии
+  for (var t = 0; t <= 2; t++) {
+    var tv = minV + (maxV - minV) * t / 2;
+    var ty = yPos(tv);
+    svg += '<line x1="' + PAD.l + '" x2="' + (W-PAD.r) + '" y1="' + ty + '" y2="' + ty + '" stroke="rgba(255,255,255,.06)" stroke-width="1"/>';
+    svg += '<text x="' + (PAD.l-3) + '" y="' + (ty+3.5) + '" text-anchor="end" font-size="8" fill="rgba(255,255,255,.3)" font-family="Jost,sans-serif">' + tv.toFixed(tv >= 100 ? 0 : 1) + '</text>';
+  }
+
+  // Область под линией
+  if (points.length > 1) {
+    var area = 'M ' + xPos(0) + ' ' + H;
+    area += ' L ' + xPos(0) + ' ' + yPos(points[0].val);
+    for (var i = 1; i < points.length; i++) {
+      var x0 = xPos(i-1), y0 = yPos(points[i-1].val);
+      var x1 = xPos(i),   y1 = yPos(points[i].val);
+      var cx = (x0+x1)/2;
+      area += ' C ' + cx + ' ' + y0 + ' ' + cx + ' ' + y1 + ' ' + x1 + ' ' + y1;
+    }
+    area += ' L ' + xPos(points.length-1) + ' ' + H + ' Z';
+    svg += '<path d="' + area + '" fill="url(#' + gradId + ')"/>';
+  }
+
+  // Линия
+  if (points.length > 1) {
+    var line = 'M ' + xPos(0) + ' ' + yPos(points[0].val);
+    for (var j = 1; j < points.length; j++) {
+      var lx0 = xPos(j-1), ly0 = yPos(points[j-1].val);
+      var lx1 = xPos(j),   ly1 = yPos(points[j].val);
+      var lcx = (lx0+lx1)/2;
+      line += ' C ' + lcx + ' ' + ly0 + ' ' + lcx + ' ' + ly1 + ' ' + lx1 + ' ' + ly1;
+    }
+    svg += '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round"/>';
+  }
+
+  // Точки
+  points.forEach(function(p, i) {
+    svg += '<circle cx="' + xPos(i) + '" cy="' + yPos(p.val) + '" r="3" fill="' + color + '"/>';
+  });
+
+  // Подписи дат — первая и последняя
+  function fmtDate(d) {
+    var dt = new Date(d + 'T00:00:00');
+    var m = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    return dt.getDate() + ' ' + m[dt.getMonth()];
+  }
+  svg += '<text x="' + PAD.l + '" y="' + (H-3) + '" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.3)" font-family="Jost,sans-serif">' + fmtDate(points[0].date) + '</text>';
+  if (points.length > 1) {
+    svg += '<text x="' + xPos(points.length-1) + '" y="' + (H-3) + '" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.3)" font-family="Jost,sans-serif">' + fmtDate(points[points.length-1].date) + '</text>';
+  }
+
+  svg += '</svg>';
+  return svg;
+}
+
+// Дельта между первым и последним значением
+function calcDelta(points) {
+  if (points.length < 2) return null;
+  var diff = points[points.length-1].val - points[0].val;
+  return diff;
+}
+
+// Иконки типов тренировок
+var WORKOUT_ICONS = { gym:'💪', run:'🏃', walk:'🚶', swim:'🏊', yoga:'🧘', bike:'🚴', tennis:'🎾', dance:'💃', other:'⚡' };
+
+// Полный рендер вкладки Тело
+function renderBodyTab(scroll) {
+  var allData = buildBodyData();
+  var filtered = filterBodyPeriod(allData);
+  var sortedKeys = Object.keys(filtered).sort();
+
+  // v3.52 Правка 4: кнопка возврата в трекер — зависит от пола профиля
+  var trackerLabel = S.gender === 'female' ? 'Ясный цикл' : S.gender === 'male' ? 'Ясный пульс' : 'Трекер';
+  var trackerBackBtn =
+    '<button onclick="openTrackerFromBodyGraphs()" style="display:flex;align-items:center;gap:7px;' +
+      'background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;' +
+      'padding:7px 14px;font-family:\'Jost\',sans-serif;font-size:13px;font-weight:600;' +
+      'color:var(--text2);cursor:pointer;margin-bottom:14px;width:fit-content">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>' +
+      trackerLabel +
+    '</button>';
+
+  // Переключатель периода
+  var periods = [['2w','2 нед'],['1m','1 мес'],['3m','3 мес'],['6m','6 мес']];
+  var perHtml = '<div class="gr-periods">' +
+    periods.map(function(p){
+      return '<button class="gr-period' + (GR_BODY_PERIOD===p[0]?' on':'') + '" onclick="setGrBodyPeriod(\'' + p[0] + '\')">' + p[1] + '</button>';
+    }).join('') + '</div>';
+
+  // ── Кнопка «Назад» при drill-down в объёмы ──
+  if (GR_BODY_SECTION === 'measurements') {
+    var backBtn = '<button onclick="GR_BODY_SECTION=\'main\';renderGraphs()" style="display:flex;align-items:center;gap:7px;background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;padding:7px 14px;font-family:\'Jost\',sans-serif;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;margin-bottom:14px;width:fit-content">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>Назад</button>';
+    scroll.innerHTML = trackerBackBtn + backBtn + perHtml + renderMeasurementsSection(sortedKeys, filtered);
+    return;
+  }
+
+  // ── ВЕС ──
+  var weightPts = sortedKeys.filter(function(k){ return filtered[k].weight; })
+    .map(function(k){ return { date:k, val: parseFloat(filtered[k].weight) }; });
+  var wLatest = weightPts.length ? weightPts[weightPts.length-1].val : null;
+  var wDelta = calcDelta(weightPts);
+  var wDeltaHtml = '';
+  if (wDelta !== null) {
+    var sign = wDelta > 0 ? '+' : '';
+    var cls = wDelta > 0 ? 'up' : wDelta < 0 ? 'down' : 'same';
+    wDeltaHtml = '<span class="body-metric-delta ' + cls + '">' + sign + wDelta.toFixed(1) + ' кг</span>';
+  }
+  var weightHtml = '<div class="body-metric-card">' +
+    '<div class="body-metric-title">Вес</div>' +
+    '<div class="body-metric-row">' +
+      '<div><span class="body-metric-val">' + (wLatest !== null ? wLatest.toFixed(1) : '—') + '</span> <span class="body-metric-unit">кг</span></div>' +
+      wDeltaHtml +
+    '</div>' +
+    '<div class="gr-canvas-wrap">' + buildBodySvgChart(weightPts, '#BCBBFF', 'кг') + '</div>' +
+  '</div>';
+
+  // ── ОБЪЁМЫ (кнопка-вход) ──
+  var lastKey = sortedKeys[sortedKeys.length - 1];
+  var lastDay = lastKey ? filtered[lastKey] : {};
+  var volumesBtn = '<button class="body-volumes-btn" onclick="GR_BODY_SECTION=\'measurements\';renderGraphs()">' +
+    '<div style="text-align:left">' +
+      '<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Объёмы</div>' +
+      '<div style="display:flex;gap:16px">' +
+        (lastDay.waist  ? '<div><div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;font-weight:600;color:var(--text);line-height:1">' + lastDay.waist  + '</div><div style="font-size:10px;color:var(--text3);margin-top:1px">талия</div></div>' : '') +
+        (lastDay.hips   ? '<div><div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;font-weight:600;color:var(--text);line-height:1">' + lastDay.hips   + '</div><div style="font-size:10px;color:var(--text3);margin-top:1px">бёдра</div></div>' : '') +
+        (lastDay.chest  ? '<div><div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;font-weight:600;color:var(--text);line-height:1">' + lastDay.chest  + '</div><div style="font-size:10px;color:var(--text3);margin-top:1px">грудь</div></div>' : '') +
+        (!lastDay.waist && !lastDay.hips && !lastDay.chest ? '<div style="font-size:12px;color:var(--text3)">Данных пока нет — вноси замеры в трекере</div>' : '') +
+      '</div>' +
+    '</div>' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+  '</button>';
+
+  // ── ТРЕНИРОВКИ ──
+  var workoutHtml = renderWorkoutsLog(sortedKeys, filtered);
+
+  scroll.innerHTML = trackerBackBtn + perHtml + weightHtml + volumesBtn + workoutHtml + '<div style="height:20px"></div>';
+}
+
+// Три отдельных графика объёмов
+function renderMeasurementsSection(sortedKeys, filtered) {
+  var metrics = [
+    { key:'waist', label:'Талия', unit:'см', color:'#BCBBFF' },
+    { key:'hips',  label:'Бёдра', unit:'см', color:'#FF9CCB' },
+    { key:'chest', label:'Грудь', unit:'см', color:'#7AFFD4' }
+  ];
+  var html = '';
+  metrics.forEach(function(m) {
+    var pts = sortedKeys.filter(function(k){ return filtered[k][m.key]; })
+      .map(function(k){ return { date:k, val: parseFloat(filtered[k][m.key]) }; });
+    var latest = pts.length ? pts[pts.length-1].val : null;
+    var delta = calcDelta(pts);
+    var dHtml = '';
+    if (delta !== null) {
+      var sign = delta > 0 ? '+' : '';
+      var dcls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
+      dHtml = '<span class="body-metric-delta ' + dcls + '">' + sign + delta.toFixed(1) + ' см</span>';
+    }
+    html += '<div class="body-metric-card">' +
+      '<div class="body-metric-title">' + m.label + '</div>' +
+      '<div class="body-metric-row">' +
+        '<div><span class="body-metric-val">' + (latest !== null ? latest.toFixed(1) : '—') + '</span> <span class="body-metric-unit">см</span></div>' +
+        dHtml +
+      '</div>' +
+      '<div class="gr-canvas-wrap">' + buildBodySvgChart(pts, m.color, m.unit) + '</div>' +
+    '</div>';
+  });
+  return html || '<div class="gr-empty"><div class="gr-empty-t">Нет данных</div><div class="gr-empty-s">Вноси замеры талии, бёдер и груди в трекере Ясного цикла или Ясного пульса</div></div>';
+}
+
+// Лента тренировок — хронологически, разделена по месяцам
+function renderWorkoutsLog(sortedKeys, filtered) {
+  var entries = sortedKeys.filter(function(k){ return filtered[k].workoutType; });
+  if (!entries.length) return '<div class="body-metric-card"><div class="body-metric-title">Тренировки</div><div style="font-size:13px;color:var(--text3);padding:10px 0">Нет тренировок за выбранный период</div></div>';
+
+  var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var weekDays  = ['вс','пн','вт','ср','чт','пт','сб'];
+  var intLabels = { easy:'лёгкая', mid:'средняя', hard:'тяжёлая' };
+
+  var html = '<div class="body-metric-card"><div class="body-metric-title">Тренировки · ' + entries.length + ' за период</div>';
+  var lastMonth = '';
+
+  // Реверс — сначала новые
+  entries.slice().reverse().forEach(function(k) {
+    var d  = new Date(k + 'T00:00:00');
+    var mKey = d.getFullYear() + '-' + d.getMonth();
+    if (mKey !== lastMonth) {
+      lastMonth = mKey;
+      html += '<div class="body-month-sep">' + monthNames[d.getMonth()] + ' ' + d.getFullYear() + '</div>';
+    }
+    var day = filtered[k];
+    var type  = WORKOUT_LABELS[day.workoutType] || day.workoutType;
+    var icon  = WORKOUT_ICONS[day.workoutType] || '⚡';
+    var custom = day.workoutCustom ? ' · ' + day.workoutCustom : '';
+    var intens = day.workoutIntensity ? ' · ' + (intLabels[day.workoutIntensity]||'') : '';
+    var dur    = day.workoutMin ? day.workoutMin + ' мин' : '';
+    var dateLabel = d.getDate() + ' · ' + weekDays[d.getDay()];
+    html += '<div class="workout-log-item">' +
+      '<div class="workout-log-dot">' + icon + '</div>' +
+      '<div class="workout-log-info">' +
+        '<div class="workout-log-type">' + type + custom + '</div>' +
+        '<div class="workout-log-meta">' + dateLabel + intens + '</div>' +
+      '</div>' +
+      (dur ? '<div class="workout-log-dur">' + dur + '</div>' : '') +
+    '</div>';
+  });
+
+  return html + '</div>';
+}
+
 function renderGraphs() {
   var scroll = document.getElementById('grScroll');
   var sub = document.getElementById('grSub');
   if (!scroll) return;
+
+  // v3.51: вкладка Тело
+  if (GR_TAB === 'body') {
+    renderBodyTab(scroll);
+    return;
+  }
 
   var all = getIndicators();
   var isDemo = false;
@@ -9760,7 +10594,16 @@ function buildYpPrompt() {
   if (todayData.stress)   trackerLines.push('Стресс: ' + ({low:'низкий',mid:'средний',high:'высокий'}[todayData.stress]||'—'));
   if (todayData.alcohol && todayData.alcohol !== 'no') trackerLines.push('Алкоголь: ' + ({bit:'немного',yes:'да'}[todayData.alcohol]||'—'));
   if (todayData.steps)    trackerLines.push('Шаги: ' + todayData.steps);
-  if (todayData.workoutType) trackerLines.push('Тренировка: ' + ({gym:'зал',run:'бег',walk:'прогулка',other:'другое'}[todayData.workoutType]||'—') + (todayData.workoutIntensity?' ('+{easy:'лёгкая',mid:'средняя',hard:'тяжёлая'}[todayData.workoutIntensity]+')':'') + (todayData.workoutMin?' '+todayData.workoutMin+' мин':''));
+  if (todayData.workoutType) trackerLines.push(
+    'Тренировка: ' + (WORKOUT_LABELS[todayData.workoutType] || todayData.workoutType) +
+    (todayData.workoutCustom ? ' (' + todayData.workoutCustom + ')' : '') +
+    (todayData.workoutIntensity ? ', ' + {easy:'лёгкая',mid:'средняя',hard:'тяжёлая'}[todayData.workoutIntensity] : '') +
+    (todayData.workoutMin ? ', ' + todayData.workoutMin + ' мин' : '')
+  );
+  // B3 v3.47: вес и объёмы из трекера
+  if (todayData.weight) trackerLines.push('Вес: ' + todayData.weight + ' кг');
+  if (todayData.waist)  trackerLines.push('Талия: ' + todayData.waist + ' см');
+  if (todayData.chest)  trackerLines.push('Грудь: ' + todayData.chest + ' см');
   var trackerCtx = trackerLines.length ? 'Трекер сегодня: ' + trackerLines.join(', ') : '';
 
   // Тренировки за последние 7 дней для контекста
@@ -9771,9 +10614,9 @@ function buildYpPrompt() {
     var wk = wd.toISOString().split('T')[0];
     var wday = ypDaysAll[wk] || {};
     if (wday.workoutType) {
-      var wlabels = {gym:'зал',run:'бег',walk:'прогулка',other:'другое'};
       var wilabels = {easy:'лёгкая',mid:'средняя',hard:'тяжёлая'};
-      recentWorkouts.push(wk + ': ' + (wlabels[wday.workoutType]||wday.workoutType) +
+      recentWorkouts.push(wk + ': ' + (WORKOUT_LABELS[wday.workoutType] || wday.workoutType) +
+        (wday.workoutCustom ? ' (' + wday.workoutCustom + ')' : '') +
         (wday.workoutIntensity ? ' ' + (wilabels[wday.workoutIntensity]||'') : '') +
         (wday.workoutMin ? ' ' + wday.workoutMin + 'мин' : ''));
     }
@@ -9807,7 +10650,13 @@ function buildYpPrompt() {
   return 'Ты ЯСНА — AI-агент здоровья. МУЖСКОЙ профиль — только мужская тематика.\n\n' +
     'СТРОГО ЗАПРЕЩЕНО упоминать: менструальный цикл, фазы цикла, ПМС, овуляцию, эстроген, прогестерон, беременность, менструацию — это мужской профиль!\n\n' +
     'ДАННЫЕ:\n' +
-    'Имя: ' + name + (S.age ? ', ' + S.age + ' лет' : '') + ', день: ' + weekDay + '\n' +
+    'Имя: ' + name + (S.age ? ', ' + S.age + ' лет' : '') +
+    // B5 v3.46: измерения тела из профиля
+    (S.height ? ', рост ' + S.height + ' см' : '') +
+    (S.weight ? ', вес ' + S.weight + ' кг' : '') +
+    (S.waist  ? ', талия ' + S.waist + ' см' : '') +
+    (S.hips   ? ', бёдра ' + S.hips + ' см' : '') +
+    ', день: ' + weekDay + '\n' +
     sleepCtx + '\n' + (trackerCtx ? trackerCtx + '\n' : '') + workoutsCtx + '\n' + testCtx + '\n' +
     (dnaCtx ? dnaCtx + '\n' : '') +
     (S.cond ? 'Состояния: ' + S.cond + '\n' : '') +
@@ -9960,20 +10809,27 @@ function renderYpSheet() {
   // ── Мини-сводка за текущий месяц ──
   var statsMonth = getYpMonthStats();
   var statsHtml =
-    '<div class="yp-tracker-summary">' +
+    '<div class="yp-tracker-summary" style="margin-bottom:6px">' +
       '<div class="yp-tracker-stat">' +
         '<div class="yp-tracker-stat-val">' + statsMonth.workouts + '</div>' +
         '<div class="yp-tracker-stat-lbl">тренировок</div>' +
       '</div>' +
       '<div class="yp-tracker-stat">' +
-        '<div class="yp-tracker-stat-val">' + statsMonth.minutes + '</div>' +
-        '<div class="yp-tracker-stat-lbl">мин актив.</div>' +
+        // Правка 3 v3.48: показываем avg минут вместо суммы
+        '<div class="yp-tracker-stat-val">' + (statsMonth.avgMin || '—') + '</div>' +
+        '<div class="yp-tracker-stat-lbl">мин (ср.)</div>' +
       '</div>' +
       '<div class="yp-tracker-stat">' +
         '<div class="yp-tracker-stat-val">' + statsMonth.steps + '</div>' +
         '<div class="yp-tracker-stat-lbl">шаги (ср.)</div>' +
       '</div>' +
-    '</div>';
+      '<div class="yp-tracker-stat">' +
+        '<div class="yp-tracker-stat-val">' + statsMonth.weight + '</div>' +
+        '<div class="yp-tracker-stat-lbl">кг (ср.)</div>' +
+      '</div>' +
+    '</div>' +
+    // Правка 3 v3.48: строка разбивки по типам
+    buildWorkoutBreakdownHtml(statsMonth.typeBreakdown, statsMonth.avgMin);
 
   // ── Календарь ──
   var calHtml = renderYpCalendar();
@@ -9988,6 +10844,15 @@ function renderYpSheet() {
     '</div>' +
     '<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Этот месяц</div>' +
     statsHtml + calHtml +
+    // v3.52 Правка 3: кнопка перехода в Графики тела
+    '<button onclick="openBodyGraphsFromTracker()" style="width:100%;height:42px;margin:12px 0 16px;' +
+      'border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);' +
+      'color:var(--accent);font-family:\'Jost\',sans-serif;font-size:13px;font-weight:700;' +
+      'cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M3 20V8m0 12l4-5 4 3 4-7 4 4"/></svg>' +
+      'Графики тела' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '</button>' +
     '<div id="ypDayPanel">' + panelHtml + '</div>';
 
   document.getElementById('ypSheet').scrollTop = 0;
@@ -10017,18 +10882,28 @@ function getYpMonthStats() {
   var year = now.getFullYear();
   var month = now.getMonth();
   var daysInMonth = new Date(year, month + 1, 0).getDate();
-  var workouts = 0, minutes = 0, stepsSum = 0, stepsCount = 0;
+  // Правка 2 v3.48: расширенная статистика
+  var workouts = 0, minutesSum = 0, minutesCount = 0;
+  var stepsSum = 0, stepsCount = 0, weightSum = 0, weightCount = 0;
+  var typeBreakdown = {};
   for (var d = 1; d <= daysInMonth; d++) {
     var key = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     var day = days[key] || {};
-    if (day.workoutType) workouts++;
-    if (day.workoutMin) minutes += parseInt(day.workoutMin) || 0;
-    if (day.steps) { stepsSum += parseInt(day.steps) || 0; stepsCount++; }
+    if (day.workoutType) {
+      workouts++;
+      typeBreakdown[day.workoutType] = (typeBreakdown[day.workoutType] || 0) + 1;
+      if (day.workoutMin) { minutesSum += parseInt(day.workoutMin) || 0; minutesCount++; }
+    }
+    if (day.steps)  { stepsSum  += parseInt(day.steps)  || 0; stepsCount++; }
+    if (day.weight) { weightSum += parseFloat(day.weight) || 0; weightCount++; }
   }
   return {
     workouts: workouts,
-    minutes: minutes,
-    steps: stepsCount ? Math.round(stepsSum / stepsCount).toLocaleString('ru') : '—'
+    minutes: minutesSum,
+    avgMin: minutesCount ? Math.round(minutesSum / minutesCount) : 0,
+    steps: stepsCount ? Math.round(stepsSum / stepsCount).toLocaleString('ru') : '—',
+    weight: weightCount ? (weightSum / weightCount).toFixed(1) : '—',
+    typeBreakdown: typeBreakdown
   };
 }
 
@@ -10190,19 +11065,22 @@ function renderYpDayPanel(dateStr) {
   var stepsHtml = '<div class="yp-field-label">Шаги</div>' +
     '<input class="yp-day-input" type="number" min="0" max="100000" step="500" placeholder="Сколько шагов?" value="' + (data.steps || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'steps\',this.value)">';
 
-  // ── ТРЕНИРОВКА ──
-  var wtLabels  = { gym:'Зал', run:'Бег', walk:'Прогулка', other:'Другое' };
-  var wtCls     = { gym:'sel-blue', run:'sel-green', walk:'sel-accent', other:'sel-purple' };
+  // ── ТРЕНИРОВКА — Правка 5 v3.48: сетка 3×3, 9 типов + поле "Своя" ──
   var wiLabels  = { easy:'Лёгкая', mid:'Средняя', hard:'Тяжёлая' };
   var wiCls     = { easy:'sel-green', mid:'sel-yellow', hard:'sel-red' };
+  var workoutTypes = ['gym','run','walk','swim','yoga','bike','tennis','dance','other'];
 
   var workoutHtml = '<div class="yp-field-label">Тренировка</div>' +
-    '<div class="yp-btn-row">' +
-    ['gym','run','walk','other'].map(function(v) {
-      var active = data.workoutType === v ? ' ' + wtCls[v] : '';
-      return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'workoutType\',\'' + v + '\',this,\'workoutType\')">' + wtLabels[v] + '</button>';
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">' +
+    workoutTypes.map(function(v) {
+      var active = data.workoutType === v ? ' ' + (WORKOUT_CLS[v]||'sel-accent') : '';
+      return '<button class="yp-wide-btn' + active + '" style="justify-content:center;padding:10px 4px;font-size:12px" onclick="ypSaveDayField(' + ds + ',\'workoutType\',\'' + v + '\',this,\'workoutType\')">' + (WORKOUT_LABELS[v]||v) + '</button>';
     }).join('') +
     '</div>';
+
+  if (data.workoutType === 'other') {
+    workoutHtml += '<input class="yp-day-input" placeholder="Название тренировки" value="' + (data.workoutCustom || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'workoutCustom\',this.value)">';
+  }
 
   if (data.workoutType) {
     workoutHtml +=
@@ -10213,8 +11091,20 @@ function renderYpDayPanel(dateStr) {
         return '<button class="yp-wide-btn' + active + '" onclick="ypSaveDayField(' + ds + ',\'workoutIntensity\',\'' + v + '\',this,\'workoutIntensity\')">' + wiLabels[v] + '</button>';
       }).join('') +
       '</div>' +
-      '<input class="yp-day-input" type="number" min="5" max="300" step="5" placeholder="Минут (необязательно)" value="' + (data.workoutMin || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'workoutMin\',this.value)">';
+      '<input class="yp-day-input" type="number" min="5" max="300" step="5" placeholder="Минут тренировки" value="' + (data.workoutMin || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'workoutMin\',this.value)">';
   }
+
+  // ── ВЕС И ОБЪЁМЫ (B1 v3.47) ──
+  var bodyMHtml =
+    '<div class="yp-field-label">Вес и объёмы</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Вес, кг</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="30" max="300" step="0.1" placeholder="0.0" value="' + (data.weight || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'weight\',this.value)"></div>' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Талия, см</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="40" max="200" step="0.5" placeholder="0" value="' + (data.waist || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'waist\',this.value)"></div>' +
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600">Грудь, см</div>' +
+        '<input class="yp-day-input" style="margin-bottom:0" type="number" min="40" max="200" step="0.5" placeholder="0" value="' + (data.chest || '') + '" onchange="ypSaveFieldDirect(' + ds + ',\'chest\',this.value)"></div>' +
+    '</div>';
 
   // ── МЕДИЦИНСКИЙ ВОПРОС (скрыт) ──
   var libidoLabels = { low:'Низкое', mid:'Среднее', high:'Высокое' };
@@ -10236,7 +11126,7 @@ function renderYpDayPanel(dateStr) {
 
   return '<div class="yp-day-panel">' +
     '<div class="yp-day-panel-title">' + title + '</div>' +
-    sleepHtml + hoursHtml + energyHtml + stressHtml + alcHtml + stepsHtml + workoutHtml + medHtml +
+    sleepHtml + hoursHtml + energyHtml + stressHtml + alcHtml + stepsHtml + workoutHtml + bodyMHtml + medHtml +
     '<button onclick="toast(\'✓ Сохранено\')" style="width:100%;margin-top:6px;height:46px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:\'Jost\',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Готово</button>' +
   '</div>';
 }
@@ -10659,16 +11549,18 @@ function closeMsgCtx(e) {
 
 function msgCtxCopy() {
   document.getElementById('msgCtxOverlay').classList.remove('on');
-  if (!_ctxText) return;
+  // B2 v3.46: захватываем text ДО обнуления переменных (race condition fix)
+  var text = _ctxText;
+  _ctxTarget = null; _ctxText = '';
+  if (!text) return;
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(_ctxText)
+    navigator.clipboard.writeText(text)
       .then(function(){ toast('✓ Скопировано'); })
-      .catch(function(){ _copyFallback(_ctxText); toast('✓ Скопировано'); });
+      .catch(function(){ _copyFallback(text); });
   } else {
-    _copyFallback(_ctxText);
+    _copyFallback(text);
     toast('✓ Скопировано');
   }
-  _ctxTarget = null; _ctxText = '';
 }
 
 function msgCtxDelete() {
