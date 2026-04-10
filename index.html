@@ -2948,7 +2948,7 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 /* ══════════════════ ПРАВОВЫЕ ДОКУМЕНТЫ v3.54 ══════════════════ */
 .legal-hdr {
   display: flex; align-items: center; gap: 12px;
-  padding: 16px 18px 12px;
+  padding: max(16px, env(safe-area-inset-top)) 18px 12px;
   border-bottom: 1px solid var(--glass-border);
   position: sticky; top: 0; background: var(--bg1); z-index: 2;
 }
@@ -3777,7 +3777,12 @@ button:focus-visible,
       </button>
     </div>
     <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px">ЯСНА не является медицинским устройством и не заменяет консультацию врача</div>
-    <button onclick="acceptConsent()" style="width:100%;padding:16px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:'Jost',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all .2s;box-shadow:0 4px 20px rgba(188,207,255,.25)">
+    <!-- Чекбокс подтверждения v3.57 -->
+    <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;cursor:pointer;padding:12px 14px;background:var(--glass);border-radius:var(--rx);border:1px solid var(--glass-border)">
+      <input type="checkbox" id="consentCheck" onchange="var btn=document.getElementById('consentAcceptBtn');btn.disabled=!this.checked;btn.style.opacity=this.checked?'1':'0.4'" style="width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--accent);cursor:pointer">
+      <span style="font-size:12px;color:var(--text2);line-height:1.6">Я ознакомилась с <button onclick="openLegal('privacy')" style="background:none;border:none;color:var(--accent);font-size:12px;padding:0;cursor:pointer;text-decoration:underline">Политикой конфиденциальности</button> и <button onclick="openLegal('terms')" style="background:none;border:none;color:var(--accent);font-size:12px;padding:0;cursor:pointer;text-decoration:underline">Пользовательским соглашением</button> и согласна с их условиями</span>
+    </label>
+    <button id="consentAcceptBtn" onclick="acceptConsent()" disabled style="width:100%;padding:16px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:'Jost',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all .2s;box-shadow:0 4px 20px rgba(188,207,255,.25);opacity:0.4">
       Принимаю и продолжаю
     </button>
     <button onclick="declineConsent()" style="width:100%;padding:13px;border-radius:var(--rs);border:1px solid var(--glass-border);background:var(--glass);color:var(--text3);font-family:'Jost',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s">
