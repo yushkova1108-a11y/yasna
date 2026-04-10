@@ -9,7 +9,7 @@
 <!-- A2: title обновлён до актуальной версии -->
 <title>ЯСНА — персональный AI-агент здоровья</title>
 <!-- A1: CSP — вторая линия защиты от XSS после escapeHtml -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.deepseek.com; img-src 'self' data: blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://yasna-proxy.yushkova1108.workers.dev https://cdnjs.cloudflare.com; img-src 'self' data: blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 <!-- A2: SEO + Open Graph — для шаринга ссылки и поисковиков -->
 <meta name="description" content="ЯСНА — персональный AI-агент здоровья. Расшифровка анализов, ДНК-профиль, трекер цикла, динамика показателей. Работает без интернета, данные только на вашем устройстве.">
 <meta name="keywords" content="анализы крови, расшифровка анализов, ДНК, здоровье, AI, искусственный интеллект">
@@ -19,13 +19,20 @@
 <meta property="og:locale" content="ru_RU">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ЯСНА — персональный AI-агент здоровья">
-<!-- A6: theme-color — цвет строки браузера при добавлении на экран -->
-<meta name="theme-color" content="#04040F" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#E4EAFF" media="(prefers-color-scheme: light)">
+<!-- theme-color обновлён в PWA-блоке v3.56 -->
+<!-- PWA Манифест + Иконка ЯСНА v3.56 -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoi0K/QodCd0JAiLCJzaG9ydF9uYW1lIjoi0K/QodCd0JAiLCJkZXNjcmlwdGlvbiI6ItCf0LXRgNGB0L7QvdCw0LvRjNC90YvQuSBBSS3QutC+0LzQv9Cw0L3RjNC+0L0g0LTQu9GPINC+0YHQvtC30L3QsNC90L3QvtCz0L4g0L7QsdGA0LDQt9CwINC20LjQt9C90LgiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFDMUIyRSIsInRoZW1lX2NvbG9yIjoiIzFDMUIyRSIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhacFpYZENiM2c5SWpBZ01DQTFNVElnTlRFeUlqNEtJQ0E4Y21WamRDQjNhV1IwYUQwaU5URXlJaUJvWldsbmFIUTlJalV4TWlJZ2NuZzlJakV4TkNJZ1ptbHNiRDBpSXpGRE1VSXlSU0l2UGdvZ0lEeDBaWGgwSUhnOUlqYzJJaUI1UFNJek1EZ2lJR1p2Ym5RdGMybDZaVDBpTVRRNElpQm1iMjUwTFdaaGJXbHNlVDBpUjJWdmNtZHBZU3h6WlhKcFppSWdabTl1ZEMxM1pXbG5hSFE5SWpRd01DSWdabWxzYkQwaUkwTTRRelZGT0NJKzBLODhMM1JsZUhRK0NpQWdQSFJsZUhRZ2VEMGlNakF6SWlCNVBTSXpNRGdpSUdadmJuUXRjMmw2WlQwaU1UUTRJaUJtYjI1MExXWmhiV2xzZVQwaVIyVnZjbWRwWVN4elpYSnBaaUlnWm05dWRDMTNaV2xuYUhROUlqUXdNQ0lnWm1sc2JEMGlJME00UXpWRk9DSSswS0U4TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpTXpJeklpQjVQU0l6TURnaUlHWnZiblF0YzJsNlpUMGlNVFE0SWlCbWIyNTBMV1poYldsc2VUMGlSMlZ2Y21kcFlTeHpaWEpwWmlJZ1ptOXVkQzEzWldsbmFIUTlJalF3TUNJZ1ptbHNiRDBpSTBNNFF6VkZPQ0krMEowOEwzUmxlSFErQ2lBZ1BIUmxlSFFnZUQwaU5ETXdJaUI1UFNJek1EZ2lJR1p2Ym5RdGMybDZaVDBpTVRRNElpQm1iMjUwTFdaaGJXbHNlVDBpUjJWdmNtZHBZU3h6WlhKcFppSWdabTl1ZEMxM1pXbG5hSFE5SWpRd01DSWdabWxzYkQwaUkwTTRRelZGT0NJKzBKQThMM1JsZUhRK0NpQWdQSFJsZUhRZ2VEMGlORGcwSWlCNVBTSXhOamdpSUdadmJuUXRjMmw2WlQwaU5qUWlJR1p2Ym5RdFptRnRhV3g1UFNKSFpXOXlaMmxoTEhObGNtbG1JaUJtYjI1MExYZGxhV2RvZEQwaU5EQXdJaUJtYVd4c1BTSWpRVGM0UWtaQklpQjBaWGgwTFdGdVkyaHZjajBpYldsa1pHeGxJajVlUEM5MFpYaDBQZ29nSUR4eVpXTjBJSGc5SWpjMklpQjVQU0l6TkRnaUlIZHBaSFJvUFNJME1qUWlJR2hsYVdkb2REMGlPQ0lnY25nOUlqUWlJR1pwYkd3OUlpTXdSRGswT0RnaUx6NEtQQzl6ZG1jKyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWo0S0lDQThjbVZqZENCM2FXUjBhRDBpTlRFeUlpQm9aV2xuYUhROUlqVXhNaUlnY25nOUlqRXhOQ0lnWm1sc2JEMGlJekZETVVJeVJTSXZQZ29nSUR4MFpYaDBJSGc5SWpjMklpQjVQU0l6TURnaUlHWnZiblF0YzJsNlpUMGlNVFE0SWlCbWIyNTBMV1poYldsc2VUMGlSMlZ2Y21kcFlTeHpaWEpwWmlJZ1ptOXVkQzEzWldsbmFIUTlJalF3TUNJZ1ptbHNiRDBpSTBNNFF6VkZPQ0krMEs4OEwzUmxlSFErQ2lBZ1BIUmxlSFFnZUQwaU1qQXpJaUI1UFNJek1EZ2lJR1p2Ym5RdGMybDZaVDBpTVRRNElpQm1iMjUwTFdaaGJXbHNlVDBpUjJWdmNtZHBZU3h6WlhKcFppSWdabTl1ZEMxM1pXbG5hSFE5SWpRd01DSWdabWxzYkQwaUkwTTRRelZGT0NJKzBLRThMM1JsZUhRK0NpQWdQSFJsZUhRZ2VEMGlNekl6SWlCNVBTSXpNRGdpSUdadmJuUXRjMmw2WlQwaU1UUTRJaUJtYjI1MExXWmhiV2xzZVQwaVIyVnZjbWRwWVN4elpYSnBaaUlnWm05dWRDMTNaV2xuYUhROUlqUXdNQ0lnWm1sc2JEMGlJME00UXpWRk9DSSswSjA4TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpTkRNd0lpQjVQU0l6TURnaUlHWnZiblF0YzJsNlpUMGlNVFE0SWlCbWIyNTBMV1poYldsc2VUMGlSMlZ2Y21kcFlTeHpaWEpwWmlJZ1ptOXVkQzEzWldsbmFIUTlJalF3TUNJZ1ptbHNiRDBpSTBNNFF6VkZPQ0krMEpBOEwzUmxlSFErQ2lBZ1BIUmxlSFFnZUQwaU5EZzBJaUI1UFNJeE5qZ2lJR1p2Ym5RdGMybDZaVDBpTmpRaUlHWnZiblF0Wm1GdGFXeDVQU0pIWlc5eVoybGhMSE5sY21sbUlpQm1iMjUwTFhkbGFXZG9kRDBpTkRBd0lpQm1hV3hzUFNJalFUYzRRa1pCSWlCMFpYaDBMV0Z1WTJodmNqMGliV2xrWkd4bElqNWVQQzkwWlhoMFBnb2dJRHh5WldOMElIZzlJamMySWlCNVBTSXpORGdpSUhkcFpIUm9QU0kwTWpRaUlHaGxhV2RvZEQwaU9DSWdjbmc5SWpRaUlHWnBiR3c5SWlNd1JEazBPRGdpTHo0S1BDOXpkbWMrIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn1dfQ==">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNCIgZmlsbD0iIzFDMUIyRSIvPgogIDx0ZXh0IHg9Ijc2IiB5PSIzMDgiIGZvbnQtc2l6ZT0iMTQ4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC13ZWlnaHQ9IjQwMCIgZmlsbD0iI0M4QzVFOCI+0K88L3RleHQ+CiAgPHRleHQgeD0iMjAzIiB5PSIzMDgiIGZvbnQtc2l6ZT0iMTQ4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC13ZWlnaHQ9IjQwMCIgZmlsbD0iI0M4QzVFOCI+0KE8L3RleHQ+CiAgPHRleHQgeD0iMzIzIiB5PSIzMDgiIGZvbnQtc2l6ZT0iMTQ4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC13ZWlnaHQ9IjQwMCIgZmlsbD0iI0M4QzVFOCI+0J08L3RleHQ+CiAgPHRleHQgeD0iNDMwIiB5PSIzMDgiIGZvbnQtc2l6ZT0iMTQ4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC13ZWlnaHQ9IjQwMCIgZmlsbD0iI0M4QzVFOCI+0JA8L3RleHQ+CiAgPHRleHQgeD0iNDg0IiB5PSIxNjgiIGZvbnQtc2l6ZT0iNjQiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLHNlcmlmIiBmb250LXdlaWdodD0iNDAwIiBmaWxsPSIjQTc4QkZBIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ePC90ZXh0PgogIDxyZWN0IHg9Ijc2IiB5PSIzNDgiIHdpZHRoPSI0MjQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMwRDk0ODgiLz4KPC9zdmc+">
+<meta name="apple-mobile-web-app-title" content="ЯСНА">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1C1B2E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- Tesseract.js v4 — OCR фото бланков v3.53 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <!-- A7: PDF.js error handler — пользователь видит причину ошибки -->
 <script>
 if(window.pdfjsLib){
@@ -2937,52 +2944,50 @@ body { background:var(--bg1); color:var(--text); transition:background .4s, colo
 .portrait-update-btn.loading { animation: spin .8s linear infinite; }
 .portrait-date { font-size: 10px; color: var(--text3); margin-top: 8px; text-align: center; }
 
-/* ══════════════════ SOS БАННЕР v3.22 ══════════════════ */
-.sos-banner {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 500;
-  display: none;
-  align-items: flex-end;
+
+/* ══════════════════ ПРАВОВЫЕ ДОКУМЕНТЫ v3.54 ══════════════════ */
+.legal-hdr {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky; top: 0; background: var(--bg1); z-index: 2;
 }
-.sos-banner.on { display: flex; animation: su .3s ease; }
-.sos-inner {
-  width: 100%; max-width: 430px; margin: 0 auto;
-  background: var(--bg2);
-  border-radius: 24px 24px 0 0;
-  border-top: 1px solid var(--glass-border);
-  padding: 20px 22px max(28px, env(safe-area-inset-bottom));
-  box-shadow: 0 -8px 40px rgba(0,0,0,0.4);
-}
-.sos-top {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 10px;
-}
-.sos-title { font-size: 18px; font-weight: 700; color: var(--text); font-family: 'Jost', sans-serif; }
-.sos-close {
-  background: none; border: none; color: var(--text3);
-  font-size: 20px; cursor: pointer; padding: 4px; line-height: 1;
-}
-.sos-text {
-  font-size: 14px; color: var(--text2); line-height: 1.7;
-  margin-bottom: 18px; font-family: 'Jost', sans-serif;
-}
-.sos-call-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 16px; border-radius: 16px;
-  color: white; font-family: 'Jost', sans-serif;
-  font-size: 15px; font-weight: 700; text-decoration: none;
-  margin-bottom: 10px; transition: opacity .2s;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-.sos-call-btn:active { opacity: .82; transform: scale(.98); }
-.sos-dismiss {
-  width: 100%; padding: 13px; border-radius: 14px;
+.legal-back-btn {
+  width: 36px; height: 36px; border-radius: 50%;
   background: var(--glass); border: 1px solid var(--glass-border);
-  color: var(--text3); font-family: 'Jost', sans-serif;
-  font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: all .2s;
 }
-.sos-dismiss:active { background: var(--glass-hover); }
+.legal-back-btn:active { opacity: .7; transform: scale(.92); }
+.legal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 600; color: var(--text);
+}
+.legal-tabs {
+  display: flex; gap: 6px;
+  padding: 12px 18px 0;
+}
+.legal-tab {
+  flex: 1; padding: 10px 8px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--rx); font-family: 'Jost', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--text3);
+  cursor: pointer; text-align: center; transition: all .2s;
+}
+.legal-tab.active {
+  background: rgba(188,207,255,.15);
+  border-color: rgba(188,207,255,.35);
+  color: var(--accent);
+}
+.legal-body {
+  padding: 18px 18px 48px;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px; color: var(--text2);
+  line-height: 1.75; white-space: pre-wrap;
+  overflow-y: auto;
+}
+.legal-body strong { color: var(--text); }
+.light .legal-hdr { background: var(--bg1); }
 
 /* ══════════════════ ОТЧЁТ ДЛЯ ВРАЧА v3.21 ══════════════════ */
 /* Кнопка «Новый отчёт» в шапке чата v3.26 */
@@ -3438,36 +3443,49 @@ button:focus-visible,
         </div>
       </div>
 
+      <!-- ФОТО-РАСШИФРОВКА v3.53 — Tesseract.js OCR -->
       <div class="dec-block" id="dec-block-photo">
-        <div style="border-radius:var(--r);padding:32px 22px;text-align:center;background:linear-gradient(135deg,rgba(212,176,255,0.08) 0%,rgba(188,207,255,0.06) 100%);border:1px solid rgba(212,176,255,0.25);position:relative;overflow:hidden;">
-          <div style="position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(212,176,255,0.4),transparent)"></div>
-          <div style="display:flex;justify-content:center;margin-bottom:16px;">
-            <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,rgba(212,176,255,0.20),rgba(188,207,255,0.15));border:1px solid rgba(212,176,255,0.30);display:flex;align-items:center;justify-content:center;">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(212,176,255,0.9)" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="6" width="20" height="14" rx="3"/><circle cx="12" cy="13" r="3"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+        <!-- Зона загрузки фото -->
+        <div id="photoUploadZone" class="dec-upload-zone" onclick="document.getElementById('decPhotoInput').click()">
+          <input type="file" id="decPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoOCR(this)">
+          <div class="duz-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <rect x="2" y="6" width="20" height="14" rx="3"/><circle cx="12" cy="13" r="3"/><path d="M8 6l1.5-2h5L16 6"/>
+            </svg>
+          </div>
+          <div class="duz-title">Сфотографировать бланк</div>
+          <div class="duz-sub">Камера · Галерея · JPG · PNG</div>
+          <div class="dec-fmts"><span>JPG</span><span>PNG</span><span>HEIC</span></div>
+        </div>
+        <!-- Предупреждение о качестве -->
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:rgba(255,200,100,0.07);border:1px solid rgba(255,200,100,0.20);border-radius:var(--rx);margin-top:10px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,200,100,0.8)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div style="font-size:11px;color:var(--text3);line-height:1.6;">Для лучшего результата: чёткое фото, хорошее освещение, бланк горизонтально, без теней. Распознавание занимает 10–20 сек.</div>
+        </div>
+        <!-- Превью и прогресс — скрыты до загрузки -->
+        <div id="photoOcrProgress" style="display:none;margin-top:14px;">
+          <img id="photoPreviewImg" style="width:100%;border-radius:var(--rx);border:1px solid var(--glass-border);max-height:220px;object-fit:contain;background:var(--glass);" alt="превью бланка">
+          <div style="margin-top:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div style="font-size:12px;color:var(--text2);font-family:'Jost',sans-serif;" id="photoOcrStatusText">Распознавание...</div>
+              <div style="font-size:12px;color:var(--accent);font-weight:700;font-family:'Jost',sans-serif;" id="photoOcrPct">0%</div>
+            </div>
+            <div style="height:4px;background:var(--glass);border-radius:2px;overflow:hidden;">
+              <div id="photoOcrBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .3s;"></div>
             </div>
           </div>
-          <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;background:linear-gradient(135deg,rgba(212,176,255,0.18),rgba(188,207,255,0.14));border:1px solid rgba(212,176,255,0.35);margin-bottom:14px;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--accent2);text-transform:uppercase">Про версия</span>
-          </div>
-          <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;font-family:'Jost',sans-serif;">Распознавание фото бланка</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;">Сфотографируй бланк любой лаборатории — ЯСНА̂ прочитает все показатели автоматически. Без ручного ввода, без PDF.</div>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;text-align:left;">
-            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent3)" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Фото с камеры или из галереи
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent3)" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Любая лаборатория — Инвитро, Гемотест и другие
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent3)" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Результат за 5 секунд
-            </div>
-          </div>
-          <div style="font-size:12px;color:var(--text3);padding:12px 16px;background:var(--glass);border-radius:var(--rx);border:1px solid var(--glass-border);line-height:1.6;">
-            Сейчас доступно: загрузи <strong style="color:var(--text2)">PDF или TXT</strong> из Инвитро/Гемотест — или введи значения <strong style="color:var(--text2)">вручную</strong>
+        </div>
+        <!-- Результат OCR — скрыт до распознавания -->
+        <div id="photoOcrResult" style="display:none;margin-top:14px;">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:'Jost',sans-serif;">Распознанный текст (передаётся в ЯСНА):</div>
+          <div id="photoOcrText" style="font-size:11px;color:var(--text2);background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--rx);padding:10px 12px;max-height:120px;overflow-y:auto;line-height:1.6;white-space:pre-wrap;font-family:monospace;"></div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="runPhotoDecodeWithOCR()" style="flex:1;padding:13px;border-radius:var(--rx);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:'Jost',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">
+              Расшифровать
+            </button>
+            <button onclick="resetPhotoOCR()" style="padding:13px 16px;border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);color:var(--text3);font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;">
+              Сбросить
+            </button>
           </div>
         </div>
       </div>
@@ -3711,6 +3729,21 @@ button:focus-visible,
   </nav>
 </div>
 
+<!-- ПРАВОВЫЕ ДОКУМЕНТЫ v3.54 -->
+<div class="screen" id="s-legal" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+  <div class="legal-hdr">
+    <button class="legal-back-btn" onclick="go('home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="legal-title">Правовые документы</div>
+  </div>
+  <div class="legal-tabs">
+    <div class="legal-tab active" id="legal-tab-privacy" onclick="setLegalTab('privacy')">Политика конфиденциальности</div>
+    <div class="legal-tab" id="legal-tab-terms" onclick="setLegalTab('terms')">Соглашение</div>
+  </div>
+  <div class="legal-body" id="legalBody"></div>
+</div>
+
 <!-- СОГЛАСИЕ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ -->
 <div class="overlay" id="consentOverlay" style="z-index:200;align-items:center;padding:20px">
   <div style="width:100%;max-width:390px;background:var(--bg2);border-radius:30px;border:1px solid var(--glass-border);padding:28px 24px 24px;animation:su .3s ease;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
@@ -3719,14 +3752,31 @@ button:focus-visible,
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px">Согласие на обработку<br>персональных данных</div>
       <div style="font-size:12px;color:var(--text3)">Требуется однократно при первом запуске</div>
     </div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:18px;padding:14px 16px;background:var(--glass);border-radius:var(--rx);border:1px solid var(--glass-border)">
-      В соответствии с Федеральным законом № 152-ФЗ «О персональных данных» я даю согласие на обработку следующих персональных данных:<br><br>
-      <span style="color:var(--text3)">• Имя, пол, возраст<br>• Параметры тела (рост, вес, объём талии)<br>• Сведения о здоровье (анализы, хронические состояния, лекарства)<br>• Генетические данные (при добавлении ДНК-файла)<br>• Записи дневника самочувствия</span>
+    <!-- Что обрабатывается -->
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;padding:14px 16px;background:var(--glass);border-radius:var(--rx);border:1px solid var(--glass-border)">
+      В соответствии с ФЗ-152 «О персональных данных» я даю согласие на обработку:<br><br>
+      <span style="color:var(--text3)">• Имя, пол, возраст<br>• Параметры тела (рост, вес, объём талии)<br>• Сведения о здоровье (анализы, хронические состояния)<br>• Генетические данные (при добавлении ДНК-файла)<br>• Записи дневника самочувствия и сообщения в чате</span>
     </div>
-    <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:20px;padding:0 4px">
-      <strong style="color:var(--text2)">Важно:</strong> все данные хранятся исключительно на вашем устройстве в localStorage браузера. ЯСНА не передаёт данные третьим лицам и не имеет собственных серверов. API-запросы к DeepSeek осуществляются с использованием вашего личного ключа.<br><br>
-      Вы можете отозвать согласие в любой момент, очистив данные браузера. ЯСНА не является медицинским устройством и не заменяет консультацию врача.
+    <!-- Хранение -->
+    <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:12px;padding:12px 14px;background:var(--glass);border-radius:var(--rx);border:1px solid var(--glass-border)">
+      <strong style="color:var(--text2)">Хранение:</strong> все данные хранятся только на вашем устройстве в localStorage. Серверов хранения нет.
     </div>
+    <!-- DeepSeek — трансграничная передача -->
+    <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:16px;padding:12px 14px;background:rgba(255,180,50,0.06);border-radius:var(--rx);border:1px solid rgba(255,180,50,0.20)">
+      <strong style="color:var(--text2)">Трансграничная передача (ст. 12 ФЗ-152):</strong> для работы AI-компаньона текст сообщений и данные профиля передаются в DeepSeek API (КНР). Данные не используются для обучения моделей. Нажимая «Принимаю», вы даёте согласие на эту передачу.
+    </div>
+    <!-- Ссылки на документы -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button onclick="openLegal('privacy')" style="flex:1;padding:10px 8px;border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);color:var(--accent);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-align:center;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;margin-right:4px;vertical-align:middle"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        Политика конфиденциальности
+      </button>
+      <button onclick="openLegal('terms')" style="flex:1;padding:10px 8px;border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);color:var(--accent);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-align:center;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;margin-right:4px;vertical-align:middle"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Пользовательское соглашение
+      </button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px">ЯСНА не является медицинским устройством и не заменяет консультацию врача</div>
     <button onclick="acceptConsent()" style="width:100%;padding:16px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0A0620;font-family:'Jost',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all .2s;box-shadow:0 4px 20px rgba(188,207,255,.25)">
       Принимаю и продолжаю
     </button>
@@ -3771,21 +3821,6 @@ button:focus-visible,
   </div>
 </div>
 
-<!-- SOS БАННЕР v3.22 -->
-<div class="sos-banner" id="sosBanner">
-  <div class="sos-inner">
-    <div class="sos-top">
-      <div class="sos-title" id="sosBannerTitle">Всё хорошо?</div>
-      <button class="sos-close" onclick="closeSOSBanner()">✕</button>
-    </div>
-    <div class="sos-text" id="sosBannerText">Я заметила тревожную фразу...</div>
-    <a class="sos-call-btn" id="sosCallBtn" href="tel:112">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.08 2.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      Вызвать скорую · 112
-    </a>
-    <button class="sos-dismiss" onclick="closeSOSBanner()">Я в порядке, спасибо</button>
-  </div>
-</div>
 
 <!-- ЯСНЫЙ ЦИКЛ — ШТОРКА -->
 <div class="overlay" id="ycOverlay" onclick="ycOverlayClick(event)">
@@ -3946,9 +3981,7 @@ button:focus-visible,
       <div class="si-hint">Возраст важен — нормы многих анализов меняются с годами</div>
     </div>
     <div class="sg">
-      <div class="sg-lbl">DeepSeek API ключ</div>
-      <input class="si" id="sKey" placeholder="sk-ant-..." type="password">
-      <div class="si-hint">Получи бесплатно на platform.deepseek.com → API Keys → Create new API key. Хранится только на твоём устройстве.</div>
+      <!-- API ключ убран v3.55 — запросы идут через Cloudflare Worker -->
     </div>
     <div class="sg">
       <div class="sg-lbl">Параметры тела</div>
@@ -4057,6 +4090,21 @@ button:focus-visible,
       <div id="memoryList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"></div>
     </div>
 
+    <!-- Правовые документы в настройках v3.54 -->
+    <div class="sg">
+      <div class="sg-lbl">Правовые документы</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="openLegal('privacy');closeSettings();" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);color:var(--text2);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+          Политика конфиденциальности
+        </button>
+        <button onclick="openLegal('terms');closeSettings();" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:var(--rx);border:1px solid var(--glass-border);background:var(--glass);color:var(--text2);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Пользовательское соглашение
+        </button>
+      </div>
+    </div>
+
     <button class="btn-save" onclick="saveSettings()" style="display:flex;align-items:center;justify-content:center;gap:8px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Сохранить
@@ -4065,6 +4113,126 @@ button:focus-visible,
 </div>
 
 <script>
+// ══════════════════ ПРАВОВЫЕ ДОКУМЕНТЫ v3.54 ══════════════════
+// Чтобы обновить текст — найди переменную через Ctrl+F и замени только текст внутри кавычек
+
+var LEGAL_PRIVACY = [
+  '# Политика конфиденциальности · ЯСНА',
+  'Версия 1.0 · Апрель 2026',
+  'Оператор: Юшкова Яна Васильевна, г. Москва · yushkova1108@gmail.com',
+  '',
+  '## 1. Общие положения',
+  '1.1. Настоящая Политика описывает порядок обработки персональных данных пользователей приложения ЯСНА.',
+  '1.2. Политика разработана в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных».',
+  '1.3. ЯСНА — информационно-образовательная wellness-платформа. Приложение не является медицинским изделием, не осуществляет диагностику заболеваний и не заменяет консультацию врача.',
+  '1.4. Используя Приложение, Пользователь подтверждает согласие с настоящей Политикой.',
+  '',
+  '## 2. Какие данные обрабатываются',
+  '**Данные, которые Пользователь вводит самостоятельно (добровольно):**',
+  '• Имя или псевдоним, пол, возраст',
+  '• Параметры тела: рост, вес, объём талии, бёдер, груди',
+  '• Данные об образе жизни: физическая активность, режим сна, шаги',
+  '• Данные о менструальном цикле (для пользователей женского пола)',
+  '• Данные о самочувствии, энергии, настроении из дневника',
+  '• Результаты лабораторных исследований (анализы крови, мочи и др.)',
+  '• Генетическая информация — только при самостоятельной загрузке ДНК-файла',
+  '• Хронические состояния, приём лекарств — вводятся вручную',
+  '• Текст сообщений в чате с AI-компаньоном',
+  '',
+  '**Данные, которые НЕ собираются:**',
+  '• Email, номер телефона, паспортные данные',
+  '• Геолокация',
+  '• Данные из сторонних приложений (Apple Health, Google Fit и др.)',
+  '• Файлы cookie, идентификаторы устройства, IP-адрес',
+  '',
+  '## 3. Где и как хранятся данные',
+  '3.1. Все данные хранятся исключительно на устройстве Пользователя в хранилище браузера (localStorage). Оператор не имеет собственных серверов и не получает доступа к данным Пользователя.',
+  '3.2. Данные не передаются между устройствами и не синхронизируются автоматически.',
+  '3.3. При удалении приложения или очистке данных браузера все данные безвозвратно уничтожаются.',
+  '',
+  '## 4. Передача данных третьим лицам',
+  '**4.1. DeepSeek API — трансграничная передача (ст. 12 ФЗ-152)**',
+  'Для работы AI-компаньона текст сообщений и данные профиля передаются в DeepSeek API (оператор — DeepSeek, КНР) для генерации ответов. Нажимая «Принимаю», Пользователь даёт явное согласие на трансграничную передачу данных.',
+  'Данные не используются для обучения моделей. Передача защищена протоколом HTTPS/TLS.',
+  'Политика DeepSeek: https://www.deepseek.com/privacy',
+  '',
+  '**DeepSeek НЕ получает:**',
+  '• Загруженные файлы анализов в сыром виде',
+  '• Генетические данные из ДНК-файла в сыром виде',
+  '',
+  '4.2. Оператор не продаёт персональные данные и не передаёт их третьим лицам в иных целях.',
+  '',
+  '## 5. Цели обработки данных',
+  '• Персонализация ответов AI-компаньона — на основании согласия (ст. 9 ФЗ-152)',
+  '• Отслеживание показателей образа жизни — на основании согласия',
+  '• Формирование отчёта для врача — на основании согласия',
+  '• Образовательная интерпретация анализов — на основании согласия',
+  '• Трансграничная передача (DeepSeek API) — на основании согласия (ст. 12 ФЗ-152)',
+  '',
+  '## 6. Особые категории данных',
+  '6.1. Данные о здоровье (анализы, цикл, ДНК) относятся к специальным категориям по ст. 10 ФЗ-152. Их обработка осуществляется исключительно на основании явного согласия Пользователя.',
+  '6.2. Генетические данные передаются в DeepSeek API только в виде текстовых описаний, не в виде сырых генетических данных.',
+  '',
+  '## 7. Права Пользователя',
+  'Пользователь вправе:',
+  '• Отозвать согласие — через кнопку «Сбросить все данные» в настройках',
+  '• Удалить все данные — через настройки или очистив данные сайта в браузере',
+  '• Получить информацию об обработке данных — направив запрос на yushkova1108@gmail.com',
+  '• Подать жалобу в Роскомнадзор (rkn.gov.ru)',
+  'Срок ответа на запросы — 30 дней.',
+  '',
+  '## 8. Возраст пользователей',
+  'Приложение предназначено для лиц 18 лет и старше. Оператор не обрабатывает данные несовершеннолетних.',
+  '',
+  '## 9. Изменения в Политике',
+  '9.1. Актуальная версия Политики всегда доступна в Приложении в разделе «Настройки → Правовые документы».',
+  '9.2. Продолжение использования Приложения после публикации новой версии означает согласие с ней.',
+  '',
+  '## 10. Контакты оператора',
+  'Юшкова Яна Васильевна',
+  'Email: yushkova1108@gmail.com',
+  'Telegram: @Yeah0066',
+  'Москва, Россия'
+].join('\n');
+
+var LEGAL_TERMS = [
+  '# Пользовательское соглашение · ЯСНА',
+  'Версия 1.0 · Апрель 2026',
+  'Оператор: Юшкова Яна Васильевна · yushkova1108@gmail.com',
+  '',
+  '## 1. Предмет соглашения',
+  '1.1. Настоящее Соглашение регулирует использование информационно-образовательного приложения ЯСНА.',
+  '1.2. Используя Приложение, Пользователь принимает условия настоящего Соглашения в полном объёме.',
+  '',
+  '## 2. Статус приложения',
+  '2.1. ЯСНА — персональный AI-компаньон для осознанного образа жизни (wellness-платформа).',
+  '2.2. Приложение не является медицинским изделием и не зарегистрировано в качестве такового.',
+  '2.3. Вся информация, предоставляемая Приложением — образовательная и справочная. Она не является медицинским заключением, диагнозом или назначением.',
+  '2.4. При любых вопросах о здоровье Пользователь обязан обращаться к лицензированному врачу.',
+  '',
+  '## 3. Ограничение ответственности',
+  '3.1. Разработчик не несёт ответственности за решения, принятые Пользователем на основании информации из Приложения.',
+  '3.2. Разработчик не гарантирует бесперебойную работу Приложения и точность AI-ответов.',
+  '3.3. Приложение не предназначено для использования в экстренных ситуациях. При угрозе жизни и здоровью звоните 112.',
+  '',
+  '## 4. Правила использования',
+  '4.1. Приложение предназначено для лиц старше 18 лет.',
+  '4.2. Пользователь несёт ответственность за сохранность своего API-ключа DeepSeek.',
+  '4.3. Запрещается использовать Приложение в противоправных целях.',
+  '',
+  '## 5. Интеллектуальная собственность',
+  '5.1. Все права на Приложение принадлежат Юшковой Яне Васильевне.',
+  '5.2. Копирование кода и дизайна без письменного разрешения запрещено.',
+  '',
+  '## 6. Применимое право',
+  'Соглашение регулируется законодательством Российской Федерации.',
+  '',
+  '## 7. Контакты',
+  'Email: yushkova1108@gmail.com · Telegram: @Yeah0066'
+].join('\n');
+
+// ══════════════════════════════════════════════════════════════
+
 const S = {
   theme: null,
   key: '', name: 'Яна', gender: 'female', age: '',
@@ -4107,7 +4275,61 @@ window.addEventListener('DOMContentLoaded', function() {
     return; // не инициализируем приложение до согласия
   }
   initApp();
+  go('home'); // v3.54: явный вызов — иначе legal в screens[] скрывает все экраны
 });
+
+// ══════════════════ ПРАВОВЫЕ ДОКУМЕНТЫ v3.54 ══════════════════
+
+var _legalTab = 'privacy'; // текущий активный таб
+
+function setLegalTab(tab) {
+  _legalTab = tab;
+  document.getElementById('legal-tab-privacy').classList.toggle('active', tab === 'privacy');
+  document.getElementById('legal-tab-terms').classList.toggle('active', tab === 'terms');
+  renderLegalBody();
+}
+
+function renderLegalBody() {
+  var text = _legalTab === 'privacy' ? LEGAL_PRIVACY : LEGAL_TERMS;
+  // Минимальная типографика — заголовки и маркеры
+  var html = text
+    .replace(/^# (.+)$/gm, '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px">$1</div>')
+    .replace(/^## (.+)$/gm, '<div style="font-size:14px;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:6px">$1</div>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text)">$1</strong>')
+    .replace(/^(Версия.+|Оператор.+)$/gm, '<div style="font-size:11px;color:var(--text3);margin-bottom:12px">$1</div>')
+    .replace(/^(•.+)$/gm, '<div style="padding-left:8px;color:var(--text3)">$1</div>');
+  document.getElementById('legalBody').innerHTML = html;
+}
+
+function openLegal(tab) {
+  _legalTab = tab || 'privacy';
+  // Если вызвано из consent overlay — показываем legal поверх него
+  var consent = document.getElementById('consentOverlay');
+  var fromConsent = consent && consent.classList.contains('on');
+  if (fromConsent) {
+    // Добавляем кнопку возврата к согласию
+    var legalScreen = document.getElementById('s-legal');
+    if (legalScreen) {
+      legalScreen.dataset.fromConsent = '1';
+    }
+    document.getElementById('legal-back-btn').onclick = function() {
+      go('home');
+      // Возвращаем consent overlay
+      setTimeout(function() {
+        var c = document.getElementById('consentOverlay');
+        if (c) c.classList.add('on');
+      }, 50);
+    };
+  } else {
+    document.getElementById('legal-back-btn').onclick = function() { go('home'); };
+  }
+  // Скрываем consent overlay пока читают документы
+  if (consent) consent.classList.remove('on');
+  go('legal');
+  setTimeout(function() { setLegalTab(_legalTab); }, 50);
+}
+
+// ══════════════════════════════════════════════════════════════
 
 function acceptConsent() {
   localStorage.setItem('yasna_consent', '1');
@@ -4161,7 +4383,7 @@ function initApp() {
     loadChatHistory();
     rebuildChatFromHistory(); // v3.30
     // PDF.js workerSrc установлен синхронно в head
-    if (!S.key) setTimeout(function(){ toast('⚙️ Добавь API-ключ в настройках'); }, 2000);
+    // v3.55: API-ключ не нужен — запросы через Cloudflare Worker
   } catch(e) { console.warn('init error', e.message); }
 } // end initApp
 
@@ -4218,7 +4440,7 @@ function updateGreeting() {
   } catch(e) {}
 }
 
-var screens = ['home','chat','analyses','decode','graphs','search'];
+var screens = ['home','chat','analyses','decode','graphs','search','legal'];
 function go(name) {
   screens.forEach(function(s) {
     var sc = document.getElementById('s-' + s);
@@ -4345,7 +4567,7 @@ function send() {
   if (!txt) { toast('Напиши или расскажи как себя чувствуешь'); return; }
   // FIX: ограничиваем длину сообщения — защита от переполнения промпта
   if (txt.length > 3000) { toast('Сообщение слишком длинное (максимум 3000 символов)'); return; }
-  if (!S.key) { openSettings(); toast('Сначала добавь API-ключ'); return; }
+  // v3.55: проверка ключа не нужна
   inp.value = ''; inp.style.height = '';
   saveDiaryEntry(txt);
   // v3.43: перед переходом в чат — всегда переключаемся в general тред
@@ -4383,9 +4605,9 @@ function send() {
   // v3.43: streaming — текст появляется по символам как в sendChat()
   (async function() {
     try {
-      var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true,
           messages: [{role:'system',content:getChatSystemPrompt()}].concat(chatHistory) })
       });
@@ -4791,9 +5013,9 @@ async function sendChat() {
   if (!txt) return;
   // FIX: ограничиваем длину — защита от переполнения промпта
   if (txt.length > 3000) { toast('Сообщение слишком длинное (максимум 3000 символов)'); return; }
-  if (!S.key) { openSettings(); toast('Сначала добавь API-ключ'); return; }
+  // v3.55: проверка ключа не нужна
   try { checkWellbeingSave(); } catch(e) {}
-  checkSOSPatterns(txt); // v3.22 SOS-проверка
+
   inp.value = ''; inp.style.height = '';
   var btn = document.getElementById('chatSendBtn');
   if (btn) btn.disabled = true;
@@ -4804,9 +5026,9 @@ async function sendChat() {
   thisHistory.push({ role: 'user', content: txt });
   showTyping(true);
   try {
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true, messages: [{role:'system',content:getChatSystemPrompt()}].concat(thisHistory) })
     });
     if (!res.ok || !res.body) {
@@ -5102,7 +5324,7 @@ function fillSettings() {
   document.getElementById('sName').value    = S.name;
   document.getElementById('sGender').value  = S.gender;
   document.getElementById('sAge').value     = S.age;
-  document.getElementById('sKey').value    = S.key;
+  // v3.55: поле sKey удалено — ключ в Cloudflare Worker
   document.getElementById('sCond').value   = S.cond;
   document.getElementById('sMeds').value   = S.meds;
   (function(){
@@ -5130,7 +5352,7 @@ function saveSettings() {
   S.name   = document.getElementById('sName').value.trim() || 'друг';
   S.gender = document.getElementById('sGender').value;
   S.age    = document.getElementById('sAge').value.trim();
-  S.key    = document.getElementById('sKey').value.trim();
+  // v3.55: S.key не читается из UI — ключ в Cloudflare Worker
   S.cond   = document.getElementById('sCond').value.trim();
   S.meds   = document.getElementById('sMeds').value.trim();
   S.smoking = document.getElementById('sSmoking').value;
@@ -5141,7 +5363,7 @@ function saveSettings() {
   S.height = document.getElementById('sHeight').value.trim();
   S.weight = document.getElementById('sWeight').value.trim();
   var saved = JSON.parse(localStorage.getItem('yasna') || '{}');
-  Object.assign(saved, { name:S.name, gender:S.gender, age:S.age, key:S.key, cond:S.cond, meds:S.meds, smoking:S.smoking, relationship:S.relationship, pregnancy:S.pregnancy, waist:S.waist, hips:S.hips, height:S.height, weight:S.weight });
+  Object.assign(saved, { name:S.name, gender:S.gender, age:S.age, cond:S.cond, meds:S.meds, smoking:S.smoking, relationship:S.relationship, pregnancy:S.pregnancy, waist:S.waist, hips:S.hips, height:S.height, weight:S.weight });
   localStorage.setItem('yasna', JSON.stringify(saved));
   closeSettings(); updateGreeting(); updateCycleWidget(); renderYasnyCycle(); renderYasnyPulse(); renderDnaHomeBlock(); toast('✓ Сохранено');
 }
@@ -5300,10 +5522,7 @@ function buildPortraitContext() {
 }
 
 async function buildPortrait() {
-  if (!S.key) {
-    toast('Добавь API-ключ в настройках');
-    return;
-  }
+  // v3.55: проверка ключа не нужна
   var btn = document.getElementById('portraitUpdateBtn');
   var content = document.getElementById('portraitContent');
   if (btn) { btn.classList.add('loading'); btn.textContent = 'Анализирую...'; }
@@ -5338,9 +5557,9 @@ async function buildPortrait() {
     '- Пиши на русском языке, кратко и по делу';
 
   try {
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200,
         messages: [{ role: 'user', content: prompt }] })
     });
@@ -5480,7 +5699,7 @@ function tickMemoryExtraction() {
   if (_memMsgCount < 10) return;
   _memMsgCount = 0;
   if (_isExtractingMemory) return;
-  if (!S.key) return;
+  // v3.55: проверка ключа не нужна
   // Берём историю активного треда
   var history = chatThreads[activeThread] ? chatThreads[activeThread].history.slice() : [];
   if (history.length < 4) return; // слишком мало для анализа
@@ -5514,9 +5733,9 @@ async function extractMemoryFromHistory(history) {
       '{"facts": ["факт 1", "факт 2"]}\n' +
       'Каждый факт — одно предложение, до 80 символов. Максимум 5 новых фактов за раз.';
 
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 300,
         messages: [{ role: 'user', content: prompt }] })
     });
@@ -5617,6 +5836,95 @@ function selectDocType(type, el) {
   decDocType = type;
   document.querySelectorAll('#dec-block-doc .dec-method').forEach(function(b){ b.classList.remove('active'); });
   el.classList.add('active');
+}
+
+// ══════════════════ ФОТО OCR v3.53 — Tesseract.js ══════════════════
+
+var _ocrRawText = ''; // глобальная — распознанный текст до передачи в AI
+
+function handlePhotoOCR(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Выбери файл изображения'); return; }
+
+  // Показываем превью
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('photoPreviewImg').src = e.target.result;
+    document.getElementById('photoUploadZone').style.display = 'none';
+    document.getElementById('photoOcrProgress').style.display = 'block';
+    document.getElementById('photoOcrResult').style.display = 'none';
+    _ocrRawText = '';
+    startTesseractOCR(file);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function startTesseractOCR(file) {
+  if (typeof Tesseract === 'undefined') {
+    toast('OCR-библиотека не загружена — проверь соединение');
+    resetPhotoOCR();
+    return;
+  }
+  document.getElementById('photoOcrStatusText').textContent = 'Загрузка языковых данных...';
+  document.getElementById('photoOcrPct').textContent = '0%';
+  document.getElementById('photoOcrBar').style.width = '0%';
+
+  Tesseract.recognize(file, 'rus+eng', {
+    logger: function(m) {
+      if (m.status === 'recognizing text') {
+        var pct = Math.round((m.progress || 0) * 100);
+        document.getElementById('photoOcrBar').style.width = pct + '%';
+        document.getElementById('photoOcrPct').textContent = pct + '%';
+        document.getElementById('photoOcrStatusText').textContent = 'Распознавание текста...';
+      } else if (m.status === 'loading language traineddata') {
+        document.getElementById('photoOcrStatusText').textContent = 'Загрузка языковых данных...';
+      }
+    }
+  }).then(function(result) {
+    var text = (result.data && result.data.text) ? result.data.text.trim() : '';
+    if (!text || text.length < 20) {
+      toast('Текст не распознан — попробуй более чёткое фото');
+      resetPhotoOCR();
+      return;
+    }
+    _ocrRawText = text;
+    document.getElementById('photoOcrBar').style.width = '100%';
+    document.getElementById('photoOcrPct').textContent = '100%';
+    document.getElementById('photoOcrStatusText').textContent = 'Готово — ' + text.length + ' символов';
+    document.getElementById('photoOcrText').textContent = text.slice(0, 1000) + (text.length > 1000 ? '...' : '');
+    document.getElementById('photoOcrResult').style.display = 'block';
+  }).catch(function(err) {
+    console.error('Tesseract error:', err);
+    toast('Ошибка распознавания — попробуй ещё раз');
+    resetPhotoOCR();
+  });
+}
+
+function resetPhotoOCR() {
+  _ocrRawText = '';
+  document.getElementById('photoUploadZone').style.display = '';
+  document.getElementById('photoOcrProgress').style.display = 'none';
+  document.getElementById('photoOcrResult').style.display = 'none';
+  document.getElementById('photoPreviewImg').src = '';
+}
+
+function runPhotoDecodeWithOCR() {
+  if (!_ocrRawText) { toast('Сначала загрузи фото'); return; }
+  // v3.55: проверка ключа не нужна
+  // Передаём распознанный текст как виртуальный файл в существующий пайплайн
+  var virtualFile = {
+    name: 'Фото бланка (OCR)',
+    type: 'text',
+    text: 'Распознанный текст с фото бланка анализов:\n\n' + _ocrRawText,
+    fileId: 'photo_' + Date.now()
+  };
+  decFilesData = [virtualFile];
+  renderDecFilesList();
+  // Переходим к результату
+  document.getElementById('decResultBlock').style.display = '';
+  runDecode();
 }
 
 function handleDecDrop(e) { e.preventDefault(); document.getElementById('decFileZone').classList.remove('drag'); var f = e.dataTransfer.files[0]; if (f) processDecFile(f); }
@@ -5915,7 +6223,7 @@ function parseDnaFile(rawText) {
 }
 
 async function runDecode() {
-  if (!S.key) { openSettings(); toast('Добавь API-ключ'); return; }
+  // v3.55: проверка ключа не нужна
   var btn = document.getElementById('decBtn');
   var btnLabel = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V9l-6-6z"/><path d="M9 3v6h6"/><path d="M9 12l2 2 4-4"/></svg>Расшифровать с ЯСНА̂';
   btn.disabled = true; btn.textContent = 'Читаю...';
@@ -5945,9 +6253,9 @@ async function runDecode() {
     document.getElementById('decYasnaBody').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
     document.getElementById('decResult').scrollIntoView({ behavior:'smooth', block:'start' });
     try {
-      var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
         method:'POST',
-        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + S.key },
+        headers:{ 'Content-Type':'application/json', },
         body: JSON.stringify({ model:'deepseek-chat', max_tokens:1500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:prompt}] })
       });
       var data = await res.json();
@@ -5985,9 +6293,9 @@ async function runDecode() {
         try {
           var docText = fdDoc.data ? fdDoc.data.slice(0, 12000) : '';
           var docMsg = 'Это медицинский документ типа «' + decDocType + '» (текст):\n---\n' + docText + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n[ВЫВОД]\nОбъясни медицинские термины простыми словами. Что найдено, что это значит для пациента. Без диагнозов. Если есть числовые показатели — выведи их в формате [ПОКАЗАТЕЛИ] перед [ВЫВОД].';
-          var resDoc = await fetch('https://api.deepseek.com/v1/chat/completions', {
+          var resDoc = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
             method:'POST',
-            headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + S.key },
+            headers:{ 'Content-Type':'application/json', },
             body: JSON.stringify({ model:'deepseek-chat', max_tokens:2500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:docMsg}] })
           });
           var dataDoc = await resDoc.json();
@@ -6023,9 +6331,9 @@ async function runDecode() {
     document.getElementById('decYasnaBody').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
     document.getElementById('decResult').scrollIntoView({ behavior:'smooth', block:'start' });
     try {
-      var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
         method:'POST',
-        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + S.key },
+        headers:{ 'Content-Type':'application/json', },
         body: JSON.stringify({ model:'deepseek-chat', max_tokens:2500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:msg0}] })
       });
       var data = await res.json();
@@ -6088,9 +6396,9 @@ async function runDecode() {
       var bodyEl = block.querySelector('.dmb-body');
       try {
         var fmsg = buildDecFileMessages(fd);
-        var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
           method:'POST',
-          headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + S.key },
+          headers:{ 'Content-Type':'application/json', },
           body: JSON.stringify({ model:'deepseek-chat', max_tokens:1500, messages: [{role:'system',content:getChatSystemPrompt()}].concat(fmsg) })
         });
         var data = await res.json();
@@ -6355,7 +6663,7 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
       }
     });
   }
-  // v3.25: предупреждение о крови в моче — критичная находка
+  // v3.53: критичная находка — toast вместо SOS-баннера
   var criticalUrineFound = rows.some(function(r) {
     var n = (r.name||'').toLowerCase();
     var v = (r.val||'').toLowerCase();
@@ -6364,15 +6672,7 @@ function renderDecBlockAns(ans, block, bodyEl, fd) {
   });
   if (criticalUrineFound) {
     setTimeout(function() {
-      var banner=document.getElementById('sosBanner');
-      if (!banner) return;
-      document.getElementById('sosBannerTitle').textContent='Обрати внимание ⚠️';
-      document.getElementById('sosBannerText').innerHTML='В анализе мочи обнаружена кровь (гематурия). Это симптом, требующий консультации врача. <strong>Не откладывай визит к урологу или терапевту.</strong>';
-      var cb=document.getElementById('sosCallBtn');
-      cb.style.background='linear-gradient(135deg,#FF9090,#C0392B)';
-      cb.href='tel:103';
-      cb.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.08 2.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>Обратиться к терапевту · 103';
-      banner.classList.add('on');
+      toast('Обнаружена кровь в моче — обратись к врачу');
     }, 1500);
   }
   if (rows.length > 0) {
@@ -6721,7 +7021,6 @@ document.addEventListener('keydown', function(e) {
 
 // ══════════════════ ДНЕВНИК САМОЧУВСТВИЯ ══════════════════
 function saveDiaryEntry(text) {
-  checkSOSPatterns(text); // v3.22 SOS-проверка
   var entries = getDiaryEntries();
   var now = new Date();
   entries.unshift({
@@ -7211,7 +7510,7 @@ function buildYcPrompt() {
 }
 
 async function loadYcAdvice(forceRefresh) {
-  if (!S.key) return;
+  // v3.55: проверка ключа не нужна
   var today = new Date().toDateString();
   var cache = JSON.parse(localStorage.getItem(YC_ADVICE_CACHE_KEY) || '{}');
   if (!forceRefresh && cache.date === today && cache.analytics) {
@@ -7221,9 +7520,9 @@ async function loadYcAdvice(forceRefresh) {
   var bodyEl = document.getElementById('ycAiBody');
   if (bodyEl) bodyEl.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
   try {
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 350, messages: [{ role: 'user', content: buildYcPrompt() }] })
     });
     var data = await res.json();
@@ -8188,7 +8487,7 @@ var HW_CACHE_KEY = 'yasna_hw_cache';
 function _hwLoad(){ loadHealthSummary(false); }
 
 function loadHealthSummary(forceRefresh) {
-  if(!S.key){ document.getElementById('hwAiBody').innerHTML='<span style="color:var(--text3);font-size:13px">Добавь API-ключ в настройках чтобы ЯСНА&#770; дала персональный совет</span>'; return; }
+  // v3.55: проверка ключа убрана
   var today=new Date().toDateString();
   var cache=JSON.parse(localStorage.getItem(HW_CACHE_KEY)||'{}');
   // v3.41 FIX: СРАЗУ показываем кэш, не ждём API
@@ -8235,9 +8534,9 @@ function loadHealthSummary(forceRefresh) {
   var controller = new AbortController();
   var timeoutId = setTimeout(function(){ controller.abort(); }, 25000);
 
-  fetch('https://api.deepseek.com/v1/chat/completions',{
+  fetch('https://yasna-proxy.yushkova1108.workers.dev',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer ' + S.key},
+    headers:{'Content-Type':'application/json',},
     body:JSON.stringify({model:'deepseek-chat',max_tokens:200,messages:[{role:'user',content:prompt}]}),
     signal: controller.signal
   }).then(function(r){ clearTimeout(timeoutId); return r.json(); }).then(function(d){
@@ -8259,7 +8558,7 @@ function loadHealthSummary(forceRefresh) {
 
 // v3.30 — проверяем кэш виджетов, обновляем если устарел
 function checkAndRefreshWidgets() {
-  if (!S.key) return;
+  // v3.55: проверка ключа не нужна
   var today = new Date().toDateString();
   var hwCache = JSON.parse(localStorage.getItem(HW_CACHE_KEY)           || '{}');
   var ycCache = JSON.parse(localStorage.getItem(YC_ADVICE_CACHE_KEY)    || '{}');
@@ -10134,10 +10433,7 @@ function openDnaTheme(themeKey) {
     return;
   }
 
-  if (!S.key) {
-    renderDnaLevel3(themeKey, { error: 'Добавь API-ключ в настройках, чтобы ЯСНА могла проанализировать твои гены' });
-    return;
-  }
+  // v3.55: проверка ключа убрана
 
   var sv = JSON.parse(localStorage.getItem('yasna') || '{}');
   var dna = sv.dna || {};
@@ -10181,9 +10477,9 @@ function openDnaTheme(themeKey) {
     '  "has_analyses_data": true/false\n' +
     '}';
 
-  fetch('https://api.deepseek.com/v1/chat/completions', {
+  fetch('https://yasna-proxy.yushkova1108.workers.dev', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
   })
   .then(function(r){ return r.json(); })
@@ -10290,12 +10586,7 @@ function openDnaUnknown() {
 
   var _discussBtnUnknown = '<button class="dna-discuss-btn" onclick="closeDnaModal();setTimeout(function(){openChatThread(\'dna\',window._dnaUnknownGenes||\'Расскажи про необычные маркеры из моего ДНК-файла\');},200);">💬 Обсудить с ЯСНА</button>';
 
-  if (!S.key) {
-    document.getElementById('dnaSheetContent').innerHTML = backBtn + titleH +
-      '<div class="dna-mb"><div class="dna-mb-text">Добавь API-ключ в настройках, чтобы ЯСНА могла расшифровать эти маркеры</div></div>' +
-      _discussBtnUnknown;
-    return;
-  }
+  // v3.55: проверка ключа убрана
 
   var genesList = unknownGenes.map(function(g){ return (g.name||'') + (g.genotype ? ' (' + g.genotype + ')' : ''); }).join(', ');
 
@@ -10310,9 +10601,9 @@ function openDnaUnknown() {
     '  "overall": "общий вывод 1-2 предложения"\n' +
     '}';
 
-  fetch('https://api.deepseek.com/v1/chat/completions', {
+  fetch('https://yasna-proxy.yushkova1108.workers.dev', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+    headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 900, messages: [{ role: 'user', content: prompt }] })
   })
   .then(function(r){ return r.json(); })
@@ -10673,19 +10964,7 @@ async function loadYasnyPulseAI(forceRefresh) {
   var today = new Date().toDateString();
   var cache = JSON.parse(localStorage.getItem(YP_CACHE_KEY) || '{}');
 
-  if (!S.key) {
-    // Нет ключа — показываем кэш если есть, иначе заглушку
-    if (cache.analytics) {
-      ypRenderAiText(cache.analytics, cache.advice, cache.time);
-    } else {
-      var bodyEl = document.getElementById('ypAiBody');
-      if (bodyEl) bodyEl.innerHTML = ypBuildTwoBlocksHtml(
-        'Добавь API-ключ DeepSeek в настройках — и я буду анализировать твои данные каждый день.',
-        'Зайди в ⚙️ Настройки → поле «DeepSeek API ключ» → получи бесплатно на platform.deepseek.com'
-      );
-    }
-    return;
-  }
+  // v3.55: проверка ключа убрана
   if (!forceRefresh && cache.date === today && cache.analytics) {
     ypRenderAiText(cache.analytics, cache.advice, cache.time);
     return;
@@ -10694,9 +10973,9 @@ async function loadYasnyPulseAI(forceRefresh) {
   if (bodyEl) bodyEl.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
 
   try {
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 350, messages: [{ role: 'user', content: buildYpPrompt() }] })
     });
     var data = await res.json();
@@ -11322,66 +11601,6 @@ async function extractPdfText(arrayBuffer) {
   }
 }
 
-// ══════════════════ SOS-СИСТЕМА v3.22 ══════════════════
-var SOS_PATTERNS = {
-  medical: [
-    'давит в груди','сжимает сердце','тяжело в груди','жжёт за грудиной','как камень на груди',
-    'онемела рука','перекосило лицо','не могу говорить нормально','слова путаются','всё поплыло резко',
-    'голова раскалывается','пульсирует в висках','темнеет в глазах','давление зашкалило',
-    'упала в обморок','отключилась','очнулась на полу','чуть не упала',
-    'не могу вдохнуть','задыхаюсь','воздуха не хватает','дышу но не надышусь',
-    'кровь не останавливается','идёт кровь и много'
-  ],
-  suicidal: [
-    'не вижу смысла','хочется исчезнуть','всем лучше без меня','устала существовать',
-    'зачем я вообще','не хочу жить','лучше бы меня не было','нет смысла продолжать',
-    'хочу исчезнуть','незачем жить'
-  ]
-};
-
-function checkSOSPatterns(text) {
-  if (!text) return;
-  var lower = text.toLowerCase();
-  var isSuicidal = SOS_PATTERNS.suicidal.some(function(p) {
-    return lower.indexOf(p) !== -1;
-  });
-  if (isSuicidal) { showSOSBanner('suicidal'); return; }
-  var isMedical = SOS_PATTERNS.medical.some(function(p) {
-    return lower.indexOf(p) !== -1;
-  });
-  if (isMedical) { showSOSBanner('medical'); }
-}
-
-function showSOSBanner(type) {
-  var banner  = document.getElementById('sosBanner');
-  var titleEl = document.getElementById('sosBannerTitle');
-  var textEl  = document.getElementById('sosBannerText');
-  var callBtn = document.getElementById('sosCallBtn');
-  if (!banner) return;
-  if (type === 'suicidal') {
-    titleEl.textContent = 'ЯСНА рядом 💜';
-    textEl.textContent  = 'Ты написала что-то важное. Я здесь и слышу тебя. Если сейчас очень тяжело — есть живой человек который выслушает, бесплатно и анонимно.';
-    callBtn.style.background = 'linear-gradient(135deg,#9D6FFF,#7C3AED)';
-    callBtn.href = 'tel:88002000122';
-    callBtn.innerHTML =
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.08 2.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
-      'Телефон доверия · 8-800-2000-122';
-  } else {
-    titleEl.textContent = 'Всё хорошо?';
-    textEl.textContent  = 'Я заметила тревожную фразу в твоём сообщении. Если сейчас плохо физически — не жди, звони 112.';
-    callBtn.style.background = 'linear-gradient(135deg,#FF6B6B,#C0392B)';
-    callBtn.href = 'tel:112';
-    callBtn.innerHTML =
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.08 2.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
-      'Вызвать скорую · 112';
-  }
-  banner.classList.add('on');
-}
-
-function closeSOSBanner() {
-  var b = document.getElementById('sosBanner');
-  if (b) b.classList.remove('on');
-}
 
 // ══════════════════ ОТЧЁТ ДЛЯ ВРАЧА v3.21 ══════════════════
 
@@ -11553,13 +11772,24 @@ function msgCtxCopy() {
   var text = _ctxText;
   _ctxTarget = null; _ctxText = '';
   if (!text) return;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  // v3.53: execCommand — синхронный, работает в контексте жеста на iOS Safari
+  // Clipboard API теряет контекст жеста на file://, пробуем вторым
+  var el = document.createElement('textarea');
+  el.value = text;
+  el.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none';
+  document.body.appendChild(el);
+  el.focus(); el.select(); el.setSelectionRange(0, 99999);
+  var execOk = false;
+  try { execOk = document.execCommand('copy'); } catch(e2) { execOk = false; }
+  document.body.removeChild(el);
+  if (execOk) {
+    toast('✓ Скопировано');
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text)
       .then(function(){ toast('✓ Скопировано'); })
-      .catch(function(){ _copyFallback(text); });
+      .catch(function(){ toast('⚠️ Скопируй текст вручную'); });
   } else {
-    _copyFallback(text);
-    toast('✓ Скопировано');
+    toast('⚠️ Скопируй текст вручную');
   }
 }
 
@@ -11618,13 +11848,7 @@ function applyDiaryCollapse() {
 
 // v3.26: Автоанализ «Когда пересдать» при первом открытии темы
 async function generateRetestAnalysis() {
-  if (!S.key) {
-    addMessage(
-      '⚙️ Добавь API-ключ в настройках, чтобы я могла проанализировать твои данные.',
-      false
-    );
-    return;
-  }
+  // v3.55: проверка ключа убрана
 
   var sv = JSON.parse(localStorage.getItem('yasna') || '{}');
   var analyses = sv.analyses || [];
@@ -11684,9 +11908,9 @@ async function generateRetestAnalysis() {
 
   showTyping(true);
   try {
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.key },
+      headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200, stream: true,
         messages: [{ role: 'system', content: getChatSystemPrompt() }, { role: 'user', content: prompt }] })
     });
@@ -11756,7 +11980,7 @@ async function generateRetestAnalysis() {
 }
 
 async function generateDoctorReport() {
-  if (!S.key) { openSettings(); toast('Добавь API-ключ для генерации отчёта'); return; }
+  // v3.55: проверка ключа не нужна
 
   // Приветственное сообщение
   var welcomeDiv = addMessage(
@@ -11831,9 +12055,9 @@ async function generateDoctorReport() {
   showTyping(true);
 
   try {
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.key},
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({model:'deepseek-chat', max_tokens:1500, stream:true, messages:[{role:'user',content:prompt}]})
     });
 
