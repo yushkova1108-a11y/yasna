@@ -4303,29 +4303,26 @@ function renderLegalBody() {
 
 function openLegal(tab) {
   _legalTab = tab || 'privacy';
-  // Если вызвано из consent overlay — показываем legal поверх него
   var consent = document.getElementById('consentOverlay');
   var fromConsent = consent && consent.classList.contains('on');
+  var legal = document.getElementById('s-legal');
+  if (!legal) return;
+
   if (fromConsent) {
-    // Добавляем кнопку возврата к согласию
-    var legalScreen = document.getElementById('s-legal');
-    if (legalScreen) {
-      legalScreen.dataset.fromConsent = '1';
-    }
-    document.getElementById('legal-back-btn').onclick = function() {
-      go('home');
-      // Возвращаем consent overlay
-      setTimeout(function() {
-        var c = document.getElementById('consentOverlay');
-        if (c) c.classList.add('on');
-      }, 50);
+    // Показываем legal как оверлей поверх consent (z-index > 200)
+    legal.style.cssText = 'display:flex!important;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--bg1);flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch';
+    var backBtn = document.getElementById('legal-back-btn');
+    if (backBtn) backBtn.onclick = function() {
+      legal.style.cssText = '';
+      legal.classList.remove('on');
     };
   } else {
-    document.getElementById('legal-back-btn').onclick = function() { go('home'); };
+    // Обычная навигация
+    legal.style.cssText = '';
+    go('legal');
+    var backBtn = document.getElementById('legal-back-btn');
+    if (backBtn) backBtn.onclick = function() { go('home'); };
   }
-  // Скрываем consent overlay пока читают документы
-  if (consent) consent.classList.remove('on');
-  go('legal');
   setLegalTab(_legalTab);
 }
 
@@ -5321,31 +5318,34 @@ function sgChipSelect(groupId, hiddenId, el) {
 }
 
 function fillSettings() {
-  document.getElementById('sName').value    = S.name;
-  document.getElementById('sGender').value  = S.gender;
-  document.getElementById('sAge').value     = S.age;
+  try {
+  var g = function(id){ return document.getElementById(id); };
+  if(g('sName'))    g('sName').value    = S.name;
+  if(g('sGender'))  g('sGender').value  = S.gender;
+  if(g('sAge'))     g('sAge').value     = S.age;
   // v3.55: поле sKey удалено — ключ в Cloudflare Worker
-  document.getElementById('sCond').value   = S.cond;
-  document.getElementById('sMeds').value   = S.meds;
+  if(g('sCond'))    g('sCond').value    = S.cond;
+  if(g('sMeds'))    g('sMeds').value    = S.meds;
   (function(){
     var sv = S.smoking || 'no';
-    document.getElementById('sSmoking').value = sv;
+    if(g('sSmoking')) g('sSmoking').value = sv;
     var sc = document.querySelector('#smokingChips [data-val="' + sv + '"]');
     if (sc) sgChipSelect('smokingChips','sSmoking',sc);
   })();
-  document.getElementById('sRelationship').value = S.relationship || 'single';
+  if(g('sRelationship')) g('sRelationship').value = S.relationship || 'single';
   (function(){
     var pv = S.pregnancy || 'no';
-    document.getElementById('sPregnancy').value = pv;
+    if(g('sPregnancy')) g('sPregnancy').value = pv;
     var pc = document.querySelector('#pregnancyChips [data-val="' + pv + '"]');
     if (pc) sgChipSelect('pregnancyChips','sPregnancy',pc);
   })();
-  document.getElementById('sPregnancyRow').style.display = S.gender === 'female' ? 'block' : 'none';
-  document.getElementById('sWaist').value  = S.waist;
-  document.getElementById('sHips').value   = S.hips;
-  document.getElementById('sHeight').value = S.height;
-  document.getElementById('sWeight').value = S.weight;
+  if(g('sPregnancyRow')) g('sPregnancyRow').style.display = S.gender === 'female' ? 'block' : 'none';
+  if(g('sWaist'))  g('sWaist').value   = S.waist;
+  if(g('sHips'))   g('sHips').value    = S.hips;
+  if(g('sHeight')) g('sHeight').value  = S.height;
+  if(g('sWeight')) g('sWeight').value  = S.weight;
   if (S.waist) calcWHR();
+  } catch(e) { console.warn('fillSettings error', e.message); }
 }
 
 function saveSettings() {
