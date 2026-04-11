@@ -9,7 +9,7 @@
 <!-- A2: title обновлён до актуальной версии -->
 <title>ЯСНА — персональный AI-агент здоровья</title>
 <!-- A1: CSP — вторая линия защиты от XSS после escapeHtml -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://yasna-proxy.yushkova1108.workers.dev https://cdnjs.cloudflare.com; img-src 'self' data: blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://functions.yandexcloud.net https://cdnjs.cloudflare.com; img-src 'self' data: blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 <!-- A2: SEO + Open Graph — для шаринга ссылки и поисковиков -->
 <meta name="description" content="ЯСНА — персональный AI-агент здоровья. Расшифровка анализов, ДНК-профиль, трекер цикла, динамика показателей. Работает без интернета, данные только на вашем устройстве.">
 <meta name="keywords" content="анализы крови, расшифровка анализов, ДНК, здоровье, AI, искусственный интеллект">
@@ -4607,7 +4607,7 @@ function send() {
   // v3.43: streaming — текст появляется по символам как в sendChat()
   (async function() {
     try {
-      var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+      var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true,
@@ -5028,7 +5028,7 @@ async function sendChat() {
   thisHistory.push({ role: 'user', content: txt });
   showTyping(true);
   try {
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true, messages: [{role:'system',content:getChatSystemPrompt()}].concat(thisHistory) })
@@ -5562,7 +5562,7 @@ async function buildPortrait() {
     '- Пиши на русском языке, кратко и по делу';
 
   try {
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200,
@@ -5738,7 +5738,7 @@ async function extractMemoryFromHistory(history) {
       '{"facts": ["факт 1", "факт 2"]}\n' +
       'Каждый факт — одно предложение, до 80 символов. Максимум 5 новых фактов за раз.';
 
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 300,
@@ -6258,7 +6258,7 @@ async function runDecode() {
     document.getElementById('decYasnaBody').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
     document.getElementById('decResult').scrollIntoView({ behavior:'smooth', block:'start' });
     try {
-      var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+      var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', },
         body: JSON.stringify({ model:'deepseek-chat', max_tokens:1500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:prompt}] })
@@ -6298,7 +6298,7 @@ async function runDecode() {
         try {
           var docText = fdDoc.data ? fdDoc.data.slice(0, 12000) : '';
           var docMsg = 'Это медицинский документ типа «' + decDocType + '» (текст):\n---\n' + docText + '\n---\n\nПрофиль: ' + getProfileLine() + '\n\nЗадача:\n[ВЫВОД]\nОбъясни медицинские термины простыми словами. Что найдено, что это значит для пациента. Без диагнозов. Если есть числовые показатели — выведи их в формате [ПОКАЗАТЕЛИ] перед [ВЫВОД].';
-          var resDoc = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+          var resDoc = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
             method:'POST',
             headers:{ 'Content-Type':'application/json', },
             body: JSON.stringify({ model:'deepseek-chat', max_tokens:2500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:docMsg}] })
@@ -6336,7 +6336,7 @@ async function runDecode() {
     document.getElementById('decYasnaBody').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
     document.getElementById('decResult').scrollIntoView({ behavior:'smooth', block:'start' });
     try {
-      var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+      var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', },
         body: JSON.stringify({ model:'deepseek-chat', max_tokens:2500, messages: [{role:'system',content:getChatSystemPrompt()},{role:'user',content:msg0}] })
@@ -6401,7 +6401,7 @@ async function runDecode() {
       var bodyEl = block.querySelector('.dmb-body');
       try {
         var fmsg = buildDecFileMessages(fd);
-        var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+        var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
           method:'POST',
           headers:{ 'Content-Type':'application/json', },
           body: JSON.stringify({ model:'deepseek-chat', max_tokens:1500, messages: [{role:'system',content:getChatSystemPrompt()}].concat(fmsg) })
@@ -7525,7 +7525,7 @@ async function loadYcAdvice(forceRefresh) {
   var bodyEl = document.getElementById('ycAiBody');
   if (bodyEl) bodyEl.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
   try {
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 350, messages: [{ role: 'user', content: buildYcPrompt() }] })
@@ -8539,7 +8539,7 @@ function loadHealthSummary(forceRefresh) {
   var controller = new AbortController();
   var timeoutId = setTimeout(function(){ controller.abort(); }, 25000);
 
-  fetch('https://yasna-proxy.yushkova1108.workers.dev',{
+  fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj',{
     method:'POST',
     headers:{'Content-Type':'application/json',},
     body:JSON.stringify({model:'deepseek-chat',max_tokens:200,messages:[{role:'user',content:prompt}]}),
@@ -10482,7 +10482,7 @@ function openDnaTheme(themeKey) {
     '  "has_analyses_data": true/false\n' +
     '}';
 
-  fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+  fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
@@ -10606,7 +10606,7 @@ function openDnaUnknown() {
     '  "overall": "общий вывод 1-2 предложения"\n' +
     '}';
 
-  fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+  fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', },
     body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 900, messages: [{ role: 'user', content: prompt }] })
@@ -10978,7 +10978,7 @@ async function loadYasnyPulseAI(forceRefresh) {
   if (bodyEl) bodyEl.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
 
   try {
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 350, messages: [{ role: 'user', content: buildYpPrompt() }] })
@@ -11913,7 +11913,7 @@ async function generateRetestAnalysis() {
 
   showTyping(true);
   try {
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
       body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200, stream: true,
@@ -12060,7 +12060,7 @@ async function generateDoctorReport() {
   showTyping(true);
 
   try {
-    var res = await fetch('https://yasna-proxy.yushkova1108.workers.dev', {
+    var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({model:'deepseek-chat', max_tokens:1500, stream:true, messages:[{role:'user',content:prompt}]})
