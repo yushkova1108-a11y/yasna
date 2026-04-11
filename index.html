@@ -4610,46 +4610,23 @@ function send() {
       var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true,
+        body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: false,
           messages: [{role:'system',content:getChatSystemPrompt()}].concat(chatHistory) })
       });
-      if (!res.ok || !res.body) {
+      if (!res.ok) {
         showTyping(false);
         var errData = await res.json().catch(function(){ return {}; });
-        addMessage('⚠️ ' + ((errData.error && errData.error.message) || 'Проверь API-ключ'), false);
+        addMessage('⚠️ ' + ((errData.error && errData.error.message) || 'Ошибка соединения'), false);
         return;
       }
+      var respData = await res.json();
+      var fullText = (respData.choices && respData.choices[0] && respData.choices[0].message && respData.choices[0].message.content) || 'Попробуй ещё раз.';
       showTyping(false);
       var msgDiv = addMessage('', false);
       var bubble = msgDiv ? msgDiv.querySelector('.msg-bubble-ai') : null;
-      var fullText = '';
-      var reader = res.body.getReader();
-      var decoder = new TextDecoder();
-      var buffer = '';
-      while (true) {
-        var chunk = await reader.read();
-        if (chunk.done) break;
-        buffer += decoder.decode(chunk.value, { stream: true });
-        var lines = buffer.split('\n');
-        buffer = lines.pop();
-        for (var i = 0; i < lines.length; i++) {
-          var line = lines[i].trim();
-          if (!line.startsWith('data: ')) continue;
-          var data = line.slice(6);
-          if (data === '[DONE]') break;
-          try {
-            var parsed = JSON.parse(data);
-            var delta = (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content) || '';
-            if (delta) {
-              fullText += delta;
-              if (bubble) bubble.innerHTML = parseMarkdown(fullText);
-              var msgsEl = document.getElementById('chatMsgs');
-              if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
-            }
-          } catch(e) {}
-        }
-      }
-      if (!fullText) fullText = 'Попробуй ещё раз.';
+      if (bubble) bubble.innerHTML = parseMarkdown(fullText);
+      var msgsEl = document.getElementById('chatMsgs');
+      if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
       chatThreads['general'].history.push({ role: 'assistant', content: fullText });
       if (chatThreads['general'].history.length > 100) chatThreads['general'].history = chatThreads['general'].history.slice(-100);
       chatHistory = chatThreads['general'].history.slice();
@@ -5031,46 +5008,23 @@ async function sendChat() {
     var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
-      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: true, messages: [{role:'system',content:getChatSystemPrompt()}].concat(thisHistory) })
+      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1000, stream: false, messages: [{role:'system',content:getChatSystemPrompt()}].concat(thisHistory) })
     });
-    if (!res.ok || !res.body) {
+    if (!res.ok) {
       showTyping(false);
       var errData = await res.json().catch(function(){return {};});
-      addMessage('⚠️ ' + ((errData.error && errData.error.message) || 'Проверь API-ключ'), false);
+      addMessage('⚠️ ' + ((errData.error && errData.error.message) || 'Ошибка соединения'), false);
       document.getElementById('chatSendBtn').disabled = false;
       return;
     }
+    var respData = await res.json();
+    var fullText = (respData.choices && respData.choices[0] && respData.choices[0].message && respData.choices[0].message.content) || 'Попробуй ещё раз.';
     showTyping(false);
     var msgDiv = addMessage('', false);
     var bubble = msgDiv ? msgDiv.querySelector('.msg-bubble-ai') : null;
-    var fullText = '';
-    var reader = res.body.getReader();
-    var decoder = new TextDecoder();
-    var buffer = '';
-    while (true) {
-      var result = await reader.read();
-      if (result.done) break;
-      buffer += decoder.decode(result.value, {stream: true});
-      var lines = buffer.split('\n');
-      buffer = lines.pop();
-      for (var i = 0; i < lines.length; i++) {
-        var line = lines[i].trim();
-        if (!line.startsWith('data: ')) continue;
-        var data = line.slice(6);
-        if (data === '[DONE]') break;
-        try {
-          var parsed = JSON.parse(data);
-          var delta = (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content) || '';
-          if (delta) {
-            fullText += delta;
-            if (bubble) bubble.innerHTML = parseMarkdown(fullText);
-            var msgs = document.getElementById('chatMsgs');
-            if (msgs) msgs.scrollTop = msgs.scrollHeight;
-          }
-        } catch(e) {}
-      }
-    }
-    if (!fullText) fullText = 'Попробуй ещё раз.';
+    if (bubble) bubble.innerHTML = parseMarkdown(fullText);
+    var msgs = document.getElementById('chatMsgs');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
     thisHistory.push({ role: 'assistant', content: fullText });
     if (thisHistory.length > 100) chatThreads[thisThread].history = thisHistory.slice(-100);
     // Сохраняем DOM только если пользователь всё ещё в этой теме
@@ -11916,46 +11870,23 @@ async function generateRetestAnalysis() {
     var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', },
-      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200, stream: true,
+      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 1200, stream: false,
         messages: [{ role: 'system', content: getChatSystemPrompt() }, { role: 'user', content: prompt }] })
     });
 
-    if (!res.ok || !res.body) {
+    if (!res.ok) {
       showTyping(false);
-      addMessage('⚠️ Ошибка. Проверь API-ключ.', false);
+      addMessage('⚠️ Ошибка соединения. Попробуй ещё раз.', false);
       return;
     }
+    var respData = await res.json();
+    var fullText = (respData.choices && respData.choices[0] && respData.choices[0].message && respData.choices[0].message.content) || '';
     showTyping(false);
     var msgDiv = addMessage('', false);
     var bubble = msgDiv ? msgDiv.querySelector('.msg-bubble-ai') : null;
-    var fullText = '';
-    var reader = res.body.getReader();
-    var decoder = new TextDecoder();
-    var buffer = '';
-
-    while (true) {
-      var chunk = await reader.read();
-      if (chunk.done) break;
-      buffer += decoder.decode(chunk.value, { stream: true });
-      var lines = buffer.split('\n');
-      buffer = lines.pop();
-      for (var li = 0; li < lines.length; li++) {
-        var line = lines[li].trim();
-        if (!line.startsWith('data: ')) continue;
-        var d3 = line.slice(6);
-        if (d3 === '[DONE]') break;
-        try {
-          var p3 = JSON.parse(d3);
-          var delta = (p3.choices && p3.choices[0] && p3.choices[0].delta && p3.choices[0].delta.content) || '';
-          if (delta) {
-            fullText += delta;
-            if (bubble) bubble.innerHTML = parseMarkdown(fullText);
-            var msgsEl2 = document.getElementById('chatMsgs');
-            if (msgsEl2) msgsEl2.scrollTop = msgsEl2.scrollHeight;
-          }
-        } catch (e3) {}
-      }
-    }
+    if (bubble) bubble.innerHTML = parseMarkdown(fullText);
+    var msgsEl2 = document.getElementById('chatMsgs');
+    if (msgsEl2) msgsEl2.scrollTop = msgsEl2.scrollHeight;
 
     if (!fullText) { addMessage('Не удалось составить план. Попробуй позже.', false); return; }
 
@@ -12063,46 +11994,23 @@ async function generateDoctorReport() {
     var res = await fetch('https://functions.yandexcloud.net/d4egeqqgmq396hhlmcqj', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'deepseek-chat', max_tokens:1500, stream:true, messages:[{role:'user',content:prompt}]})
+      body: JSON.stringify({model:'deepseek-chat', max_tokens:1500, stream:false, messages:[{role:'user',content:prompt}]})
     });
 
-    if (!res.ok || !res.body) {
+    if (!res.ok) {
       showTyping(false);
-      addMessage('⚠️ Ошибка генерации. Проверь API-ключ.', false);
+      addMessage('⚠️ Ошибка соединения. Попробуй ещё раз.', false);
       return;
     }
 
+    var respData = await res.json();
+    var fullText = (respData.choices && respData.choices[0] && respData.choices[0].message && respData.choices[0].message.content) || '';
     showTyping(false);
     var msgDiv = addMessage('', false);
     var bubble = msgDiv ? msgDiv.querySelector('.msg-bubble-ai') : null;
-    var fullText = '';
-    var reader = res.body.getReader();
-    var decoder = new TextDecoder();
-    var buffer = '';
-
-    while (true) {
-      var chunk = await reader.read();
-      if (chunk.done) break;
-      buffer += decoder.decode(chunk.value, {stream:true});
-      var lines = buffer.split('\n');
-      buffer = lines.pop();
-      for (var i = 0; i < lines.length; i++) {
-        var line = lines[i].trim();
-        if (!line.startsWith('data: ')) continue;
-        var d2 = line.slice(6);
-        if (d2 === '[DONE]') break;
-        try {
-          var p2 = JSON.parse(d2);
-          var delta = (p2.choices&&p2.choices[0]&&p2.choices[0].delta&&p2.choices[0].delta.content)||'';
-          if (delta) {
-            fullText += delta;
-            if (bubble) bubble.innerHTML = parseMarkdown(fullText);
-            var msgsEl = document.getElementById('chatMsgs');
-            if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
-          }
-        } catch(e2) {}
-      }
-    }
+    if (bubble) bubble.innerHTML = parseMarkdown(fullText);
+    var msgsEl = document.getElementById('chatMsgs');
+    if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
 
     if (!fullText) { addMessage('Не удалось сформировать отчёт — попробуй ещё раз.', false); return; }
 
